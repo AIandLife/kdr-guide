@@ -1,0 +1,9 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/feasibility/route": "app/api/feasibility/route.js",
+  "/feasibility/page": "app/feasibility/page.js",
+  "/guide/page": "app/guide/page.js",
+  "/page": "app/page.js",
+  "/professionals/page": "app/professionals/page.js"
+}
