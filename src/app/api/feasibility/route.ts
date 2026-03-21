@@ -5,7 +5,7 @@ const client = new Anthropic()
 
 export async function POST(req: Request) {
   try {
-    const { suburb, state, lotSize } = await req.json()
+    const { suburb, state, lotSize, lang = 'en' } = await req.json()
 
     if (!suburb) {
       return Response.json({ error: 'Suburb is required' }, { status: 400 })
@@ -43,7 +43,10 @@ ${lotSize ? `- User's Lot Size: ${lotSize} sqm` : ''}
 `
         : `No specific data found for "${suburb}". Provide general Australian KDR guidance.`
 
+    const isZh = lang === 'zh'
     const prompt = `You are Australia's leading Knockdown Rebuild (KDR) expert. A homeowner has asked about KDR feasibility for their property.
+
+${isZh ? 'IMPORTANT: All text fields in the JSON (verdict, messages, titles, details, etc.) must be written in Simplified Chinese. Keep technical terms like "DA", "CDC", "Council" in English.' : ''}
 
 Suburb: ${suburb}
 ${state ? `State: ${state}` : ''}

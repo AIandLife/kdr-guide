@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { LangProvider } from '@/lib/language-context'
 
 export const metadata: Metadata = {
   title: 'KDR Guide – Australia\'s Knockdown Rebuild Expert',
@@ -10,7 +11,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="min-h-screen bg-gray-950 text-white antialiased">
-        {children}
+        <LangProvider>
+          {children}
+        </LangProvider>
       </body>
     </html>
   )

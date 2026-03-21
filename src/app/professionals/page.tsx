@@ -3,9 +3,12 @@
 import { useState } from 'react'
 import {
   Building2, ArrowLeft, CheckCircle, MapPin, Phone, ChevronRight,
-  Briefcase, HardHat, Ruler, Zap, Droplets, Trees, FileText, DollarSign
+  Briefcase, HardHat, Ruler, Zap, Droplets, FileText, DollarSign
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { useLang } from '@/lib/language-context'
+import { translations } from '@/lib/i18n'
+import { LangToggle } from '@/components/LangToggle'
 
 const CATEGORIES = [
   { id: 'builder', label: 'Builders', icon: HardHat, color: 'orange' },
@@ -132,6 +135,10 @@ const COLOR_MAP: Record<string, string> = {
 }
 
 export default function ProfessionalsPage() {
+  const { lang } = useLang()
+  const t = translations[lang]
+  const tp = t.professionals
+
   const [activeCategory, setActiveCategory] = useState<string>('all')
   const [activeState, setActiveState] = useState<string>('all')
   const [contactedPros, setContactedPros] = useState<Set<string>>(new Set())
@@ -157,13 +164,14 @@ export default function ProfessionalsPage() {
             </div>
             <span className="font-bold text-lg text-white">KDR Guide</span>
           </a>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <LangToggle />
             <a href="/" className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors">
               <ArrowLeft className="w-4 h-4" />
-              Home
+              {t.nav.home}
             </a>
             <a href="/feasibility" className="bg-orange-500 hover:bg-orange-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-              Check My Block
+              {t.nav.cta}
             </a>
           </div>
         </div>
@@ -171,20 +179,20 @@ export default function ProfessionalsPage() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-3">Find KDR Professionals</h1>
-          <p className="text-gray-400 text-lg">Verified builders, planners, and trades specialising in knockdown rebuild across Australia.</p>
+          <h1 className="text-4xl font-bold text-white mb-3">{tp.h1}</h1>
+          <p className="text-gray-400 text-lg">{tp.subtitle}</p>
         </div>
 
         {/* Filters */}
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 mb-8">
           <div className="mb-4">
-            <p className="text-xs text-gray-500 uppercase font-medium mb-3">By Role</p>
+            <p className="text-xs text-gray-500 uppercase font-medium mb-3">{tp.filterByRole}</p>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setActiveCategory('all')}
                 className={cn('px-3 py-1.5 rounded-lg text-sm font-medium transition-colors', activeCategory === 'all' ? 'bg-orange-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white')}
               >
-                All Roles
+                {tp.allRoles}
               </button>
               {CATEGORIES.map(cat => {
                 const colorClass = COLOR_MAP[cat.color]
@@ -203,13 +211,13 @@ export default function ProfessionalsPage() {
             </div>
           </div>
           <div>
-            <p className="text-xs text-gray-500 uppercase font-medium mb-3">By State</p>
+            <p className="text-xs text-gray-500 uppercase font-medium mb-3">{tp.filterByState}</p>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setActiveState('all')}
                 className={cn('px-3 py-1.5 rounded-lg text-sm font-medium transition-colors', activeState === 'all' ? 'bg-orange-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white')}
               >
-                All States
+                {tp.allStates}
               </button>
               {['NSW','VIC','QLD','WA','SA','ACT','TAS','NT'].map(s => (
                 <button
@@ -243,7 +251,7 @@ export default function ProfessionalsPage() {
                     <div className="flex items-center gap-2">
                       {pro.verified && (
                         <span className="flex items-center gap-1 text-xs text-green-400">
-                          <CheckCircle className="w-3.5 h-3.5" /> Verified
+                          <CheckCircle className="w-3.5 h-3.5" /> {tp.verified}
                         </span>
                       )}
                       <span className={cn('text-xs px-2 py-0.5 rounded-full', STATE_COLORS[pro.state] || 'bg-gray-700 text-gray-400')}>
@@ -282,7 +290,7 @@ export default function ProfessionalsPage() {
                       : 'bg-orange-500 hover:bg-orange-400 text-white'
                   )}
                 >
-                  {contacted ? <><CheckCircle className="w-4 h-4" /> Request Sent</> : <><Phone className="w-4 h-4" /> {pro.contact}</>}
+                  {contacted ? <><CheckCircle className="w-4 h-4" /> {tp.requestSent}</> : <><Phone className="w-4 h-4" /> {tp.getQuote}</>}
                 </button>
               </div>
             )
@@ -299,23 +307,20 @@ export default function ProfessionalsPage() {
 
         {/* Register CTA */}
         <div className="bg-gradient-to-br from-blue-900/30 to-gray-900 border border-blue-500/20 rounded-2xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Are you a KDR Professional?</h2>
-          <p className="text-gray-400 mb-6 max-w-lg mx-auto">
-            Join our network and connect with homeowners actively planning a knockdown rebuild in your area.
-            Builders, planners, trades, and finance professionals welcome.
-          </p>
+          <h2 className="text-2xl font-bold text-white mb-2">{tp.registerTitle}</h2>
+          <p className="text-gray-400 mb-6 max-w-lg mx-auto">{tp.registerSubtitle}</p>
           <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <input
               type="email"
-              placeholder="Your business email"
+              placeholder={tp.registerEmail}
               className="flex-1 bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             />
             <button className="bg-blue-500 hover:bg-blue-400 text-white font-semibold px-6 py-3 rounded-xl transition-colors whitespace-nowrap flex items-center gap-2 justify-center">
-              List My Business
+              {tp.registerBtn}
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-          <p className="text-xs text-gray-600 mt-3">First 3 months free for verified professionals</p>
+          <p className="text-xs text-gray-600 mt-3">{tp.registerNote}</p>
         </div>
       </div>
     </div>

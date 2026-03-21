@@ -6,6 +6,9 @@ import {
   ClipboardList, Ruler, FileText, Hammer, Zap, Home, DollarSign
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { useLang } from '@/lib/language-context'
+import { translations } from '@/lib/i18n'
+import { LangToggle } from '@/components/LangToggle'
 
 const STAGES = [
   {
@@ -151,6 +154,9 @@ export default function GuidePage() {
     )
   }
 
+  const { lang } = useLang()
+  const t = translations[lang]
+
   return (
     <div className="min-h-screen bg-gray-950">
       {/* Nav */}
@@ -160,15 +166,16 @@ export default function GuidePage() {
             <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
               <Building2 className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg text-white">KDR Guide</span>
+            <span className="font-bold text-lg text-white">{t.nav.brand}</span>
           </a>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <LangToggle />
             <a href="/" className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors">
               <ArrowLeft className="w-4 h-4" />
-              Home
+              {t.nav.home}
             </a>
             <a href="/feasibility" className="bg-orange-500 hover:bg-orange-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-              Check My Block
+              {t.nav.cta}
             </a>
           </div>
         </div>
@@ -176,13 +183,13 @@ export default function GuidePage() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-white mb-3">The Complete KDR Process Guide</h1>
-          <p className="text-gray-400 text-lg">Everything you need to know about knockdown rebuild in Australia — from first question to moving in.</p>
+          <h1 className="text-4xl font-bold text-white mb-3">{t.guide.h1}</h1>
+          <p className="text-gray-400 text-lg">{t.guide.subtitle}</p>
         </div>
 
         {/* Overview timeline */}
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-8 overflow-x-auto">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Project Overview</h2>
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">{t.guide.overviewLabel}</h2>
           <div className="flex items-center gap-2 min-w-max">
             {STAGES.map((stage, i) => {
               const c = COLOR_MAP[stage.color]
@@ -218,7 +225,7 @@ export default function GuidePage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-0.5">
-                      <span className={cn('text-xs font-semibold px-2 py-0.5 rounded-full', c.badge)}>Stage {stage.id}</span>
+                      <span className={cn('text-xs font-semibold px-2 py-0.5 rounded-full', c.badge)}>{lang === 'zh' ? '阶段' : 'Stage'} {stage.id}</span>
                       <span className="text-xs text-gray-600">{stage.duration}</span>
                     </div>
                     <h2 className="text-lg font-semibold text-white">{stage.title}</h2>
@@ -250,10 +257,10 @@ export default function GuidePage() {
 
         {/* CTA */}
         <div className="mt-10 bg-gradient-to-br from-orange-900/30 to-gray-900 border border-orange-500/20 rounded-2xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Ready to check your specific property?</h2>
-          <p className="text-gray-400 mb-6">Get an AI feasibility report for your suburb — council rules, costs, timeline, and who to call.</p>
+          <h2 className="text-2xl font-bold text-white mb-2">{t.guide.ctaTitle}</h2>
+          <p className="text-gray-400 mb-6">{t.guide.ctaSubtitle}</p>
           <a href="/feasibility" className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors">
-            Check My Block — Free
+            {t.guide.ctaBtn}
             <ChevronRight className="w-4 h-4" />
           </a>
         </div>

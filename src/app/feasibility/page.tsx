@@ -8,6 +8,9 @@ import {
   Droplets, Landmark, Shield, Info
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { useLang } from '@/lib/language-context'
+import { translations } from '@/lib/i18n'
+import { LangToggle } from '@/components/LangToggle'
 
 interface RiskFlag {
   type: string
@@ -62,7 +65,7 @@ function ScoreMeter({ score }: { score: number }) {
           className="transition-all duration-1000"
         />
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center rotate-0">
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-3xl font-bold text-white">{score}</span>
         <span className="text-xs text-gray-500">/10</span>
       </div>
@@ -86,6 +89,10 @@ function RiskBadge({ level }: { level: 'Low' | 'Medium' | 'High' }) {
 function FeasibilityContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { lang } = useLang()
+  const t = translations[lang]
+  const tf = t.feasibility
+
   const [result, setResult] = useState<FeasibilityResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -99,11 +106,11 @@ function FeasibilityContent() {
     const s = searchParams.get('suburb')
     if (s) {
       setSuburb(s)
-      fetchFeasibility(s, searchParams.get('lotSize') || '', searchParams.get('state') || '')
+      fetchFeasibility(s, searchParams.get('lotSize') || '', searchParams.get('state') || '', lang)
     }
-  }, [searchParams])
+  }, [searchParams, lang])
 
-  const fetchFeasibility = async (sub: string, lot: string, st: string) => {
+  const fetchFeasibility = async (sub: string, lot: string, st: string, l: string) => {
     if (!sub) return
     setLoading(true)
     setError('')
@@ -112,7 +119,7 @@ function FeasibilityContent() {
       const res = await fetch('/api/feasibility', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ suburb: sub, lotSize: lot ? Number(lot) : null, state: st }),
+        body: JSON.stringify({ suburb: sub, lotSize: lot ? Number(lot) : null, state: st, lang: l }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
@@ -126,16 +133,11 @@ function FeasibilityContent() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    const params = new URLSearchParams({ suburb })
+    const params = new URLSearchParams({ suburb, lang })
     if (lotSize) params.set('lotSize', lotSize)
     if (state) params.set('state', state)
     router.push(`/feasibility?${params.toString()}`)
-    fetchFeasibility(suburb, lotSize, state)
-  }
-
-  const handleLeadSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setLeadSubmitted(true)
+    fetchFeasibility(suburb, lotSize, state, lang)
   }
 
   return (
@@ -147,12 +149,15 @@ function FeasibilityContent() {
             <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
               <Building2 className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg text-white">KDR Guide</span>
+            <span className="font-bold text-lg text-white">{t.nav.brand}</span>
           </a>
-          <a href="/" className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </a>
+          <div className="flex items-center gap-3">
+            <LangToggle />
+            <a href="/" className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+              {t.nav.back}
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -166,7 +171,7 @@ function FeasibilityContent() {
                 type="text"
                 value={suburb}
                 onChange={e => setSuburb(e.target.value)}
-                placeholder="Enter suburb..."
+                placeholder={t.home.formSuburbPlaceholder}
                 className="w-full bg-gray-800 border border-gray-600 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500"
                 required
               />
@@ -176,7 +181,7 @@ function FeasibilityContent() {
               onChange={e => setState(e.target.value)}
               className="bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500"
             >
-              <option value="">State</option>
+              <option value="">{t.home.formState}</option>
               {['NSW','VIC','QLD','WA','SA','ACT','TAS','NT'].map(s => (
                 <option key={s} value={s}>{s}</option>
               ))}
@@ -185,7 +190,7 @@ function FeasibilityContent() {
               type="number"
               value={lotSize}
               onChange={e => setLotSize(e.target.value)}
-              placeholder="Lot size (m²)"
+              placeholder={lang === 'zh' ? '地块面积 (m²)' : 'Lot size (m²)'}
               className="bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500"
             />
           </div>
@@ -194,34 +199,31 @@ function FeasibilityContent() {
             disabled={loading}
             className="mt-3 w-full bg-orange-500 hover:bg-orange-400 disabled:bg-gray-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
           >
-            {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Analysing...</> : <><MapPin className="w-4 h-4" /> Run Feasibility Check</>}
+            {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> {lang === 'zh' ? '分析中...' : 'Analysing...'}</> : <><MapPin className="w-4 h-4" /> {tf.searchBtn}</>}
           </button>
         </form>
 
-        {/* Loading */}
         {loading && (
           <div className="text-center py-20">
             <Loader2 className="w-12 h-12 animate-spin text-orange-400 mx-auto mb-4" />
-            <p className="text-gray-400 text-lg">Analysing your suburb...</p>
-            <p className="text-gray-600 text-sm mt-2">Checking council rules, overlays, and costs</p>
+            <p className="text-gray-400 text-lg">{tf.loadingTitle}</p>
+            <p className="text-gray-600 text-sm mt-2">{tf.loadingSubtitle}</p>
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6 text-center">
             <XCircle className="w-8 h-8 text-red-400 mx-auto mb-3" />
             <p className="text-red-400 font-medium">{error}</p>
-            <button onClick={() => fetchFeasibility(suburb, lotSize, state)} className="mt-4 text-sm text-gray-400 hover:text-white underline">
-              Try again
+            <button onClick={() => fetchFeasibility(suburb, lotSize, state, lang)} className="mt-4 text-sm text-gray-400 hover:text-white underline">
+              {lang === 'zh' ? '重试' : 'Try again'}
             </button>
           </div>
         )}
 
-        {/* Results */}
         {result && !loading && (
           <div className="space-y-6">
-            {/* Header Card */}
+            {/* Header */}
             <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                 <ScoreMeter score={result.feasibilityScore} />
@@ -245,12 +247,12 @@ function FeasibilityContent() {
                   <p className="text-gray-300 leading-relaxed">{result.verdict}</p>
                 </div>
               </div>
-
-              {/* Key Insight */}
               <div className="mt-6 bg-orange-500/10 border border-orange-500/20 rounded-xl p-4">
                 <div className="flex items-start gap-3">
                   <Info className="w-5 h-5 text-orange-400 mt-0.5 shrink-0" />
-                  <p className="text-orange-200 text-sm leading-relaxed"><strong>Key insight:</strong> {result.keyInsight}</p>
+                  <p className="text-orange-200 text-sm leading-relaxed">
+                    <strong>{tf.keyInsight}:</strong> {result.keyInsight}
+                  </p>
                 </div>
               </div>
             </div>
@@ -259,16 +261,14 @@ function FeasibilityContent() {
             {result.lotSizeCheck.passed !== null && (
               <div className={cn(
                 'rounded-2xl p-5 border flex items-start gap-4',
-                result.lotSizeCheck.passed
-                  ? 'bg-green-500/10 border-green-500/20'
-                  : 'bg-red-500/10 border-red-500/20'
+                result.lotSizeCheck.passed ? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/20'
               )}>
                 {result.lotSizeCheck.passed
                   ? <CheckCircle className="w-6 h-6 text-green-400 shrink-0 mt-0.5" />
                   : <XCircle className="w-6 h-6 text-red-400 shrink-0 mt-0.5" />}
                 <div>
                   <p className={cn('font-semibold', result.lotSizeCheck.passed ? 'text-green-400' : 'text-red-400')}>
-                    Lot Size Check: {result.lotSizeCheck.passed ? 'Passed' : 'Failed'}
+                    {result.lotSizeCheck.passed ? tf.lotSizePassed : tf.lotSizeFailed}
                   </p>
                   <p className="text-gray-400 text-sm mt-1">{result.lotSizeCheck.message}</p>
                 </div>
@@ -279,7 +279,7 @@ function FeasibilityContent() {
             <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
               <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-yellow-400" />
-                Risk Assessment
+                {tf.riskTitle}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {result.riskFlags.map((flag, i) => {
@@ -300,12 +300,12 @@ function FeasibilityContent() {
               </div>
             </div>
 
-            {/* Approval Path + Cost */}
+            {/* Approval + Cost */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
                 <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Shield className="w-5 h-5 text-blue-400" />
-                  Approval Path
+                  {tf.approvalTitle}
                 </h2>
                 <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-400 text-sm font-semibold px-3 py-1.5 rounded-lg mb-3">
                   {result.approvalPath.type}
@@ -313,7 +313,7 @@ function FeasibilityContent() {
                 {result.approvalPath.timelineWeeks && (
                   <p className="text-sm text-gray-400 mb-3">
                     <Clock className="w-4 h-4 inline mr-1 text-gray-500" />
-                    {result.approvalPath.timelineWeeks[0]}–{result.approvalPath.timelineWeeks[1]} weeks for approval
+                    {result.approvalPath.timelineWeeks[0]}–{result.approvalPath.timelineWeeks[1]} {tf.approvalWeeks}
                   </p>
                 )}
                 <p className="text-sm text-gray-500 leading-relaxed">{result.approvalPath.description}</p>
@@ -322,30 +322,28 @@ function FeasibilityContent() {
               <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
                 <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <DollarSign className="w-5 h-5 text-green-400" />
-                  Cost Estimate
+                  {tf.costTitle}
                 </h2>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">Demolition</span>
+                    <span className="text-sm text-gray-500">{tf.demolition}</span>
                     <span className="text-sm font-medium text-white">
                       ${result.costEstimate.demolition[0].toLocaleString()} – ${result.costEstimate.demolition[1].toLocaleString()}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">Build (per m²)</span>
+                    <span className="text-sm text-gray-500">{tf.buildPerSqm}</span>
                     <span className="text-sm font-medium text-white">
                       ${result.costEstimate.buildPerSqm[0].toLocaleString()} – ${result.costEstimate.buildPerSqm[1].toLocaleString()}
                     </span>
                   </div>
                   {result.costEstimate.totalEstimate && (
-                    <>
-                      <div className="border-t border-gray-700 pt-3 flex items-center justify-between">
-                        <span className="text-sm font-semibold text-white">Total Estimate</span>
-                        <span className="text-sm font-bold text-orange-400">
-                          ${(result.costEstimate.totalEstimate[0] / 1000).toFixed(0)}k – ${(result.costEstimate.totalEstimate[1] / 1000).toFixed(0)}k
-                        </span>
-                      </div>
-                    </>
+                    <div className="border-t border-gray-700 pt-3 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-white">{tf.totalEstimate}</span>
+                      <span className="text-sm font-bold text-orange-400">
+                        ${(result.costEstimate.totalEstimate[0] / 1000).toFixed(0)}k – ${(result.costEstimate.totalEstimate[1] / 1000).toFixed(0)}k
+                      </span>
+                    </div>
                   )}
                   <p className="text-xs text-gray-600 mt-2">{result.costEstimate.totalNote}</p>
                 </div>
@@ -356,11 +354,11 @@ function FeasibilityContent() {
             <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
               <h2 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-purple-400" />
-                Timeline
+                {tf.timelineTitle}
               </h2>
               <p className="text-sm text-gray-500 mb-5">
-                Total: {result.timeline.totalWeeks[0]}–{result.timeline.totalWeeks[1]} weeks
-                ({Math.round(result.timeline.totalWeeks[0] / 4)}–{Math.round(result.timeline.totalWeeks[1] / 4)} months)
+                {tf.totalWeeks}: {result.timeline.totalWeeks[0]}–{result.timeline.totalWeeks[1]} {lang === 'zh' ? '周' : 'weeks'}
+                （{Math.round(result.timeline.totalWeeks[0] / 4)}–{Math.round(result.timeline.totalWeeks[1] / 4)} {tf.months}）
               </p>
               <div className="space-y-3">
                 {result.timeline.phases.map((phase, i) => (
@@ -370,7 +368,7 @@ function FeasibilityContent() {
                     </div>
                     <div className="flex-1 flex items-center justify-between">
                       <span className="text-sm text-gray-300">{phase.phase}</span>
-                      <span className="text-sm text-gray-500">{phase.weeks} wks</span>
+                      <span className="text-sm text-gray-500">{phase.weeks} {lang === 'zh' ? '周' : 'wks'}</span>
                     </div>
                   </div>
                 ))}
@@ -381,7 +379,7 @@ function FeasibilityContent() {
             <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
               <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                 <ChevronRight className="w-5 h-5 text-orange-400" />
-                Your Next Steps
+                {tf.nextStepsTitle}
               </h2>
               <div className="space-y-4">
                 {result.nextSteps.map((step, i) => (
@@ -398,11 +396,11 @@ function FeasibilityContent() {
               </div>
             </div>
 
-            {/* Professionals Needed */}
+            {/* Professionals */}
             <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
               <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                 <Users className="w-5 h-5 text-cyan-400" />
-                Professionals You&apos;ll Need
+                {tf.prosTitle}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {result.professionals.map((pro, i) => (
@@ -417,47 +415,40 @@ function FeasibilityContent() {
 
             {/* Lead CTA */}
             <div className="bg-gradient-to-br from-orange-900/30 to-gray-900 border border-orange-500/20 rounded-2xl p-8 text-center">
-              <h2 className="text-2xl font-bold text-white mb-2">Ready to take the next step?</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">{tf.ctaTitle}</h2>
               <p className="text-gray-400 mb-6 max-w-md mx-auto">
-                We&apos;ll connect you with verified KDR builders and town planners in {result.suburb}. Free and no obligation.
+                {tf.ctaSubtitle} {result.suburb}。{tf.ctaFree}
               </p>
               {!leadSubmitted ? (
-                <form onSubmit={handleLeadSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                <form onSubmit={e => { e.preventDefault(); setLeadSubmitted(true) }} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                   <input
                     type="email"
                     value={leadEmail}
                     onChange={e => setLeadEmail(e.target.value)}
-                    placeholder="Your email address"
+                    placeholder={tf.ctaEmail}
                     required
                     className="flex-1 bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500"
                   />
-                  <button
-                    type="submit"
-                    className="bg-orange-500 hover:bg-orange-400 text-white font-semibold px-6 py-3 rounded-xl transition-colors whitespace-nowrap"
-                  >
-                    Connect Me
+                  <button type="submit" className="bg-orange-500 hover:bg-orange-400 text-white font-semibold px-6 py-3 rounded-xl transition-colors whitespace-nowrap">
+                    {tf.ctaBtn}
                   </button>
                 </form>
               ) : (
                 <div className="flex items-center justify-center gap-2 text-green-400">
                   <CheckCircle className="w-6 h-6" />
-                  <span className="font-medium">We&apos;ll be in touch soon!</span>
+                  <span className="font-medium">{tf.ctaSuccess}</span>
                 </div>
               )}
             </div>
 
-            {/* Footer disclaimer */}
-            <p className="text-center text-xs text-gray-700 pb-4">
-              This report is AI-generated and for information purposes only. Always verify with your local council and engage qualified professionals before making decisions.
-            </p>
+            <p className="text-center text-xs text-gray-700 pb-4">{tf.disclaimer}</p>
           </div>
         )}
 
-        {/* Empty state */}
         {!loading && !result && !error && (
           <div className="text-center py-20">
             <MapPin className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">Enter a suburb above to get started</p>
+            <p className="text-gray-500 text-lg">{tf.emptyState}</p>
           </div>
         )}
       </div>
