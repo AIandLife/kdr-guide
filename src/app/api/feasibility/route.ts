@@ -115,19 +115,30 @@ Generate a comprehensive, honest feasibility report. Return ONLY valid JSON in t
 Be specific, honest, and practical. If risks are high, say so clearly. Use real Australian industry knowledge.`
 
     const response = await client.messages.create({
-      model: 'claude-opus-4-6',
-      max_tokens: 2000,
-      messages: [{ role: 'user', content: prompt }],
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 3000,
+      messages: [
+        {
+          role: 'user',
+          content: prompt + '\n\nCRITICAL: Output ONLY the raw JSON object. No markdown, no explanation, no code fences. Start your response with { and end with }.',
+        },
+        {
+          role: 'assistant',
+          content: '{',
+        }
+      ],
     })
 
     const content = response.content[0]
     if (content.type !== 'text') throw new Error('Unexpected response type')
 
-    // Parse JSON from response
-    const jsonMatch = content.text.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) throw new Error('No JSON found in response')
-
-    const result = JSON.parse(jsonMatch[0])
+    // The assistant prefill starts with '{', so prepend it back
+    const rawText = '{' + content.text
+    // Find the end of the JSON object
+    const end = rawText.lastIndexOf('}')
+    if (end === -1) throw new Error('No JSON found in response')
+    const jsonStr = rawText.slice(0, end + 1)
+    const result = JSON.parse(jsonStr)
     return Response.json(result)
 
   } catch (error) {
