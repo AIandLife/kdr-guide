@@ -1,3 +1,0 @@
-module.exports=[94702,a=>{"use strict";var b=a.i(29672);a.s(["default",0,function({children:a}){return(0,b.jsx)("html",{lang:"en",children:(0,b.jsx)("body",{className:"min-h-screen bg-gray-950 text-white antialiased",children:a})})},"metadata",0,{title:"KDR Guide – Australia's Knockdown Rebuild Expert",description:"Enter your address and find out if your property is eligible for knockdown rebuild in Australia. AI-powered feasibility check, cost estimates, and builder matching."}])},72424,a=>{a.n(a.i(94702))}];
-
-//# sourceMappingURL=kdr-guide_src_app_layout_tsx_0lzvukt._.js.map
