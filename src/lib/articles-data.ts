@@ -128,9 +128,9 @@ export const ARTICLES: Article[] = [
     `,
   },
   {
-    slug: 'kdr-cost-guide-2025',
-    title: 'How Much Does a Knockdown Rebuild Cost in Australia? (2025)',
-    titleZh: '澳洲推倒重建到底要花多少钱？（2025 年完整指南）',
+    slug: 'kdr-cost-guide-2026',
+    title: 'How Much Does a Knockdown Rebuild Cost in Australia? (2026)',
+    titleZh: '澳洲推倒重建到底要花多少钱？（2026 年完整指南）',
     excerpt: 'From demolition to handover, a realistic breakdown of KDR costs across Sydney, Melbourne, Brisbane, and Perth — plus the variables that move the number most.',
     excerptZh: '从拆除到交房，全面拆解悉尼、墨尔本、布里斯班和珀斯的推倒重建费用，以及最影响价格的关键因素。',
     category: 'finance',
