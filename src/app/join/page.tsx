@@ -2,12 +2,12 @@
 
 import { useState } from 'react'
 import {
-  Building2, ArrowLeft, CheckCircle, ChevronRight, Loader2,
+  CheckCircle, ChevronRight, Loader2,
   HardHat, FileText, Zap, Droplets, Hammer, DollarSign, Briefcase, Ruler
 } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
-import { LangToggle } from '@/components/LangToggle'
+import { SiteNav } from '@/components/SiteNav'
 import { cn } from '@/lib/cn'
 
 const CATEGORIES = [
@@ -72,26 +72,8 @@ export default function JoinPage() {
   const isZh = lang === 'zh'
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(160deg, #0d1117 0%, #111827 50%, #0d1117 100%)' }}>
-      {/* Nav */}
-      <nav className="border-b sticky top-0 z-50 backdrop-blur-md" style={{ borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(13,17,23,0.85)' }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <a href="/professionals" className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-              {isZh ? '返回' : 'Back'}
-            </a>
-            <div className="w-px h-5 bg-white/10" />
-            <a href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/30">
-                <Building2 className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-lg text-white hidden sm:block">{t.nav.brand}</span>
-            </a>
-          </div>
-          <LangToggle />
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gray-50">
+      <SiteNav backHref="/professionals" backLabel={isZh ? '返回' : 'Back'} currentPath="/join" />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
         {!submitted ? (
@@ -99,24 +81,24 @@ export default function JoinPage() {
             {/* Left — Info panel */}
             <div className="lg:col-span-2">
               <div className="sticky top-24">
-                <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 mb-4 text-xs font-semibold text-orange-400" style={{ background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.2)' }}>
+                <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 mb-4 text-xs font-semibold text-orange-600 bg-orange-100 border border-orange-200">
                   {isZh ? '专业人士入驻' : 'For Professionals'}
                 </div>
-                <h1 className="text-3xl font-bold text-white mb-3">
+                <h1 className="text-3xl font-bold text-gray-900 mb-3">
                   {isZh ? '加入 KDR Guide 专业网络' : 'Join the KDR Guide Professional Network'}
                 </h1>
-                <p className="text-slate-400 leading-relaxed mb-8">
+                <p className="text-gray-500 leading-relaxed mb-8">
                   {isZh
                     ? '与全澳洲正在计划推倒重建的业主建立联系。我们将你的业务与有真实需求的客户匹配。'
                     : 'Connect with homeowners across Australia who are actively planning a knockdown rebuild. We match your business with real, qualified leads.'}
                 </p>
 
                 {/* Free trial box */}
-                <div className="rounded-2xl p-5 mb-6" style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)' }}>
-                  <div className="text-2xl font-bold text-orange-400 mb-1">
+                <div className="rounded-2xl p-5 mb-6 bg-orange-50 border border-orange-200">
+                  <div className="text-2xl font-bold text-orange-600 mb-1">
                     {isZh ? '前 3 个月完全免费' : '3 Months Free'}
                   </div>
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-gray-500">
                     {isZh
                       ? '作为早期入驻成员，享受前 3 个月免费试用期。无需信用卡，到期前我们会提前通知你。'
                       : 'As a founding member, enjoy 3 months completely free. No credit card required — we\'ll notify you before your trial ends.'}
@@ -126,8 +108,8 @@ export default function JoinPage() {
                 <div className="space-y-3">
                   {BENEFITS.map((b, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <CheckCircle className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
-                      <span className="text-sm text-slate-400">{isZh ? b.zh : b.en}</span>
+                      <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                      <span className="text-sm text-gray-600">{isZh ? b.zh : b.en}</span>
                     </div>
                   ))}
                 </div>
@@ -137,77 +119,71 @@ export default function JoinPage() {
             {/* Right — Form */}
             <div className="lg:col-span-3">
               <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="rounded-2xl p-6" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                  <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
+                <div className="rounded-2xl p-6 bg-white border border-gray-200 shadow-sm">
+                  <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
                     {isZh ? '业务信息' : 'Business Details'}
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2">
-                      <label className="block text-xs text-slate-500 mb-1.5">{isZh ? '公司名称 *' : 'Business Name *'}</label>
+                      <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '公司名称 *' : 'Business Name *'}</label>
                       <input
                         value={form.businessName} onChange={e => set('businessName', e.target.value)}
                         placeholder={isZh ? '你的公司或商号名称' : 'Your company or trading name'}
                         required
-                        className="w-full px-4 py-2.5 rounded-xl text-white placeholder-slate-600 focus:outline-none text-sm"
-                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        className="w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-slate-500 mb-1.5">{isZh ? '联系人姓名 *' : 'Contact Name *'}</label>
+                      <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '联系人姓名 *' : 'Contact Name *'}</label>
                       <input
                         value={form.contactName} onChange={e => set('contactName', e.target.value)}
                         placeholder={isZh ? '你的姓名' : 'Your name'}
                         required
-                        className="w-full px-4 py-2.5 rounded-xl text-white placeholder-slate-600 focus:outline-none text-sm"
-                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        className="w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-slate-500 mb-1.5">ABN</label>
+                      <label className="block text-xs text-gray-500 mb-1.5">ABN</label>
                       <input
                         value={form.abn} onChange={e => set('abn', e.target.value)}
                         placeholder="XX XXX XXX XXX"
-                        className="w-full px-4 py-2.5 rounded-xl text-white placeholder-slate-600 focus:outline-none text-sm"
-                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        className="w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-slate-500 mb-1.5">{isZh ? '邮箱 *' : 'Email *'}</label>
+                      <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '邮箱 *' : 'Email *'}</label>
                       <input
                         type="email" value={form.email} onChange={e => set('email', e.target.value)}
                         placeholder="you@company.com.au"
                         required
-                        className="w-full px-4 py-2.5 rounded-xl text-white placeholder-slate-600 focus:outline-none text-sm"
-                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        className="w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-slate-500 mb-1.5">{isZh ? '电话' : 'Phone'}</label>
+                      <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '电话' : 'Phone'}</label>
                       <input
                         type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
                         placeholder="04XX XXX XXX"
-                        className="w-full px-4 py-2.5 rounded-xl text-white placeholder-slate-600 focus:outline-none text-sm"
-                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        className="w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-slate-500 mb-1.5">{isZh ? '网站' : 'Website'}</label>
+                      <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '网站' : 'Website'}</label>
                       <input
                         type="url" value={form.website} onChange={e => set('website', e.target.value)}
                         placeholder="https://yourcompany.com.au"
-                        className="w-full px-4 py-2.5 rounded-xl text-white placeholder-slate-600 focus:outline-none text-sm"
-                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        className="w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-2xl p-6" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                  <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
+                <div className="rounded-2xl p-6 bg-white border border-gray-200 shadow-sm">
+                  <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
                     {isZh ? '专业类别与服务范围' : 'Category & Service Area'}
                   </h2>
                   <div className="mb-4">
-                    <label className="block text-xs text-slate-500 mb-2">{isZh ? '专业类别 *' : 'Category *'}</label>
+                    <label className="block text-xs text-gray-500 mb-2">{isZh ? '专业类别 *' : 'Category *'}</label>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {CATEGORIES.map(cat => (
                         <button
@@ -217,53 +193,47 @@ export default function JoinPage() {
                           className={cn(
                             'flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium text-left transition-all',
                             form.category === cat.id
-                              ? 'text-orange-300'
-                              : 'text-slate-500 hover:text-slate-300'
+                              ? 'text-orange-600 bg-orange-50 border border-orange-300'
+                              : 'text-gray-600 bg-gray-50 border border-gray-200 hover:border-gray-300'
                           )}
-                          style={{
-                            background: form.category === cat.id ? 'rgba(249,115,22,0.15)' : 'rgba(255,255,255,0.04)',
-                            border: `1px solid ${form.category === cat.id ? 'rgba(249,115,22,0.4)' : 'rgba(255,255,255,0.07)'}`,
-                          }}
                         >
                           <cat.icon className="w-3.5 h-3.5 shrink-0" />
                           <span className="leading-tight">{cat.label}</span>
                         </button>
                       ))}
                     </div>
-                    {!form.category && <p className="text-xs text-red-400 mt-1">{isZh ? '请选择一个类别' : 'Please select a category'}</p>}
+                    {!form.category && <p className="text-xs text-red-500 mt-1">{isZh ? '请选择一个类别' : 'Please select a category'}</p>}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs text-slate-500 mb-1.5">{isZh ? '主要州 *' : 'Primary State *'}</label>
+                      <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '主要州 *' : 'Primary State *'}</label>
                       <select
                         value={form.state} onChange={e => set('state', e.target.value)} required
-                        className="w-full px-4 py-2.5 rounded-xl text-white focus:outline-none text-sm"
-                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        className="w-full px-4 py-2.5 rounded-xl text-gray-900 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400"
                       >
-                        <option value="" style={{ background: '#1e293b' }}>{isZh ? '选择州' : 'Select state'}</option>
+                        <option value="">{isZh ? '选择州' : 'Select state'}</option>
                         {['NSW','VIC','QLD','WA','SA','ACT','TAS','NT'].map(s => (
-                          <option key={s} value={s} style={{ background: '#1e293b' }}>{s}</option>
+                          <option key={s} value={s}>{s}</option>
                         ))}
-                        <option value="All Australia" style={{ background: '#1e293b' }}>{isZh ? '全澳洲' : 'All Australia'}</option>
+                        <option value="All Australia">{isZh ? '全澳洲' : 'All Australia'}</option>
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs text-slate-500 mb-1.5">
+                      <label className="block text-xs text-gray-500 mb-1.5">
                         {isZh ? '服务区域（逗号分隔）' : 'Regions (comma separated)'}
                       </label>
                       <input
                         value={form.regions} onChange={e => set('regions', e.target.value)}
                         placeholder={isZh ? 'Sydney, Parramatta, Blacktown' : 'Sydney, Parramatta, Blacktown'}
-                        className="w-full px-4 py-2.5 rounded-xl text-white placeholder-slate-600 focus:outline-none text-sm"
-                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        className="w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-2xl p-6" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                  <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
+                <div className="rounded-2xl p-6 bg-white border border-gray-200 shadow-sm">
+                  <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
                     {isZh ? '业务介绍' : 'About Your Business'}
                   </h2>
                   <textarea
@@ -272,13 +242,12 @@ export default function JoinPage() {
                       ? '简单介绍你的业务——专长、经验年数、擅长的 KDR 项目类型等...'
                       : 'Tell us about your business — specialties, years of experience, types of KDR projects you handle...'}
                     rows={4}
-                    className="w-full px-4 py-3 rounded-xl text-white placeholder-slate-600 focus:outline-none text-sm resize-none"
-                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm resize-none bg-gray-50 border border-gray-200 focus:border-orange-400"
                   />
                 </div>
 
                 {error && (
-                  <div className="rounded-xl p-4 text-sm text-red-400" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>
+                  <div className="rounded-xl p-4 text-sm text-red-600 bg-red-50 border border-red-200">
                     {error}
                   </div>
                 )}
@@ -293,7 +262,7 @@ export default function JoinPage() {
                     ? <><Loader2 className="w-5 h-5 animate-spin" /> {isZh ? '提交中...' : 'Submitting...'}</>
                     : <><ChevronRight className="w-5 h-5" /> {isZh ? '提交申请' : 'Submit Application'}</>}
                 </button>
-                <p className="text-center text-xs text-slate-600">
+                <p className="text-center text-xs text-gray-400">
                   {isZh ? '提交后我们会在 1-2 个工作日内审核并发送确认邮件。' : 'We\'ll review and send a confirmation email within 1-2 business days.'}
                 </p>
               </form>
@@ -302,22 +271,22 @@ export default function JoinPage() {
         ) : (
           /* Success */
           <div className="max-w-lg mx-auto text-center py-20">
-            <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-10 h-10 text-green-400" />
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-3">
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">
               {isZh ? '申请已提交！' : 'Application Received!'}
             </h1>
-            <p className="text-slate-400 mb-6 leading-relaxed">
+            <p className="text-gray-500 mb-6 leading-relaxed">
               {isZh
                 ? `感谢申请入驻 KDR Guide 专业网络。我们已向 ${form.email} 发送了确认邮件，其中包含你的免费试用期详情。`
                 : `Thanks for applying to join the KDR Guide Professional Network. We've sent a confirmation to ${form.email} with your free trial details.`}
             </p>
-            <div className="rounded-2xl p-5 mb-8 text-left" style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)' }}>
-              <p className="text-sm font-semibold text-orange-400 mb-2">
+            <div className="rounded-2xl p-5 mb-8 text-left bg-orange-50 border border-orange-200">
+              <p className="text-sm font-semibold text-orange-600 mb-2">
                 {isZh ? '你的 3 个月免费试用期' : 'Your 3-Month Free Trial'}
               </p>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-gray-500">
                 {isZh ? `试用期至 ${trialEnd} 结束。到期前我们会提前通知你，无需信用卡，不会自动扣费。` : `Your trial runs until ${trialEnd}. We'll notify you before it ends — no auto-charge, no credit card needed.`}
               </p>
             </div>

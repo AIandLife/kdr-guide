@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import {
-  Building2, ArrowLeft, CheckCircle, ChevronDown, ChevronRight,
-  ClipboardList, Ruler, FileText, Hammer, Zap, Home, DollarSign
+  CheckCircle, ChevronDown, ChevronRight,
+  ClipboardList, Ruler, FileText, Hammer, Zap, Home, DollarSign, Building2
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
-import { LangToggle } from '@/components/LangToggle'
+import { SiteNav } from '@/components/SiteNav'
 
 const STAGES = [
   {
@@ -227,14 +227,14 @@ const STAGES_ZH = [
 ]
 
 const COLOR_MAP: Record<string, { bg: string; text: string; border: string; badge: string }> = {
-  blue:    { bg: 'bg-blue-500/10',    text: 'text-blue-400',    border: 'border-blue-500/20',   badge: 'bg-blue-500/20 text-blue-400' },
-  green:   { bg: 'bg-green-500/10',   text: 'text-green-400',   border: 'border-green-500/20',  badge: 'bg-green-500/20 text-green-400' },
-  purple:  { bg: 'bg-purple-500/10',  text: 'text-purple-400',  border: 'border-purple-500/20', badge: 'bg-purple-500/20 text-purple-400' },
-  yellow:  { bg: 'bg-yellow-500/10',  text: 'text-yellow-400',  border: 'border-yellow-500/20', badge: 'bg-yellow-500/20 text-yellow-400' },
-  red:     { bg: 'bg-red-500/10',     text: 'text-red-400',     border: 'border-red-500/20',    badge: 'bg-red-500/20 text-red-400' },
-  orange:  { bg: 'bg-orange-500/10',  text: 'text-orange-400',  border: 'border-orange-500/20', badge: 'bg-orange-500/20 text-orange-400' },
-  emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20',badge: 'bg-emerald-500/20 text-emerald-400' },
-  cyan:    { bg: 'bg-cyan-500/10',    text: 'text-cyan-400',    border: 'border-cyan-500/20',   badge: 'bg-cyan-500/20 text-cyan-400' },
+  blue:    { bg: 'bg-blue-50',    text: 'text-blue-600',    border: 'border-blue-200',   badge: 'bg-blue-100 text-blue-600' },
+  green:   { bg: 'bg-green-50',   text: 'text-green-600',   border: 'border-green-200',  badge: 'bg-green-100 text-green-600' },
+  purple:  { bg: 'bg-purple-50',  text: 'text-purple-600',  border: 'border-purple-200', badge: 'bg-purple-100 text-purple-600' },
+  yellow:  { bg: 'bg-yellow-50',  text: 'text-yellow-600',  border: 'border-yellow-200', badge: 'bg-yellow-100 text-yellow-600' },
+  red:     { bg: 'bg-red-50',     text: 'text-red-600',     border: 'border-red-200',    badge: 'bg-red-100 text-red-600' },
+  orange:  { bg: 'bg-orange-50',  text: 'text-orange-600',  border: 'border-orange-200', badge: 'bg-orange-100 text-orange-600' },
+  emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200',badge: 'bg-emerald-100 text-emerald-600' },
+  cyan:    { bg: 'bg-cyan-50',    text: 'text-cyan-600',    border: 'border-cyan-200',   badge: 'bg-cyan-100 text-cyan-600' },
 }
 
 export default function GuidePage() {
@@ -251,41 +251,18 @@ export default function GuidePage() {
   const activeStages = lang === 'zh' ? STAGES_ZH : STAGES
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      {/* Nav */}
-      <nav className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <a href="/" className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-              {t.nav.home}
-            </a>
-            <div className="w-px h-5 bg-gray-700" />
-            <a href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-lg text-white hidden sm:block">{t.nav.brand}</span>
-            </a>
-          </div>
-          <div className="flex items-center gap-3">
-            <LangToggle />
-            <a href="/feasibility" className="bg-orange-500 hover:bg-orange-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-              {t.nav.cta}
-            </a>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gray-50">
+      <SiteNav currentPath="/guide" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-white mb-3">{t.guide.h1}</h1>
-          <p className="text-gray-400 text-lg">{t.guide.subtitle}</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">{t.guide.h1}</h1>
+          <p className="text-gray-500 text-lg">{t.guide.subtitle}</p>
         </div>
 
         {/* Overview timeline */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-8 overflow-x-auto">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">{t.guide.overviewLabel}</h2>
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-8 overflow-x-auto shadow-sm">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">{t.guide.overviewLabel}</h2>
           <div className="flex items-center gap-2 min-w-max">
             {activeStages.map((stage, i) => {
               const c = COLOR_MAP[stage.color]
@@ -298,7 +275,7 @@ export default function GuidePage() {
                     <stage.icon className={cn('w-4 h-4', c.text)} />
                     <span className={cn('text-xs font-medium whitespace-nowrap', c.text)}>{stage.id}. {stage.title.split(' ')[0]}</span>
                   </button>
-                  {i < STAGES.length - 1 && <ChevronRight className="w-4 h-4 text-gray-700 shrink-0" />}
+                  {i < STAGES.length - 1 && <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />}
                 </div>
               )
             })}
@@ -311,7 +288,7 @@ export default function GuidePage() {
             const c = COLOR_MAP[stage.color]
             const isOpen = openStages.includes(stage.id)
             return (
-              <div key={stage.id} className={cn('bg-gray-900 border rounded-2xl overflow-hidden transition-all', isOpen ? c.border : 'border-gray-800')}>
+              <div key={stage.id} className={cn('bg-white border rounded-2xl overflow-hidden transition-all shadow-sm', isOpen ? c.border : 'border-gray-200')}>
                 <button
                   onClick={() => toggle(stage.id)}
                   className="w-full flex items-center gap-4 p-6 text-left"
@@ -322,24 +299,24 @@ export default function GuidePage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-0.5">
                       <span className={cn('text-xs font-semibold px-2 py-0.5 rounded-full', c.badge)}>{lang === 'zh' ? '阶段' : 'Stage'} {stage.id}</span>
-                      <span className="text-xs text-gray-600">{stage.duration}</span>
+                      <span className="text-xs text-gray-400">{stage.duration}</span>
                     </div>
-                    <h2 className="text-lg font-semibold text-white">{stage.title}</h2>
+                    <h2 className="text-lg font-semibold text-gray-900">{stage.title}</h2>
                     <p className="text-sm text-gray-500 mt-0.5 truncate">{stage.summary}</p>
                   </div>
-                  <ChevronDown className={cn('w-5 h-5 text-gray-500 shrink-0 transition-transform', isOpen && 'rotate-180')} />
+                  <ChevronDown className={cn('w-5 h-5 text-gray-400 shrink-0 transition-transform', isOpen && 'rotate-180')} />
                 </button>
 
                 {isOpen && (
                   <div className="px-6 pb-6 space-y-4">
-                    <div className="h-px bg-gray-800 mb-4" />
+                    <div className="h-px bg-gray-100 mb-4" />
                     {stage.steps.map((step, i) => (
                       <div key={i} className="flex gap-4">
                         <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5', c.bg)}>
                           <CheckCircle className={cn('w-4 h-4', c.text)} />
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-white mb-1">{step.title}</p>
+                          <p className="text-sm font-semibold text-gray-900 mb-1">{step.title}</p>
                           <p className="text-sm text-gray-500 leading-relaxed">{step.detail}</p>
                         </div>
                       </div>
@@ -352,9 +329,9 @@ export default function GuidePage() {
         </div>
 
         {/* CTA */}
-        <div className="mt-10 bg-gradient-to-br from-orange-900/30 to-gray-900 border border-orange-500/20 rounded-2xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">{t.guide.ctaTitle}</h2>
-          <p className="text-gray-400 mb-6">{t.guide.ctaSubtitle}</p>
+        <div className="mt-10 bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.guide.ctaTitle}</h2>
+          <p className="text-gray-500 mb-6">{t.guide.ctaSubtitle}</p>
           <a href="/feasibility" className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors">
             {t.guide.ctaBtn}
             <ChevronRight className="w-4 h-4" />
