@@ -46,6 +46,8 @@ export default function HomePage() {
           <div className="flex items-center gap-3 sm:gap-4 text-sm text-gray-400">
             <a href="/guide" className="hover:text-white transition-colors hidden sm:block">{t.nav.guide}</a>
             <a href="/professionals" className="hover:text-white transition-colors hidden sm:block">{t.nav.professionals}</a>
+            <a href="/articles" className="hover:text-white transition-colors hidden lg:block">{t.nav.articles}</a>
+            <a href="/suppliers" className="hover:text-white transition-colors hidden lg:block">{t.nav.suppliers}</a>
             <LangToggle />
             <a href="/feasibility" className="bg-orange-500 hover:bg-orange-400 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors font-medium text-xs sm:text-sm shadow-lg shadow-orange-500/20">
               {t.nav.cta}
@@ -241,6 +243,8 @@ export default function HomePage() {
             <div className="flex items-center gap-6 text-sm text-slate-500">
               <a href="/guide" className="hover:text-slate-300 transition-colors">{t.nav.guide}</a>
               <a href="/professionals" className="hover:text-slate-300 transition-colors">{t.nav.professionals}</a>
+              <a href="/articles" className="hover:text-slate-300 transition-colors">{t.nav.articles}</a>
+              <a href="/suppliers" className="hover:text-slate-300 transition-colors">{t.nav.suppliers}</a>
             </div>
             <p className="text-xs text-slate-700 text-center">{h.footerDisclaimer}</p>
           </div>

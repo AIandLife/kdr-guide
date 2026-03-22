@@ -13,3 +13,59 @@ body {
   color: #e2e8f0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
+
+/* Article prose styles */
+.prose-article h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.prose-article h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+.prose-article p {
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+  color: #94a3b8;
+}
+.prose-article ul, .prose-article ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+.prose-article li {
+  line-height: 1.75;
+  margin-bottom: 0.4rem;
+  color: #94a3b8;
+}
+.prose-article ul li { list-style-type: disc; }
+.prose-article ol li { list-style-type: decimal; }
+.prose-article strong { color: #e2e8f0; font-weight: 600; }
+.prose-article a { color: #fb923c; text-decoration: underline; }
+.prose-article a:hover { color: #f97316; }
+.prose-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.875rem;
+}
+.prose-article th {
+  background: rgba(255,255,255,0.06);
+  color: #e2e8f0;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.prose-article td {
+  color: #94a3b8;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgba(255,255,255,0.06);
+}
