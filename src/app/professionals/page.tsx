@@ -309,21 +309,16 @@ export default function ProfessionalsPage() {
         )}
 
         {/* Register CTA */}
-        <div className="bg-gradient-to-br from-blue-900/30 to-gray-900 border border-blue-500/20 rounded-2xl p-8 text-center">
+        <div className="bg-gradient-to-br from-orange-900/20 to-gray-900 border border-orange-500/20 rounded-2xl p-8 text-center">
           <h2 className="text-2xl font-bold text-white mb-2">{tp.registerTitle}</h2>
           <p className="text-gray-400 mb-6 max-w-lg mx-auto">{tp.registerSubtitle}</p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder={tp.registerEmail}
-              className="flex-1 bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-            />
-            <button className="bg-blue-500 hover:bg-blue-400 text-white font-semibold px-6 py-3 rounded-xl transition-colors whitespace-nowrap flex items-center gap-2 justify-center">
-              {tp.registerBtn}
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-          <p className="text-xs text-gray-600 mt-3">{tp.registerNote}</p>
+          <a
+            href="/join"
+            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base"
+          >
+            {tp.registerBtn}
+            <ChevronRight className="w-4 h-4" />
+          </a>
         </div>
       </div>
     </div>
