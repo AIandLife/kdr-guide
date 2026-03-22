@@ -212,6 +212,101 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Community */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            {lang === 'zh' ? '加入澳洲建房社群' : 'Join Our Community'}
+          </h2>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+            {lang === 'zh'
+              ? '和数千位正在规划或已完成推倒重建的澳洲业主一起交流，分享经验，互相解答。'
+              : 'Connect with thousands of Australian homeowners planning or completing a knockdown rebuild. Share experiences, ask questions, get answers.'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {/* WeChat Group */}
+          <div className="rounded-2xl p-6 text-center flex flex-col items-center"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-2xl"
+              style={{ background: 'rgba(9,187,7,0.12)' }}>
+              💬
+            </div>
+            <h3 className="font-bold text-white text-lg mb-2">
+              {lang === 'zh' ? '澳洲建房交流群' : 'WeChat Community Group'}
+            </h3>
+            <p className="text-sm text-slate-500 mb-5 leading-relaxed">
+              {lang === 'zh'
+                ? '扫码加入微信群，和业主、建筑商、设计师直接交流。'
+                : 'Scan to join our WeChat group — homeowners, builders, and designers in one place.'}
+            </p>
+            {/* QR placeholder */}
+            <div className="w-32 h-32 rounded-xl flex items-center justify-center mb-3"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '2px dashed rgba(255,255,255,0.12)' }}>
+              <div className="text-center">
+                <div className="text-3xl mb-1">📱</div>
+                <p className="text-xs text-slate-600">{lang === 'zh' ? '二维码即将上线' : 'QR coming soon'}</p>
+              </div>
+            </div>
+            <p className="text-xs text-slate-600">{lang === 'zh' ? '微信扫码加群' : 'Scan with WeChat'}</p>
+          </div>
+
+          {/* WeChat Official Account */}
+          <div className="rounded-2xl p-6 text-center flex flex-col items-center"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-2xl"
+              style={{ background: 'rgba(9,187,7,0.12)' }}>
+              📰
+            </div>
+            <h3 className="font-bold text-white text-lg mb-2">
+              {lang === 'zh' ? '微信公众号' : 'WeChat Official Account'}
+            </h3>
+            <p className="text-sm text-slate-500 mb-5 leading-relaxed">
+              {lang === 'zh'
+                ? '关注公众号，获取最新建房资讯、政策解读和优质案例分享。'
+                : 'Follow our official account for the latest KDR news, policy updates, and case studies.'}
+            </p>
+            {/* QR placeholder */}
+            <div className="w-32 h-32 rounded-xl flex items-center justify-center mb-3"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '2px dashed rgba(255,255,255,0.12)' }}>
+              <div className="text-center">
+                <div className="text-3xl mb-1">📱</div>
+                <p className="text-xs text-slate-600">{lang === 'zh' ? '二维码即将上线' : 'QR coming soon'}</p>
+              </div>
+            </div>
+            <p className="text-xs text-slate-600">
+              {lang === 'zh' ? '搜索公众号：KDR建房指南' : 'Search: KDR Guide Australia'}
+            </p>
+          </div>
+
+          {/* Direct contact */}
+          <div className="rounded-2xl p-6 text-center flex flex-col items-center"
+            style={{ background: 'rgba(249,115,22,0.05)', border: '1px solid rgba(249,115,22,0.15)' }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-2xl"
+              style={{ background: 'rgba(249,115,22,0.12)' }}>
+              ✉️
+            </div>
+            <h3 className="font-bold text-white text-lg mb-2">
+              {lang === 'zh' ? '私信我们' : 'Message Us Directly'}
+            </h3>
+            <p className="text-sm text-slate-500 mb-5 leading-relaxed">
+              {lang === 'zh'
+                ? '有建房问题、合作意向或想入驻我们平台？直接联系我们的团队。'
+                : 'Questions about KDR, partnership opportunities, or want to list your business? Reach our team directly.'}
+            </p>
+            <a
+              href="mailto:terry@kdrguide.com.au"
+              className="w-full py-3 rounded-xl text-sm font-semibold transition-colors text-white flex items-center justify-center gap-2"
+              style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.25)' }}
+            >
+              {lang === 'zh' ? '发送邮件' : 'Send Email'}
+            </a>
+            <p className="text-xs text-slate-600 mt-3">terry@kdrguide.com.au</p>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center">
         <div className="max-w-2xl mx-auto">

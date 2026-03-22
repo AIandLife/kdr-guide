@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import {
   Building2, ArrowLeft, CheckCircle, MapPin, Phone, ChevronRight,
-  Briefcase, HardHat, Ruler, Zap, Droplets, FileText, DollarSign
+  Briefcase, HardHat, Ruler, Zap, Droplets, FileText, DollarSign, Globe, MessageCircle
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useLang } from '@/lib/language-context'
@@ -32,6 +32,8 @@ const PROFESSIONALS = [
     featured: true,
     description: 'Specialising in KDR projects across Greater Sydney. 15+ years experience, 200+ completed projects.',
     contact: 'Get Quote',
+    website: null,
+    wechat: 'kdr_nsw',
   },
   {
     name: 'Melbourne Rebuild Co',
@@ -43,6 +45,8 @@ const PROFESSIONALS = [
     featured: true,
     description: 'Award-winning custom builder specialising in KDR across Melbourne metro. Heritage area experience.',
     contact: 'Get Quote',
+    website: null,
+    wechat: null,
   },
   {
     name: 'Urban Planning Solutions',
@@ -54,6 +58,8 @@ const PROFESSIONALS = [
     featured: false,
     description: 'Registered town planners with extensive council knowledge across all Sydney LGAs.',
     contact: 'Get Quote',
+    website: null,
+    wechat: 'urbanplan_au',
   },
   {
     name: 'QLD Build & Rebuild',
@@ -65,6 +71,8 @@ const PROFESSIONALS = [
     featured: false,
     description: 'Experienced in post-flood rebuild and standard KDR across SEQ. Excellent flood zone knowledge.',
     contact: 'Get Quote',
+    website: null,
+    wechat: null,
   },
   {
     name: 'Perth KDR Professionals',
@@ -76,6 +84,8 @@ const PROFESSIONALS = [
     featured: false,
     description: 'Western Australia\'s dedicated KDR builder. R-Codes expertise for all Perth councils.',
     contact: 'Get Quote',
+    website: null,
+    wechat: null,
   },
   {
     name: 'Demolition Masters',
@@ -87,6 +97,8 @@ const PROFESSIONALS = [
     featured: false,
     description: 'Licensed demolition contractor with asbestos removal certification. Fast, clean, and fully insured.',
     contact: 'Get Quote',
+    website: null,
+    wechat: null,
   },
   {
     name: 'Structural Solutions Engineering',
@@ -98,6 +110,8 @@ const PROFESSIONALS = [
     featured: false,
     description: 'NER registered structural engineer. Specialises in residential KDR structural design.',
     contact: 'Get Quote',
+    website: null,
+    wechat: null,
   },
   {
     name: 'KDR Finance Brokers',
@@ -109,6 +123,8 @@ const PROFESSIONALS = [
     featured: true,
     description: 'Specialised mortgage brokers for KDR and construction finance. Access to 30+ lenders.',
     contact: 'Get Quote',
+    website: null,
+    wechat: 'kdrfinance_au',
   },
 ]
 
@@ -295,6 +311,24 @@ export default function ProfessionalsPage() {
                 >
                   {contacted ? <><CheckCircle className="w-4 h-4" /> {tp.requestSent}</> : <><Phone className="w-4 h-4" /> {tp.getQuote}</>}
                 </button>
+
+                {(pro.website || pro.wechat) && (
+                  <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-gray-800">
+                    {pro.website && (
+                      <a href={`https://${pro.website}`} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors">
+                        <Globe className="w-3.5 h-3.5" />
+                        {pro.website}
+                      </a>
+                    )}
+                    {pro.wechat && (
+                      <span className="flex items-center gap-1.5 text-xs text-green-400">
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        微信: {pro.wechat}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             )
           })}
