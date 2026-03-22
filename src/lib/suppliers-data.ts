@@ -27,6 +27,7 @@ export interface Supplier {
   website?: string
   email?: string
   phone?: string
+  wechat?: string
   address?: string
   specialties: string[]
   specialtiesZh: string[]

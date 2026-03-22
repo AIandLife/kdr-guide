@@ -1,17 +1,60 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   ArrowLeft, Building2, CheckCircle, HelpCircle, Globe,
-  Mail, Phone, Star, ChevronRight, MapPin
+  Mail, Phone, Star, ChevronRight, MapPin, MessageCircle
 } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { LangToggle } from '@/components/LangToggle'
 import {
   SUPPLIERS, SUPPLIER_CATEGORIES, rankSuppliers,
-  type SupplierCategory, type SupplierOrigin
+  type SupplierCategory, type SupplierOrigin, type Supplier
 } from '@/lib/suppliers-data'
+
+// Shape returned by /api/suppliers/list for DB entries
+interface DbSupplier {
+  id: string
+  business_name: string
+  category: string
+  origin: string
+  description: string | null
+  states: string[]
+  specialties: string[]
+  status: string
+  featured: boolean
+  reliability_score: number
+  website: string | null
+  phone: string | null
+  wechat: string | null
+  email: string | null
+  google_rating: number | null
+  google_reviews: number | null
+}
+
+function dbToSupplier(d: DbSupplier): Supplier {
+  return {
+    id: d.id,
+    name: d.business_name,
+    category: d.category as SupplierCategory,
+    origin: (d.origin || 'local') as SupplierOrigin,
+    description: d.description || '',
+    descriptionZh: d.description || '',
+    states: d.states || [],
+    specialties: d.specialties || [],
+    specialtiesZh: d.specialties || [],
+    verified: d.status === 'verified',
+    verifiedNote: d.status === 'verified' ? 'Self-verified via KDR Guide' : undefined,
+    googleRating: d.google_rating ?? undefined,
+    googleReviews: d.google_reviews ?? undefined,
+    website: d.website ?? undefined,
+    phone: d.phone ?? undefined,
+    email: d.email ?? undefined,
+    featured: d.featured,
+    reliabilityScore: d.reliability_score ?? 50,
+  }
+}
 
 const ORIGIN_LABELS: Record<SupplierOrigin, { en: string; zh: string; color: string }> = {
   local:  { en: 'Australian',    zh: '澳洲本地', color: 'text-green-400 bg-green-500/10' },
@@ -60,8 +103,23 @@ export default function SuppliersPage() {
   const [activeCategory, setActiveCategory] = useState<SupplierCategory | 'all'>('all')
   const [activeOrigin, setActiveOrigin] = useState<SupplierOrigin | 'all'>('all')
   const [verifiedOnly, setVerifiedOnly] = useState(false)
+  const [dbSuppliers, setDbSuppliers] = useState<Supplier[]>([])
 
-  const ranked = rankSuppliers(SUPPLIERS)
+  useEffect(() => {
+    fetch('/api/suppliers/list')
+      .then(r => r.json())
+      .then(data => {
+        if (data.suppliers) setDbSuppliers(data.suppliers.map(dbToSupplier))
+      })
+      .catch(() => {/* non-fatal, fall back to static only */})
+  }, [])
+
+  // Merge: static curated + DB-submitted (deduplicate by name)
+  const staticNames = new Set(SUPPLIERS.map(s => s.name.toLowerCase()))
+  const uniqueDb = dbSuppliers.filter(s => !staticNames.has(s.name.toLowerCase()))
+  const allSuppliers = [...SUPPLIERS, ...uniqueDb]
+
+  const ranked = rankSuppliers(allSuppliers)
 
   const filtered = ranked.filter(s => {
     if (activeCategory !== 'all' && s.category !== activeCategory) return false
@@ -332,6 +390,12 @@ export default function SuppliersPage() {
                         <Mail className="w-3.5 h-3.5" />
                         {isZh ? '发送邮件' : 'Email'}
                       </a>
+                    )}
+                    {supplier.wechat && (
+                      <span className="flex items-center gap-1.5 text-xs text-green-400">
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        微信: {supplier.wechat}
+                      </span>
                     )}
                   </div>
                 ) : (
