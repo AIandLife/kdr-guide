@@ -14,7 +14,7 @@ export const translations = {
     },
     // Homepage
     home: {
-      badge: 'Full Australia Coverage — All 8 States & Territories',
+      badge: 'Full Australia Coverage — All 537 Councils, 8 States & Territories',
       h1a: 'Can you knock down',
       h1b: '& rebuild',
       h1c: 'your home?',
@@ -28,7 +28,7 @@ export const translations = {
       formBtn: 'Check My Feasibility — Free',
       formNote: 'No signup required. Instant AI-powered analysis.',
       stats: [
-        { value: '40+', label: 'Councils Covered' },
+        { value: '537', label: 'Councils Covered' },
         { value: '8', label: 'States & Territories' },
         { value: '2 min', label: 'to get your report' },
         { value: 'Free', label: 'feasibility check' },
@@ -124,7 +124,7 @@ export const translations = {
     },
     // Homepage
     home: {
-      badge: '全澳洲覆盖 — 全部 8 个州和领地',
+      badge: '全澳洲覆盖 — 537 个 Council，8 个州和领地',
       h1a: '你的房子能',
       h1b: '推倒重建',
       h1c: '吗？',
@@ -138,7 +138,7 @@ export const translations = {
       formBtn: '免费查询可行性',
       formNote: '无需注册，AI 即时分析。',
       stats: [
-        { value: '40+', label: '已覆盖 Council' },
+        { value: '537', label: '个 Council 全覆盖' },
         { value: '8', label: '个州和领地' },
         { value: '2 分钟', label: '获取报告' },
         { value: '免费', label: '可行性查询' },
