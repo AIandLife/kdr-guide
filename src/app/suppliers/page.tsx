@@ -352,28 +352,32 @@ export default function SuppliersPage() {
         )}
 
         {/* List Your Business CTA */}
-        <div className="rounded-2xl p-8 text-center" style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)' }}>
-          <h2 className="text-2xl font-bold text-white mb-2">
-            {isZh ? '你是建材供应商吗？' : 'Are you a building materials supplier?'}
-          </h2>
-          <p className="text-slate-400 mb-2 max-w-lg mx-auto">
-            {isZh
-              ? '将你的业务收录到 KDR Guide 建材目录，与正在进行推倒重建的业主建立直接联系。'
-              : 'Get your business listed in the KDR Guide materials directory and connect directly with homeowners mid-project.'}
-          </p>
-          <p className="text-slate-500 text-sm mb-6">
-            {isZh
-              ? '初期免费收录 · 认证商家获得优先排名和认证徽章'
-              : 'Free basic listing · Verified suppliers get priority ranking and verified badge'}
-          </p>
-          <a
-            href="/join"
-            className="inline-flex items-center gap-2 text-white font-semibold px-8 py-3.5 rounded-xl transition-all"
-            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 24px rgba(249,115,22,0.3)' }}
-          >
-            {isZh ? '申请收录' : 'Apply to List Your Business'}
-            <ChevronRight className="w-4 h-4" />
-          </a>
+        <div className="rounded-2xl p-8" style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)' }}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-white mb-1">
+                {isZh ? '你是建材供应商？免费收录你的业务' : 'Are you a building materials supplier? List for free'}
+              </h2>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                {isZh
+                  ? '填写基本信息即可免费上架。申请认证后，联系方式和网站将对买家可见，并获得优先排名。'
+                  : 'Submit your basic info to list for free. Apply for verification to show contact details and get priority ranking.'}
+              </p>
+              <div className="flex flex-wrap gap-4 mt-3 text-xs text-slate-500">
+                <span>✓ {isZh ? '免费收录' : 'Free listing'}</span>
+                <span>✓ {isZh ? '认证后展示联系方式' : 'Contact shown after verification'}</span>
+                <span>✓ {isZh ? '认证费 AUD $99/年' : 'Verification: AUD $99/year'}</span>
+              </div>
+            </div>
+            <a
+              href="/suppliers/register"
+              className="shrink-0 inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-xl transition-all whitespace-nowrap"
+              style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
+            >
+              {isZh ? '立即收录' : 'List My Business'}
+              <ChevronRight className="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
