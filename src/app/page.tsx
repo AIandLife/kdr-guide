@@ -32,12 +32,12 @@ export default function HomePage() {
   const STATES = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'ACT', 'TAS', 'NT']
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(160deg, #0d1117 0%, #111827 50%, #0d1117 100%)' }}>
       {/* Nav */}
-      <nav className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm sticky top-0 z-50">
+      <nav className="border-b sticky top-0 z-50 backdrop-blur-md" style={{ borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(13,17,23,0.85)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/30">
               <Building2 className="w-5 h-5 text-white" />
             </div>
             <span className="font-bold text-lg text-white">{t.nav.brand}</span>
@@ -47,7 +47,7 @@ export default function HomePage() {
             <a href="/guide" className="hover:text-white transition-colors hidden sm:block">{t.nav.guide}</a>
             <a href="/professionals" className="hover:text-white transition-colors hidden sm:block">{t.nav.professionals}</a>
             <LangToggle />
-            <a href="/feasibility" className="bg-orange-500 hover:bg-orange-400 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors font-medium text-xs sm:text-sm">
+            <a href="/feasibility" className="bg-orange-500 hover:bg-orange-400 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors font-medium text-xs sm:text-sm shadow-lg shadow-orange-500/20">
               {t.nav.cta}
             </a>
           </div>
@@ -56,83 +56,98 @@ export default function HomePage() {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-900/20 via-gray-950 to-gray-950 pointer-events-none" />
+        {/* Background orbs */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-10 pointer-events-none" style={{ background: 'radial-gradient(circle, #f97316, transparent)' }} />
+        <div className="absolute top-20 right-1/4 w-72 h-72 rounded-full blur-3xl opacity-8 pointer-events-none" style={{ background: 'radial-gradient(circle, #3b82f6, transparent)' }} />
+
         <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-16 relative">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-1.5 mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6" style={{ background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.2)' }}>
               <span className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" />
               <span className="text-orange-400 text-sm font-medium">{h.badge}</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
               {h.h1a}
-              <span className="text-orange-400"> {h.h1b}</span>
+              <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #f97316, #fb923c)' }}> {h.h1b}</span>
               <br />{h.h1c}
             </h1>
 
-            <p className="text-xl text-gray-400 mb-10 max-w-2xl">{h.subtitle}</p>
+            <p className="text-xl text-slate-400 mb-10 max-w-2xl leading-relaxed">{h.subtitle}</p>
 
             {/* Search Form */}
-            <form onSubmit={handleSubmit} className="bg-gray-900 border border-gray-700 rounded-2xl p-4 sm:p-6 max-w-2xl">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-                <div className="sm:col-span-2">
-                  <label className="block text-xs text-gray-500 mb-1.5 font-medium">{h.formSuburb}</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                    <input
-                      type="text"
-                      value={suburb}
-                      onChange={e => setSuburb(e.target.value)}
-                      placeholder={h.formSuburbPlaceholder}
-                      className="w-full bg-gray-800 border border-gray-600 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-                      required
-                    />
+            <div className="max-w-2xl rounded-2xl p-4 sm:p-6" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
+              <form onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs text-slate-500 mb-1.5 font-medium">{h.formSuburb}</label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                      <input
+                        type="text"
+                        value={suburb}
+                        onChange={e => setSuburb(e.target.value)}
+                        placeholder={h.formSuburbPlaceholder}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl text-white placeholder-slate-500 focus:outline-none transition-colors"
+                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        onFocus={e => e.target.style.borderColor = 'rgba(249,115,22,0.6)'}
+                        onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1.5 font-medium">{h.formState}</label>
+                    <select
+                      value={state}
+                      onChange={e => setState(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl text-white focus:outline-none transition-colors"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    >
+                      <option value="" style={{ background: '#1e293b' }}>{h.formStateAll}</option>
+                      {STATES.map(s => <option key={s} value={s} style={{ background: '#1e293b' }}>{s}</option>)}
+                    </select>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1.5 font-medium">{h.formState}</label>
-                  <select
-                    value={state}
-                    onChange={e => setState(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
-                  >
-                    <option value="">{h.formStateAll}</option>
-                    {STATES.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                <div className="mb-4">
+                  <label className="block text-xs text-slate-500 mb-1.5 font-medium">{h.formLotSize}</label>
+                  <input
+                    type="number"
+                    value={lotSize}
+                    onChange={e => setLotSize(e.target.value)}
+                    placeholder={h.formLotSizePlaceholder}
+                    className="w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 focus:outline-none transition-colors"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    onFocus={e => e.target.style.borderColor = 'rgba(249,115,22,0.6)'}
+                    onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                  />
                 </div>
-              </div>
-              <div className="mb-4">
-                <label className="block text-xs text-gray-500 mb-1.5 font-medium">{h.formLotSize}</label>
-                <input
-                  type="number"
-                  value={lotSize}
-                  onChange={e => setLotSize(e.target.value)}
-                  placeholder={h.formLotSizePlaceholder}
-                  className="w-full bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-white font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-base"
-              >
-                <Search className="w-5 h-5" />
-                {h.formBtn}
-                <ChevronRight className="w-4 h-4" />
-              </button>
-              <p className="text-center text-xs text-gray-600 mt-3">{h.formNote}</p>
-            </form>
+                <button
+                  type="submit"
+                  className="w-full text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-base shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 24px rgba(249,115,22,0.3)' }}
+                  onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 32px rgba(249,115,22,0.5)')}
+                  onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 24px rgba(249,115,22,0.3)')}
+                >
+                  <Search className="w-5 h-5" />
+                  {h.formBtn}
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                <p className="text-center text-xs text-slate-600 mt-3">{h.formNote}</p>
+              </form>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Stats */}
-      <section className="border-y border-gray-800 bg-gray-900/50">
+      <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {h.stats.map(s => (
               <div key={s.label} className="text-center">
-                <div className="text-3xl font-bold text-orange-400 mb-1">{s.value}</div>
-                <div className="text-sm text-gray-500">{s.label}</div>
+                <div className="text-3xl font-bold mb-1" style={{ color: '#fb923c' }}>{s.value}</div>
+                <div className="text-sm text-slate-500">{s.label}</div>
               </div>
             ))}
           </div>
@@ -143,18 +158,22 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">{h.painTitle}</h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">{h.painSubtitle}</p>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">{h.painSubtitle}</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {h.pains.map((p, i) => {
             const Icon = PAIN_ICONS[i]
             return (
-              <div key={i} className="bg-gray-900 border border-gray-800 rounded-2xl p-6 hover:border-gray-700 transition-colors">
-                <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center mb-4">
+              <div key={i} className="rounded-2xl p-6 transition-all group cursor-default"
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.055)'; e.currentTarget.style.borderColor = 'rgba(249,115,22,0.2)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)' }}
+              >
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style={{ background: 'rgba(249,115,22,0.12)' }}>
                   <Icon className="w-6 h-6 text-orange-400" />
                 </div>
                 <h3 className="font-semibold text-white mb-2">{p.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{p.desc}</p>
+                <p className="text-sm text-slate-500 leading-relaxed">{p.desc}</p>
               </div>
             )
           })}
@@ -162,11 +181,11 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section className="bg-gray-900/50 border-y border-gray-800">
+      <section style={{ background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
-          <div className="text-center mb-12">
+          <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">{h.howTitle}</h2>
-            <p className="text-gray-400 text-lg">{h.howSubtitle}</p>
+            <p className="text-slate-400 text-lg">{h.howSubtitle}</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {h.steps.map((step, i) => {
@@ -174,15 +193,15 @@ export default function HomePage() {
               return (
                 <div key={i} className="relative">
                   {i < 3 && (
-                    <div className="hidden lg:block absolute top-6 left-full w-full h-px bg-gradient-to-r from-gray-700 to-transparent z-0" />
+                    <div className="hidden lg:block absolute top-6 left-full w-full h-px z-0" style={{ background: 'linear-gradient(to right, rgba(249,115,22,0.3), transparent)' }} />
                   )}
                   <div className="relative z-10">
-                    <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mb-4">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-lg" style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.25)' }}>
                       <Icon className="w-6 h-6 text-white" />
                     </div>
-                    <div className="text-xs text-orange-400 font-medium mb-2">STEP {i + 1}</div>
+                    <div className="text-xs text-orange-400 font-semibold mb-2 tracking-wide">STEP {i + 1}</div>
                     <h3 className="font-semibold text-white mb-2">{step.title}</h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">{step.desc}</p>
+                    <p className="text-sm text-slate-500 leading-relaxed">{step.desc}</p>
                   </div>
                 </div>
               )
@@ -193,19 +212,24 @@ export default function HomePage() {
 
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">{h.ctaTitle}</h2>
-        <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">{h.ctaSubtitle}</p>
-        <a
-          href="/feasibility"
-          className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-4 rounded-xl transition-colors text-lg"
-        >
-          {h.ctaBtn}
-          <ChevronRight className="w-5 h-5" />
-        </a>
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">{h.ctaTitle}</h2>
+          <p className="text-slate-400 text-lg mb-8">{h.ctaSubtitle}</p>
+          <a
+            href="/feasibility"
+            className="inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-xl transition-all text-lg"
+            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 24px rgba(249,115,22,0.3)' }}
+            onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 36px rgba(249,115,22,0.5)')}
+            onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 24px rgba(249,115,22,0.3)')}
+          >
+            {h.ctaBtn}
+            <ChevronRight className="w-5 h-5" />
+          </a>
+        </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 bg-gray-900/50">
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
@@ -214,11 +238,11 @@ export default function HomePage() {
               </div>
               <span className="font-bold text-white">{t.nav.brand}</span>
             </div>
-            <div className="flex items-center gap-6 text-sm text-gray-500">
-              <a href="/guide" className="hover:text-gray-300 transition-colors">{t.nav.guide}</a>
-              <a href="/professionals" className="hover:text-gray-300 transition-colors">{t.nav.professionals}</a>
+            <div className="flex items-center gap-6 text-sm text-slate-500">
+              <a href="/guide" className="hover:text-slate-300 transition-colors">{t.nav.guide}</a>
+              <a href="/professionals" className="hover:text-slate-300 transition-colors">{t.nav.professionals}</a>
             </div>
-            <p className="text-xs text-gray-600 text-center">{h.footerDisclaimer}</p>
+            <p className="text-xs text-slate-700 text-center">{h.footerDisclaimer}</p>
           </div>
         </div>
       </footer>

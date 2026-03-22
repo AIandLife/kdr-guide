@@ -134,6 +134,98 @@ const STAGES = [
   },
 ]
 
+const STAGES_ZH = [
+  {
+    id: 1, icon: Ruler, title: '现场评估', color: 'blue', duration: '2–4 周',
+    summary: '在花任何钱之前，先搞清楚你的地块允许什么。',
+    steps: [
+      { title: '获取 Section 10.7 证书（NSW）/ Planning Certificate（VIC）', detail: '这份来自 Council 的官方文件会列出所有限制条款：遗产保护、洪水区、灌木火灾区、生物多样性保护、道路拓宽计划等。费用约 $100–200，是所有步骤的第一步，必须做。' },
+      { title: '查询你的分区规定（LEP / Planning Scheme）', detail: '住宅分区（NSW 的 R2/R3，VIC 的 Neighbourhood Residential）对容积率、建筑高度、退缩距离和最小地块面积都有具体规定。在 Council 的规划地图上查询你的地块。' },
+      { title: '确认地块尺寸', detail: '确认地块正面宽度、深度和总面积。不同 Council 的最小地块要求差异很大：内城区低至 200㎡，外郊区可能要求 600㎡ 以上。' },
+      { title: '检查地役权（Easement）和限制性条款（Covenant）', detail: '排水、管道、电力线等地役权会限制建筑位置。产权调查（Title Search）可以查到这些信息。建议咨询测量师。' },
+      { title: '如有需要，聘请岩土工程师', detail: '有坡度的地块、已知的膨胀土区域或洪水易发区，可能需要岩土/土壤分类报告。这会影响地基类型和基础费用。' },
+    ]
+  },
+  {
+    id: 2, icon: DollarSign, title: '可行性与融资', color: 'green', duration: '2–6 周',
+    summary: '在做任何承诺之前，先确认数字是否合理。',
+    steps: [
+      { title: '计算项目总费用', detail: '包含：拆除费（$15k–40k）、新建费（每平方米 $1,800–$5,000，因州而异）、Council 费用、DA/CDC 费用、顾问费、园艺景观、管道接驳、以及 10–15% 的预备金。' },
+      { title: '了解建筑贷款选项', detail: 'KDR 通常使用"建筑贷款"（Construction Loan），按施工阶段分批放款，而非一次性普通房贷。建议找专注建筑融资的贷款经纪，在确认 Builder 之前先获得预批。' },
+      { title: '业主自建 vs 持牌建筑商', detail: '自建可以省钱，但风险高、保险复杂、转售困难。对大多数业主而言，使用持牌建筑商是更稳妥的选择。' },
+      { title: '对比 KDR vs 买新房', detail: '在大多数主要城市，在同一 Suburb 推倒重建，比直接购买同等新房更便宜。因为土地已经是你的，你只需要支付建筑费用。' },
+    ]
+  },
+  {
+    id: 3, icon: ClipboardList, title: '设计与城市规划', color: 'purple', duration: '4–12 周',
+    summary: '在提交 Council 申请之前，先把方案做对。',
+    steps: [
+      { title: '聘请 Town Planner（城市规划师）', detail: '在找建筑师或制图师之前，先咨询一位 Town Planner。他们了解你所在 Council 的具体规定，可以告诉你哪些方案可以通过、哪些会被拒绝。在遗产区或大型项目中尤为关键。' },
+      { title: '选择设计路径', detail: '选项A：量产建筑商（Volume Builder）— 更快、更便宜，但定制空间有限。选项B：定制建筑师 — 费用较高、周期较长，但完全个性化。对大多数 KDR 项目，一位好的制图师加建筑设计师是性价比最高的组合。' },
+      { title: 'BASIX / 节能要求', detail: 'NSW 所有新建住宅须提交 BASIX 证书；VIC 要求 NatHERS 7 星评级。这些会影响保温层、窗户尺寸、雨水箱和太阳能板。从方案初期就应考虑这些要求。' },
+      { title: '提前获取 Builder 初步报价', detail: '在完成施工图之前，把概念方案发给 2–3 家建筑商，核实费用是否在预算范围内。这样可以避免图纸完成后才发现超支。' },
+    ]
+  },
+  {
+    id: 4, icon: FileText, title: 'Council 审批（DA 或 CDC）', color: 'yellow', duration: '8–52 周',
+    summary: '整个流程中最长、最不确定的阶段——做好延误的心理准备。',
+    steps: [
+      { title: 'CDC（合规建设证书）— 更快的审批路径', detail: '如果你的建筑方案完全符合现行规定，CDC 可由私人核查员（Private Certifier）审批，最快 10 个工作日即可获批，无需 Council 介入。费用约 $3,000–8,000。适用于 NSW 大部分地区和部分 VIC 区域。' },
+      { title: 'DA（开发申请）— 完整的 Council 审查流程', detail: '如果不符合 CDC 条件，或你的方案不符合既有规定，就需要提交 DA。Council 在 NSW 有 40–60 个工作日的审批期限。遗产物业、非标准设计或邻居异议都会大幅延长时间。' },
+      { title: 'Pre-DA 预申请会议', detail: '对于复杂地块，强烈建议先申请 Pre-DA 会议。大多数 Council 提供正式提交前的预咨询，规划师可以提前告知问题所在，节省时间和金钱。' },
+      { title: '邻居通知', detail: 'DA 会公开通知。邻居可以提出反对意见。遗产物业和双拼申请最容易引发投诉。建议提前与邻居建立良好关系。' },
+      { title: 'Construction Certificate（建筑证书）', detail: '获得 DA 批准后，仍需申请建筑证书（CC）才能开工。需要详细的工程图纸、结构设计和核查员签字确认。' },
+    ]
+  },
+  {
+    id: 5, icon: Hammer, title: '拆除', color: 'red', duration: '1–3 周',
+    summary: '激动人心的时刻——推倒开始了。',
+    steps: [
+      { title: '拆除许可', detail: '大多数州需要在开发申请之前单独申请拆除许可。1987 年以前建造的房屋需附上石棉调查报告。' },
+      { title: '石棉检测与清除', detail: '1987 年以前的房屋通常含有石棉，常见于纤维水泥板、地砖和屋顶材料。必须由持牌石棉清除承包商处理。费用约 $3,000–20,000，视石棉范围而定。' },
+      { title: '公共设施断开', detail: '拆除前需安排断开水、燃气、电力和 NBN。各公用事业公司通常需要 4–8 周提前通知。不要等到最后一刻才安排。' },
+      { title: '混凝土地基处理', detail: '如果打算保留原有地基，须请结构工程师先评估。大多数新建工程需要全新地基。拆除旧地基会增加 $5,000–15,000，但可确保基础干净牢固。' },
+      { title: '场地准备', detail: '拆除完成后：场地平整、边界桩和测量标记。如果靠近人行道，还需临时围栏和 Council 的围挡许可。' },
+    ]
+  },
+  {
+    id: 6, icon: Building2, title: '施工', color: 'orange', duration: '20–40 周',
+    summary: '建筑商接手了——保持参与，但要信任流程。',
+    steps: [
+      { title: '施工阶段与进度付款', detail: '标准阶段：地基/板、框架、封闭（Lock-Up）、装修、实际完工。每个阶段触发一笔进度款。在付款前，让你的贷款机构或独立验房师确认每个阶段的完成情况。' },
+      { title: '独立建筑检查员', detail: '自行聘请一位独立检查员在关键阶段检查施工质量。他不同于核查员（核查员代表合规，而非你的利益）。每次检查费用 $300–600，物有所值。' },
+      { title: 'Principal Certifier（主要认证员）', detail: '你需要指定一位主要认证员（通常是私人机构），他负责在关键阶段检查并认证工程：地基、框架、防水、最终完工。在 NSW，这一角色已取代原来的 PCA。' },
+      { title: '各工种协调', detail: '建筑商负责协调：混凝土工、框架工、屋面工、水管工（粗装和精装）、电工（粗装和精装）、隔热层、抹灰工、瓦工、油漆工、橱柜工。建议每 2–4 周进行一次现场会议。' },
+      { title: '变更单（Variations）', detail: '变更单是预算超支的最大杀手。任何变更都必须事先以书面形式确认。合理变更包括：场地问题、业主主动要求的更改。建筑商自身的错误应由其承担费用。' },
+    ]
+  },
+  {
+    id: 7, icon: Home, title: '验收与入住', color: 'emerald', duration: '2–4 周',
+    summary: '最后检查、修复缺陷，然后搬入新家。',
+    steps: [
+      { title: '实际完工检查（PCI）', detail: '与建筑商一起进行验收，制作缺陷清单（"punch list"）。这是正常的——新建房屋通常有 20–100 个小问题。建筑商必须在收到最终付款前完成修复。' },
+      { title: '入住证书（OC）', detail: '入住证书由你的主要认证员在最终检查后签发。没有 OC，你在法律上不能入住。OC 签发后，将建筑贷款转换为普通房贷。' },
+      { title: '法定质保期', detail: 'NSW 规定：重大缺陷质保 6 年，其他缺陷质保 2 年。在此期间，建筑商必须修复任何质保问题。所有事项均需留有书面记录。' },
+      { title: '最终接驳与设置', detail: '电表、燃气表接驳，NBN 安装，Council 要求的人行道和车道修复。OC 签发后，所有服务接驳通常还需 4–6 周。' },
+      { title: '维护期', detail: '新房会有沉降。石膏和瓷砖出现轻微裂缝属于正常现象。重大结构问题属于质保项目。保留好缺陷清单并逐一跟进处理。' },
+    ]
+  },
+  {
+    id: 8, icon: Zap, title: '各工种职责说明', color: 'cyan', duration: '贯穿整个项目',
+    summary: '了解该找谁、什么时候找。',
+    steps: [
+      { title: 'Town Planner（城市规划师）', detail: '负责解读 Council 规定、撰写规划报告、管理 DA 流程。在设计之前就应聘请。费用：$2,000–10,000+（复杂地块更高）。' },
+      { title: '持牌建筑商（建议选 HIA/MBA 会员）', detail: '负责从地基到交房的全程施工管理。获取 3 家报价对比。在州政府网站查验施工执照。仔细阅读合同——建议使用 HIA 或 MBA 标准合同。' },
+      { title: '结构工程师', detail: '根据你的土壤类型设计地基和地板。申请建筑证书（CC）必须提供。也适用于非标准结构：有坡度的地块、钢结构框架、特殊跨度等。' },
+      { title: '持牌水管工（管道与排水）', detail: '粗装阶段在地基浇筑前和框架中铺设管道；精装阶段连接卫浴设备。必须持牌。雨水接入 Council 排水系统需要 Council 审批。' },
+      { title: '持牌电工', detail: '粗装阶段在框架中铺设电缆；精装阶段连接配电箱和用电设备。必须持牌。每个阶段完成后单独出具电气合规证书。' },
+      { title: '注册测量师', detail: '施工前标定边界桩，施工完成后认证建筑位置（用于获取 OC）。依法必须聘请。费用约 $2,000–5,000。' },
+      { title: '私人建筑认证员 / 主要认证员', detail: '签发 CDC 或审批 CC，在关键阶段进行检查，最终签发入住证书（OC）。依法必须聘请。建议货比三家，比较价格和服务效率。' },
+      { title: '景观设计师（可选，但强烈建议）', detail: '负责车道、小径、草坪、绿化和围栏。通常是总费用的最后 5%，但对居住品质影响巨大。预算建议为建筑费用的 3–5%。' },
+    ]
+  },
+]
+
 const COLOR_MAP: Record<string, { bg: string; text: string; border: string; badge: string }> = {
   blue:    { bg: 'bg-blue-500/10',    text: 'text-blue-400',    border: 'border-blue-500/20',   badge: 'bg-blue-500/20 text-blue-400' },
   green:   { bg: 'bg-green-500/10',   text: 'text-green-400',   border: 'border-green-500/20',  badge: 'bg-green-500/20 text-green-400' },
@@ -156,24 +248,28 @@ export default function GuidePage() {
 
   const { lang } = useLang()
   const t = translations[lang]
+  const activeStages = lang === 'zh' ? STAGES_ZH : STAGES
 
   return (
     <div className="min-h-screen bg-gray-950">
       {/* Nav */}
       <nav className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-              <Building2 className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-lg text-white">{t.nav.brand}</span>
-          </a>
           <div className="flex items-center gap-3">
-            <LangToggle />
             <a href="/" className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors">
               <ArrowLeft className="w-4 h-4" />
               {t.nav.home}
             </a>
+            <div className="w-px h-5 bg-gray-700" />
+            <a href="/" className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-bold text-lg text-white hidden sm:block">{t.nav.brand}</span>
+            </a>
+          </div>
+          <div className="flex items-center gap-3">
+            <LangToggle />
             <a href="/feasibility" className="bg-orange-500 hover:bg-orange-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
               {t.nav.cta}
             </a>
@@ -191,7 +287,7 @@ export default function GuidePage() {
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-8 overflow-x-auto">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">{t.guide.overviewLabel}</h2>
           <div className="flex items-center gap-2 min-w-max">
-            {STAGES.map((stage, i) => {
+            {activeStages.map((stage, i) => {
               const c = COLOR_MAP[stage.color]
               return (
                 <div key={stage.id} className="flex items-center gap-2">
@@ -211,7 +307,7 @@ export default function GuidePage() {
 
         {/* Stages accordion */}
         <div className="space-y-4">
-          {STAGES.map(stage => {
+          {activeStages.map(stage => {
             const c = COLOR_MAP[stage.color]
             const isOpen = openStages.includes(stage.id)
             return (
