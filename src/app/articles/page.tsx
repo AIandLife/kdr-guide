@@ -44,7 +44,7 @@ export default function ArticlesPage() {
         {/* Header */}
         <div className="mb-10">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            {isZh ? 'KDR 知识库' : 'KDR Knowledge Hub'}
+            {isZh ? '建房攻略' : 'Build Knowledge Hub'}
           </h1>
           <p className="text-gray-500 text-lg max-w-2xl">
             {isZh
