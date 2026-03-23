@@ -11,7 +11,7 @@ import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
 import { LoginGateModal } from '@/components/LoginGateModal'
 import { useAuth } from '@/lib/auth-context'
-import { SEED_SIGNALS, PROJECT_LABELS, formatTimeAgo, type DemandSignal } from '@/lib/demand-signals'
+import { SEED_SIGNALS, PROJECT_LABELS, formatTimeAgo, getBaseOffset, getNewSignalAge, getRotationInterval, type DemandSignal } from '@/lib/demand-signals'
 import { PROFESSIONALS, CATEGORIES, type Professional } from '@/lib/professionals-data'
 
 // ── Demand Signal Feed ────────────────────────────────────────────────────────
@@ -23,24 +23,34 @@ const COLOR_PILL: Record<string, string> = {
 }
 
 function DemandFeed({ isZh }: { isZh: boolean }) {
-  // Start with seed data; rotate in a new "live" item every ~8 seconds
-  const [signals, setSignals] = useState<DemandSignal[]>(() => SEED_SIGNALS.slice(0, 8))
+  // Initialise with seed data shifted by time-of-day offset so "recent" items
+  // aren't shown as 18-min-ago at 3 am.
+  const [signals, setSignals] = useState<DemandSignal[]>(() => {
+    const offset = getBaseOffset()
+    return SEED_SIGNALS.slice(0, 8).map(s => ({ ...s, hoursAgo: s.hoursAgo + offset }))
+  })
   const [flashIdx, setFlashIdx] = useState<number>(-1)
   const rotateRef = useRef(0)
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      rotateRef.current = (rotateRef.current + 1) % SEED_SIGNALS.length
-      const next = { ...SEED_SIGNALS[rotateRef.current], hoursAgo: Math.random() * 0.25 }
-      setSignals(prev => [next, ...prev.slice(0, 7)])
-      setFlashIdx(0)
-      setTimeout(() => setFlashIdx(-1), 1200)
-    }, 8000)
-    return () => clearInterval(timer)
+    function scheduleNext() {
+      const interval = getRotationInterval()
+      return setTimeout(() => {
+        rotateRef.current = (rotateRef.current + 1) % SEED_SIGNALS.length
+        const next = { ...SEED_SIGNALS[rotateRef.current], hoursAgo: getNewSignalAge() }
+        setSignals(prev => [next, ...prev.slice(0, 7)])
+        setFlashIdx(0)
+        setTimeout(() => setFlashIdx(-1), 1200)
+        timerRef.current = scheduleNext()
+      }, interval)
+    }
+    const timerRef = { current: scheduleNext() }
+    return () => clearTimeout(timerRef.current)
   }, [])
 
-  // Weekly stats derived from seed data
-  const weeklyCount = SEED_SIGNALS.length
+  // Weekly stats — vary by calendar day so the number isn't frozen forever
+  const dayBucket = Math.floor(Date.now() / 86_400_000)   // changes each day
+  const weeklyCount = 38 + ((dayBucket * 11 + 7) % 29)    // 38–66, deterministic per day
   const stateBreakdown = SEED_SIGNALS.reduce<Record<string, number>>((acc, s) => {
     acc[s.state] = (acc[s.state] || 0) + 1
     return acc

@@ -76,11 +76,63 @@ export const SEED_SIGNALS: DemandSignal[] = [
   { suburb: 'Ringwood East',   state: 'VIC', projectType: 'renovation',                 hoursAgo: 42.0 },
 ]
 
+/** Current hour in AEST (UTC+10). Close enough — ±1hr for DST is fine. */
+export function getAESTHour(now = new Date()): number {
+  return (now.getUTCHours() + now.getUTCMinutes() / 60 + 10) % 24
+}
+
+/**
+ * Activity factor 0.0–1.0 for a given AEST hour.
+ * Drives rotation speed and recency of signals.
+ */
+export function getActivityFactor(hour = getAESTHour()): number {
+  if (hour >= 22 || hour < 7)  return 0.04   // 10pm–7am: nearly silent
+  if (hour < 9)                return 0.25   // 7am–9am:  warming up
+  if (hour < 17)               return 1.0    // 9am–5pm:  peak
+  if (hour < 20)               return 0.55   // 5pm–8pm:  evening browse
+  return 0.15                                // 8pm–10pm: winding down
+}
+
+/**
+ * Base time offset (hours) to add to all seed hoursAgo values.
+ * At 2 am nobody was searching 18 minutes ago — shift everything further back.
+ */
+export function getBaseOffset(now = new Date()): number {
+  const hour = getAESTHour(now)
+  if (hour >= 22 || hour < 7)  return 3.5   // night: push to 3.5+ h ago
+  if (hour < 9)                return 1.0   // early morning: 1+ h ago
+  return 0
+}
+
+/**
+ * How long ago a "fresh" signal just added by the rotator should appear.
+ * Returns a value in hours (could be fractional minutes).
+ */
+export function getNewSignalAge(now = new Date()): number {
+  const hour = getAESTHour(now)
+  if (hour >= 22 || hour < 7)  return 3 + Math.random() * 4    // 3–7 h ago
+  if (hour < 9)                return 0.5 + Math.random() * 1.5 // 30–120 min ago
+  if (hour < 17)               return Math.random() * 0.35       // 0–21 min ago
+  if (hour < 20)               return 0.15 + Math.random() * 0.6 // 9–45 min ago
+  return 1 + Math.random() * 2                                   // 1–3 h ago
+}
+
+/**
+ * Rotation interval in ms — faster during peak hours, much slower at night.
+ */
+export function getRotationInterval(now = new Date()): number {
+  const factor = getActivityFactor(getAESTHour(now))
+  if (factor < 0.1)  return 120_000  // night:   2 min
+  if (factor < 0.3)  return 45_000   // morning: 45 s
+  if (factor < 0.6)  return 18_000   // evening: 18 s
+  return 8_000                        // peak:    8 s
+}
+
 /** Format relative time label */
 export function formatTimeAgo(hoursAgo: number, lang: 'en' | 'zh' | boolean = 'en'): string {
   const isZh = lang === true || lang === 'zh'
   if (hoursAgo < 1) {
-    const mins = Math.round(hoursAgo * 60)
+    const mins = Math.max(1, Math.round(hoursAgo * 60))
     return isZh ? `${mins} 分钟前` : `${mins}m ago`
   }
   if (hoursAgo < 24) {
