@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import {
   CheckCircle, ChevronRight, Loader2, Shield, Star, Phone,
-  HardHat, FileText, Zap, Droplets, Hammer, DollarSign, Briefcase, Ruler
+  HardHat, FileText, Zap, Droplets, Hammer, DollarSign, Briefcase, Ruler,
+  CreditCard, Lock
 } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { SiteNav } from '@/components/SiteNav'
@@ -35,6 +36,46 @@ const VERIFY_BENEFITS_ZH = [
   { icon: '🎯', title: '询盘直接发送到你的邮箱', desc: '业主可以直接从你的主页向你发送报价请求。' },
 ]
 
+// Per-category verification documents required
+const VERIFY_DOCS: Record<string, { label: string; labelZh: string; placeholder: string }[]> = {
+  Builder: [
+    { label: 'Builder\'s Licence Number', labelZh: '建筑执照号码', placeholder: 'e.g. BLD123456' },
+    { label: 'ABN', labelZh: 'ABN', placeholder: 'XX XXX XXX XXX' },
+  ],
+  'Town Planner': [
+    { label: 'PIA / Planning Registration Number', labelZh: 'PIA 规划注册号码', placeholder: 'e.g. PIA-123456' },
+    { label: 'ABN', labelZh: 'ABN', placeholder: 'XX XXX XXX XXX' },
+  ],
+  Demolition: [
+    { label: 'Demolition Contractor Licence', labelZh: '拆房承包商执照号码', placeholder: 'e.g. DEM123456' },
+    { label: 'ABN', labelZh: 'ABN', placeholder: 'XX XXX XXX XXX' },
+  ],
+  'Structural Engineer': [
+    { label: 'CPEng / Engineers Australia No.', labelZh: '结构工程师注册号码', placeholder: 'e.g. CPEng-12345' },
+    { label: 'ABN', labelZh: 'ABN', placeholder: 'XX XXX XXX XXX' },
+  ],
+  Electrician: [
+    { label: 'Electrical Contractor Licence', labelZh: '电工承包商执照号码', placeholder: 'e.g. EC123456' },
+    { label: 'ABN', labelZh: 'ABN', placeholder: 'XX XXX XXX XXX' },
+  ],
+  Plumber: [
+    { label: 'Plumbing Licence Number', labelZh: '水管工执照号码', placeholder: 'e.g. PL123456' },
+    { label: 'ABN', labelZh: 'ABN', placeholder: 'XX XXX XXX XXX' },
+  ],
+  'Finance Broker': [
+    { label: 'ACL / MFAA / FBAA Number', labelZh: 'ACL / MFAA / FBAA 会员号码', placeholder: 'e.g. ACL123456' },
+    { label: 'ABN', labelZh: 'ABN', placeholder: 'XX XXX XXX XXX' },
+  ],
+  Surveyor: [
+    { label: 'Surveyor Registration Number', labelZh: '测量师注册号码', placeholder: 'e.g. SRV-12345' },
+    { label: 'ABN', labelZh: 'ABN', placeholder: 'XX XXX XXX XXX' },
+  ],
+  Other: [
+    { label: 'Relevant Licence / Registration', labelZh: '相关执照 / 注册号码', placeholder: 'e.g. your licence number' },
+    { label: 'ABN', labelZh: 'ABN', placeholder: 'XX XXX XXX XXX' },
+  ],
+}
+
 type View = 'form' | 'listed' | 'verify_requested' | 'done'
 
 export default function JoinPage() {
@@ -48,6 +89,8 @@ export default function JoinPage() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [verifyDocs, setVerifyDocs] = useState<Record<string, string>>({})
+  const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly'>('annual')
 
   const set = (key: string, value: string) => setForm(f => ({ ...f, [key]: value }))
 
@@ -330,51 +373,126 @@ export default function JoinPage() {
     )
   }
 
-  // ── Step 3a: Verification requested ──────────────────────────────────────
+  // ── Step 3a: Verification — show docs required + pricing ─────────────────
   if (view === 'verify_requested') {
+    const docs = VERIFY_DOCS[form.category] ?? VERIFY_DOCS['Other']
     return (
       <div className="min-h-screen bg-gray-50">
         <SiteNav backHref="/professionals" backLabel={isZh ? '返回' : 'Back'} currentPath="/join" />
 
-        <div className="max-w-md mx-auto px-4 sm:px-6 py-20 text-center">
-          <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-5">
-            <Phone className="w-10 h-10 text-orange-500" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">
-            {isZh ? '认证申请已收到' : 'Verification Request Received'}
-          </h1>
-          <p className="text-gray-500 leading-relaxed mb-6">
-            {isZh
-              ? `我们会在 1–2 个工作日内通过 ${form.email} 联系你，指导你完成认证流程。`
-              : `We'll contact you at ${form.email} within 1–2 business days to walk you through the verification process.`}
-          </p>
-          <div className="rounded-2xl p-5 bg-orange-50 border border-orange-200 text-left mb-8">
-            <p className="text-sm font-semibold text-orange-700 mb-2">
-              {isZh ? '认证流程包括：' : 'The verification process includes:'}
+        <div className="max-w-xl mx-auto px-4 sm:px-6 py-12">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 mb-4 text-xs font-semibold text-orange-600 bg-orange-100 border border-orange-200">
+              <Shield className="w-3.5 h-3.5" />
+              {isZh ? '认证申请' : 'Verification'}
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              {isZh ? '提交认证所需材料' : 'Submit Verification Documents'}
+            </h1>
+            <p className="text-sm text-gray-500">
+              {isZh
+                ? '认证后你的主页会显示已认证徽章，搜索结果优先排名，联系方式对业主可见。'
+                : 'Once verified, your listing shows a Verified badge, ranks above unverified profiles, and reveals your contact details.'}
             </p>
-            <ul className="space-y-1.5 text-sm text-gray-600">
-              {(isZh ? [
-                'ABN / ASIC 注册核实',
-                '资质证书核实（建筑执照等）',
-                '联系方式激活',
-                '认证徽章即时显示',
-              ] : [
-                'ABN / ASIC registration check',
-                'Licence or qualification verification',
-                'Contact details activated on your listing',
-                'Verified badge displayed immediately',
-              ]).map((item, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
-                  {item}
-                </li>
-              ))}
-            </ul>
           </div>
-          <a href="/" className="inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-xl"
-            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}>
-            {isZh ? '返回首页' : 'Back to Home'}
-          </a>
+
+          {/* Documents required */}
+          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-6 mb-4">
+            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+              {isZh ? '所需材料' : 'Required Documents'}
+            </h2>
+            <div className="space-y-4">
+              {docs.map((doc, i) => (
+                <div key={i}>
+                  <label className="block text-xs text-gray-500 mb-1.5">
+                    {isZh ? doc.labelZh : doc.label} *
+                  </label>
+                  <input
+                    value={verifyDocs[doc.label] ?? ''}
+                    onChange={e => setVerifyDocs(prev => ({ ...prev, [doc.label]: e.target.value }))}
+                    placeholder={doc.placeholder}
+                    className="w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400"
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400 mt-4 leading-relaxed">
+              {isZh
+                ? '我们会通过 ASIC / 各州注册机构核实上述信息，通常在 1–2 个工作日内完成。'
+                : 'We verify details via ASIC and state licensing bodies. This typically takes 1–2 business days.'}
+            </p>
+          </div>
+
+          {/* Pricing */}
+          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-6 mb-4">
+            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+              {isZh ? '认证套餐' : 'Verification Plan'}
+            </h2>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setSelectedPlan('annual')}
+                className={cn(
+                  'relative flex flex-col items-center gap-1 p-4 rounded-xl border-2 transition-all text-center',
+                  selectedPlan === 'annual'
+                    ? 'border-orange-400 bg-orange-50'
+                    : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                )}
+              >
+                {selectedPlan === 'annual' && (
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                    {isZh ? '推荐' : 'Best Value'}
+                  </span>
+                )}
+                <span className="text-2xl font-bold text-gray-900">$99</span>
+                <span className="text-xs text-gray-500">{isZh ? '/ 年（AUD）' : '/ year (AUD)'}</span>
+                <span className="text-xs text-orange-500 font-medium">
+                  {isZh ? '仅 $8.25/月' : 'Only $8.25/mo'}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedPlan('monthly')}
+                className={cn(
+                  'flex flex-col items-center gap-1 p-4 rounded-xl border-2 transition-all text-center',
+                  selectedPlan === 'monthly'
+                    ? 'border-orange-400 bg-orange-50'
+                    : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                )}
+              >
+                <span className="text-2xl font-bold text-gray-900">$12</span>
+                <span className="text-xs text-gray-500">{isZh ? '/ 月（AUD）' : '/ month (AUD)'}</span>
+                <span className="text-xs text-gray-400">{isZh ? '随时取消' : 'Cancel anytime'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Pay button (Stripe placeholder) */}
+          <button
+            type="button"
+            onClick={() => {
+              // TODO: Stripe Checkout integration
+              setView('done')
+            }}
+            className="w-full text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 text-base mb-3"
+            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 24px rgba(249,115,22,0.3)' }}
+          >
+            <CreditCard className="w-5 h-5" />
+            {isZh
+              ? `提交并支付 ${selectedPlan === 'annual' ? 'AUD $99/年' : 'AUD $12/月'} →`
+              : `Submit & Pay ${selectedPlan === 'annual' ? 'AUD $99/yr' : 'AUD $12/mo'} →`}
+          </button>
+          <p className="text-center text-xs text-gray-400 flex items-center justify-center gap-1 mb-6">
+            <Lock className="w-3 h-3" />
+            {isZh ? '安全支付 · 由 Stripe 处理' : 'Secure payment · Powered by Stripe'}
+          </p>
+          <button
+            type="button"
+            onClick={() => setView('done')}
+            className="w-full text-center text-sm text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            {isZh ? '先跳过，稍后再申请认证' : 'Skip for now — I\'ll verify later'}
+          </button>
         </div>
       </div>
     )
