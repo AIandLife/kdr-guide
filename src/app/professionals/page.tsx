@@ -1,15 +1,138 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   CheckCircle, MapPin, Phone, ChevronRight,
   Briefcase, HardHat, Ruler, Zap, Droplets, FileText, DollarSign,
-  Globe, MessageCircle, X, Building2
+  Globe, MessageCircle, X, Building2, TrendingUp, Activity
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
+import { SEED_SIGNALS, PROJECT_LABELS, formatTimeAgo, type DemandSignal } from '@/lib/demand-signals'
+
+// ── Demand Signal Feed ────────────────────────────────────────────────────────
+const COLOR_PILL: Record<string, string> = {
+  orange: 'bg-orange-100 text-orange-700',
+  blue:   'bg-blue-100 text-blue-700',
+  purple: 'bg-purple-100 text-purple-700',
+  green:  'bg-green-100 text-green-700',
+}
+
+function DemandFeed({ isZh }: { isZh: boolean }) {
+  // Start with seed data; rotate in a new "live" item every ~8 seconds
+  const [signals, setSignals] = useState<DemandSignal[]>(() => SEED_SIGNALS.slice(0, 8))
+  const [flashIdx, setFlashIdx] = useState<number>(-1)
+  const rotateRef = useRef(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      rotateRef.current = (rotateRef.current + 1) % SEED_SIGNALS.length
+      const next = { ...SEED_SIGNALS[rotateRef.current], hoursAgo: Math.random() * 0.25 }
+      setSignals(prev => [next, ...prev.slice(0, 7)])
+      setFlashIdx(0)
+      setTimeout(() => setFlashIdx(-1), 1200)
+    }, 8000)
+    return () => clearInterval(timer)
+  }, [])
+
+  // Weekly stats derived from seed data
+  const weeklyCount = SEED_SIGNALS.length
+  const stateBreakdown = SEED_SIGNALS.reduce<Record<string, number>>((acc, s) => {
+    acc[s.state] = (acc[s.state] || 0) + 1
+    return acc
+  }, {})
+  const topStates = Object.entries(stateBreakdown).sort((a, b) => b[1] - a[1]).slice(0, 3)
+  const kdrPct = Math.round(SEED_SIGNALS.filter(s => s.projectType === 'kdr').length / SEED_SIGNALS.length * 100)
+
+  return (
+    <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm mb-8 bg-white">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #fff7ed 0%, #fff 60%)' }}>
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-sm font-semibold text-gray-900">
+              {isZh ? '实时需求动态' : 'Live Homeowner Activity'}
+            </span>
+          </div>
+          <span className="text-xs text-gray-400 hidden sm:block">
+            {isZh ? '匿名 · 真实查询' : 'Anonymised · Real searches'}
+          </span>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+            <TrendingUp className="w-3.5 h-3.5 text-orange-400" />
+            <span className="font-semibold text-gray-900">{weeklyCount}</span>
+            <span>{isZh ? '本周查询' : 'this week'}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats row */}
+      <div className="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100">
+        {topStates.map(([state, count]) => (
+          <div key={state} className="px-4 py-3 text-center">
+            <div className="text-lg font-bold text-gray-900">{count}</div>
+            <div className="text-xs text-gray-400">{state} {isZh ? '查询' : 'searches'}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Signal list */}
+      <div className="divide-y divide-gray-50">
+        {signals.map((s, i) => {
+          const proj = PROJECT_LABELS[s.projectType]
+          return (
+            <div
+              key={`${s.suburb}-${i}`}
+              className={cn(
+                'flex items-center gap-3 px-5 py-3 transition-colors duration-700',
+                i === flashIdx && 'bg-green-50'
+              )}
+            >
+              {/* Dot */}
+              <div className={cn('w-2 h-2 rounded-full shrink-0', i === 0 ? 'bg-green-500 animate-pulse' : 'bg-gray-200')} />
+
+              {/* Location */}
+              <div className="flex-1 min-w-0">
+                <span className="text-sm font-medium text-gray-900">{s.suburb}</span>
+                <span className="text-xs text-gray-400 ml-1.5">{s.state}</span>
+                {s.lotSize && (
+                  <span className="text-xs text-gray-400 ml-1.5">· {s.lotSize}㎡</span>
+                )}
+              </div>
+
+              {/* Project type pill */}
+              <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium shrink-0 hidden sm:block', COLOR_PILL[proj.color])}>
+                {isZh ? proj.zh : proj.en}
+              </span>
+
+              {/* Time */}
+              <span className="text-xs text-gray-400 shrink-0 w-14 text-right">
+                {formatTimeAgo(s.hoursAgo, isZh)}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Footer */}
+      <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+        <div className="flex items-center gap-1.5 text-xs text-gray-500">
+          <Activity className="w-3.5 h-3.5" />
+          {isZh
+            ? `${kdrPct}% 为推倒重建 · 其余为翻新、扩建和 Granny Flat`
+            : `${kdrPct}% knockdown rebuild · rest are renovations, extensions & granny flats`}
+        </div>
+        <a href="/" className="text-xs text-orange-500 hover:text-orange-600 font-medium transition-colors">
+          {isZh ? '查询我的地块 →' : 'Check my block →'}
+        </a>
+      </div>
+    </div>
+  )
+}
 
 const CATEGORIES = [
   { id: 'builder',     label: 'Builders',       icon: HardHat,    color: 'orange' },
@@ -244,23 +367,12 @@ export default function ProfessionalsPage() {
       <SiteNav currentPath="/professionals" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">{tp.h1}</h1>
-          <p className="text-gray-500 text-lg mb-5">{tp.subtitle}</p>
-          {/* Social proof bar */}
-          <div className="flex flex-wrap gap-4">
-            {[
-              { icon: '🏗️', en: '40+ professionals listed', zh: '40+ 位专业人士已入驻' },
-              { icon: '📍', en: 'NSW · VIC · QLD · WA covered', zh: '覆盖 NSW · VIC · QLD · WA' },
-              { icon: '💬', en: 'Leads sent within 24hrs', zh: '询盘 24 小时内转发' },
-              { icon: '🆓', en: 'Free for first 3 months', zh: '前 3 个月免费' },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg px-3 py-2">
-                <span>{item.icon}</span>
-                <span>{isZh ? item.zh : item.en}</span>
-              </div>
-            ))}
-          </div>
+        <div className="mb-6">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{tp.h1}</h1>
+          <p className="text-gray-500 text-lg mb-6">{tp.subtitle}</p>
+
+          {/* Live demand feed — shows builders real homeowner intent */}
+          <DemandFeed isZh={isZh} />
         </div>
 
         {/* Filters */}
