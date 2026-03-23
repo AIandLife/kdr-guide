@@ -33,10 +33,9 @@ interface Props {
   state: string
   info: { name: string; city: string; blurb: string; blurbZh: string }
   professionals: Professional[]
-  categories: Category[]
 }
 
-export function StateProfessionalsClient({ state, info, professionals, categories }: Props) {
+export function StateProfessionalsClient({ state, info, professionals }: Props) {
   const { lang } = useLang()
   const isZh = lang === 'zh'
   const { user } = useAuth()
@@ -143,7 +142,7 @@ export function StateProfessionalsClient({ state, info, professionals, categorie
               className={cn('px-3 py-1.5 rounded-lg text-sm font-medium transition-colors', activeCategory === 'all' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
               {isZh ? '全部' : 'All roles'}
             </button>
-            {categories.map(cat => (
+            {CATEGORIES.map(cat => (
               <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
                 className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors', activeCategory === cat.id ? COLOR_MAP[cat.color] : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
                 <cat.icon className="w-3.5 h-3.5" />
@@ -156,7 +155,7 @@ export function StateProfessionalsClient({ state, info, professionals, categorie
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
           {filtered.map(pro => {
-            const cat = categories.find(c => c.id === pro.category)
+            const cat = CATEGORIES.find(c => c.id === pro.category)
             const sent = sentPros.has(pro.name)
             const isFav = favorites.has(pro.slug)
             return (
