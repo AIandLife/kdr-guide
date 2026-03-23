@@ -11,7 +11,7 @@ import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
 import { LoginGateModal } from '@/components/LoginGateModal'
 import { useAuth } from '@/lib/auth-context'
-import { SEED_SIGNALS, PROJECT_LABELS, formatTimeAgo, getBaseOffset, getNewSignalAge, getRotationInterval, type DemandSignal } from '@/lib/demand-signals'
+import { SUBURB_POOL, PROJECT_LABELS, formatTimeAgo, getInitialSignals, getWeeklyStats, getNewSignalAge, getRotationInterval, type DemandSignal } from '@/lib/demand-signals'
 import { PROFESSIONALS, CATEGORIES, type Professional } from '@/lib/professionals-data'
 
 // ── Demand Signal Feed ────────────────────────────────────────────────────────
@@ -23,21 +23,24 @@ const COLOR_PILL: Record<string, string> = {
 }
 
 function DemandFeed({ isZh }: { isZh: boolean }) {
-  // Initialise with seed data shifted by time-of-day offset so "recent" items
-  // aren't shown as 18-min-ago at 3 am.
-  const [signals, setSignals] = useState<DemandSignal[]>(() => {
-    const offset = getBaseOffset()
-    return SEED_SIGNALS.slice(0, 8).map(s => ({ ...s, hoursAgo: s.hoursAgo + offset }))
-  })
+  const [signals, setSignals] = useState<DemandSignal[]>(() => getInitialSignals(new Date(), 8))
   const [flashIdx, setFlashIdx] = useState<number>(-1)
-  const rotateRef = useRef(0)
+  const poolRef = useRef(0)
 
   useEffect(() => {
     function scheduleNext() {
       const interval = getRotationInterval()
       return setTimeout(() => {
-        rotateRef.current = (rotateRef.current + 1) % SEED_SIGNALS.length
-        const next = { ...SEED_SIGNALS[rotateRef.current], hoursAgo: getNewSignalAge() }
+        poolRef.current = (poolRef.current + 1) % SUBURB_POOL.length
+        const { suburb, state } = SUBURB_POOL[poolRef.current]
+        const pt = Math.random()
+        const projectType = pt < 0.50 ? 'kdr' : pt < 0.70 ? 'renovation' : pt < 0.88 ? 'extension' : 'granny-flat'
+        const next: DemandSignal = {
+          suburb, state,
+          projectType: projectType as DemandSignal['projectType'],
+          lotSize: projectType === 'kdr' ? Math.round((380 + Math.random() * 720) / 10) * 10 : undefined,
+          hoursAgo: getNewSignalAge(),
+        }
         setSignals(prev => [next, ...prev.slice(0, 7)])
         setFlashIdx(0)
         setTimeout(() => setFlashIdx(-1), 1200)
@@ -48,46 +51,32 @@ function DemandFeed({ isZh }: { isZh: boolean }) {
     return () => clearTimeout(timerRef.current)
   }, [])
 
-  // Weekly stats — vary by calendar day so the number isn't frozen forever
-  const dayBucket = Math.floor(Date.now() / 86_400_000)   // changes each day
-  const weeklyCount = 38 + ((dayBucket * 11 + 7) % 29)    // 38–66, deterministic per day
-  const stateBreakdown = SEED_SIGNALS.reduce<Record<string, number>>((acc, s) => {
-    acc[s.state] = (acc[s.state] || 0) + 1
-    return acc
-  }, {})
+  const { weeklyCount, stateBreakdown, kdrPct } = getWeeklyStats()
   const topStates = Object.entries(stateBreakdown).sort((a, b) => b[1] - a[1]).slice(0, 3)
-  const kdrPct = Math.round(SEED_SIGNALS.filter(s => s.projectType === 'kdr').length / SEED_SIGNALS.length * 100)
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm mb-8 bg-white">
+    <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm bg-white">
       {/* Header */}
-      <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #fff7ed 0%, #fff 60%)' }}>
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-sm font-semibold text-gray-900">
-              {isZh ? '实时需求动态' : 'Live Homeowner Activity'}
-            </span>
-          </div>
-          <span className="text-xs text-gray-400 hidden sm:block">
-            {isZh ? '匿名 · 真实查询' : 'Anonymised · Real searches'}
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #fff7ed 0%, #fff 60%)' }}>
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0" />
+          <span className="text-sm font-semibold text-gray-900">
+            {isZh ? '实时需求动态' : 'Live Activity'}
           </span>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-xs text-gray-500">
-            <TrendingUp className="w-3.5 h-3.5 text-orange-400" />
-            <span className="font-semibold text-gray-900">{weeklyCount}</span>
-            <span>{isZh ? '本周查询' : 'this week'}</span>
-          </div>
+        <div className="flex items-center gap-1 text-xs text-gray-500">
+          <TrendingUp className="w-3 h-3 text-orange-400" />
+          <span className="font-semibold text-gray-900">{weeklyCount}</span>
+          <span>{isZh ? '本周' : 'this week'}</span>
         </div>
       </div>
 
       {/* Stats row */}
       <div className="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100">
         {topStates.map(([state, count]) => (
-          <div key={state} className="px-4 py-3 text-center">
-            <div className="text-lg font-bold text-gray-900">{count}</div>
-            <div className="text-xs text-gray-400">{state} {isZh ? '查询' : 'searches'}</div>
+          <div key={state} className="px-2 py-2.5 text-center">
+            <div className="text-base font-bold text-gray-900">{count}</div>
+            <div className="text-xs text-gray-400">{state}</div>
           </div>
         ))}
       </div>
@@ -97,48 +86,34 @@ function DemandFeed({ isZh }: { isZh: boolean }) {
         {signals.map((s, i) => {
           const proj = PROJECT_LABELS[s.projectType]
           return (
-            <div
-              key={`${s.suburb}-${i}`}
-              className={cn(
-                'flex items-center gap-3 px-5 py-3 transition-colors duration-700',
-                i === flashIdx && 'bg-green-50'
-              )}
-            >
-              {/* Dot */}
-              <div className={cn('w-2 h-2 rounded-full shrink-0', i === 0 ? 'bg-green-500 animate-pulse' : 'bg-gray-200')} />
-
-              {/* Location */}
+            <div key={`${s.suburb}-${i}`}
+              className={cn('flex items-center gap-2 px-4 py-2.5 transition-colors duration-700', i === flashIdx && 'bg-green-50')}>
+              <div className={cn('w-1.5 h-1.5 rounded-full shrink-0', i === 0 ? 'bg-green-500 animate-pulse' : 'bg-gray-200')} />
               <div className="flex-1 min-w-0">
-                <span className="text-sm font-medium text-gray-900">{s.suburb}</span>
-                <span className="text-xs text-gray-400 ml-1.5">{s.state}</span>
-                {s.lotSize && (
-                  <span className="text-xs text-gray-400 ml-1.5">· {s.lotSize}㎡</span>
-                )}
+                <span className="text-sm font-medium text-gray-900 truncate block">{s.suburb}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-400">{s.state}</span>
+                  {s.lotSize && <span className="text-xs text-gray-300">· {s.lotSize}㎡</span>}
+                </div>
               </div>
-
-              {/* Project type pill */}
-              <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium shrink-0 hidden sm:block', COLOR_PILL[proj.color])}>
-                {isZh ? proj.zh : proj.en}
-              </span>
-
-              {/* Time */}
-              <span className="text-xs text-gray-400 shrink-0 w-14 text-right">
-                {formatTimeAgo(s.hoursAgo, isZh)}
-              </span>
+              <div className="flex flex-col items-end shrink-0 gap-1">
+                <span className={cn('text-xs px-1.5 py-0.5 rounded-full font-medium', COLOR_PILL[proj.color])}>
+                  {isZh ? proj.zh : proj.en}
+                </span>
+                <span className="text-xs text-gray-400">{formatTimeAgo(s.hoursAgo, isZh)}</span>
+              </div>
             </div>
           )
         })}
       </div>
 
       {/* Footer */}
-      <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-xs text-gray-500">
-          <Activity className="w-3.5 h-3.5" />
-          {isZh
-            ? `${kdrPct}% 为推倒重建 · 其余为翻新、扩建和 Granny Flat`
-            : `${kdrPct}% knockdown rebuild · rest are renovations, extensions & granny flats`}
-        </div>
-        <a href="/" className="text-xs text-orange-500 hover:text-orange-600 font-medium transition-colors">
+      <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+        <span className="text-xs text-gray-400">
+          <Activity className="w-3 h-3 inline mr-1" />
+          {kdrPct}% {isZh ? '推倒重建' : 'knockdown rebuild'}
+        </span>
+        <a href="/" className="text-xs text-orange-500 hover:text-orange-600 font-medium">
           {isZh ? '查询我的地块 →' : 'Check my block →'}
         </a>
       </div>
@@ -268,17 +243,28 @@ export default function ProfessionalsPage() {
     <div className="min-h-screen bg-gray-50">
       <SiteNav currentPath="/professionals" />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-        <div className="mb-6">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">{tp.h1}</h1>
-          <p className="text-gray-500 text-lg mb-6">{tp.subtitle}</p>
-
-          {/* Live demand feed — shows builders real homeowner intent */}
-          <DemandFeed isZh={isZh} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        {/* Page header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">
+            {isZh ? '找建房专家' : 'Find Build Experts'}
+          </h1>
+          <p className="text-gray-500">{tp.subtitle}</p>
         </div>
 
+        {/* Desktop: sidebar + main. Mobile: stacked */}
+        <div className="lg:flex lg:gap-8 lg:items-start">
+
+          {/* ── Left sidebar: demand feed (sticky on desktop) ── */}
+          <aside className="lg:w-72 xl:w-80 shrink-0 mb-8 lg:mb-0 lg:sticky lg:top-6">
+            <DemandFeed isZh={isZh} />
+          </aside>
+
+          {/* ── Right: filters + cards ── */}
+          <div className="flex-1 min-w-0">
+
         {/* Filters */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 mb-8 shadow-sm">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 mb-6 shadow-sm">
           <div className="mb-4">
             <p className="text-xs text-gray-400 uppercase font-medium mb-3">{tp.filterByRole}</p>
             <div className="flex flex-wrap gap-2">
@@ -304,7 +290,7 @@ export default function ProfessionalsPage() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-10">
           {filtered.map(pro => {
             const cat = CATEGORIES.find(c => c.id === pro.category)
             const sent = sentPros.has(pro.name)
@@ -391,13 +377,16 @@ export default function ProfessionalsPage() {
         {/* Subtle B2B entry point */}
         <div className="border-t border-gray-200 pt-8 text-center">
           <p className="text-sm text-gray-400">
-            {isZh ? '你是 KDR 专业人士？' : 'Are you a KDR professional?'}
+            {isZh ? '你是建房专业人士？' : 'Are you a building professional?'}
             {' '}
             <a href="/join" className="text-orange-500 hover:text-orange-600 font-medium transition-colors">
               {isZh ? '免费收录你的业务 →' : 'List your business for free →'}
             </a>
           </p>
         </div>
+
+          </div>{/* end right column */}
+        </div>{/* end flex */}
       </div>
 
       {/* ── Login Gate Modal ── */}

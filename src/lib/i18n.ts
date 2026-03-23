@@ -48,7 +48,7 @@ export const translations = {
         { title: 'Every council has different rules', desc: 'Heritage overlays, flood zones, minimum lot sizes — we\'ve mapped them all.' },
         { title: 'No idea what it actually costs', desc: 'Get realistic cost ranges based on your state, suburb, and house size.' },
         { title: 'Don\'t know how long it takes', desc: 'From DA lodgement to handover — realistic timelines for your council.' },
-        { title: 'Can\'t find the right builder', desc: 'We connect you with KDR-specialist builders, town planners, and trades.' },
+        { title: 'Can\'t find the right builder', desc: 'We connect you with knockdown rebuild builders, town planners, and trades.' },
       ],
       howTitle: 'How it works',
       howSubtitle: 'From question to action in minutes',
@@ -103,7 +103,7 @@ export const translations = {
     },
     // Professionals page
     professionals: {
-      h1: 'Find KDR Professionals',
+      h1: 'Find Build Experts',
       subtitle: 'Verified builders, planners, and trades specialising in knockdown rebuild across Australia.',
       filterByRole: 'By Role',
       filterByState: 'By State',
@@ -222,7 +222,7 @@ export const translations = {
     },
     // Professionals page
     professionals: {
-      h1: '寻找 KDR 专业人士',
+      h1: '找建房专家',
       subtitle: '澳洲全国经过验证的 Builder、规划师和专业工种，专注于推倒重建项目。',
       filterByRole: '按角色筛选',
       filterByState: '按州筛选',
@@ -231,7 +231,7 @@ export const translations = {
       verified: '已验证',
       requestSent: '已发送请求',
       getQuote: '获取报价',
-      registerTitle: '你是 KDR 专业人士吗？',
+      registerTitle: '你是建房专业人士吗？',
       registerSubtitle: '加入我们的网络，与当地正在规划推倒重建的业主建立联系。欢迎 Builder、规划师、施工人员和金融专业人士入驻。',
       registerEmail: '你的商业邮箱',
       registerBtn: '申请入驻',
