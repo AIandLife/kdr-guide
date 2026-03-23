@@ -7,7 +7,8 @@ import { useLang } from '@/lib/language-context'
 import { useAuth } from '@/lib/auth-context'
 import { SiteNav } from '@/components/SiteNav'
 import { LoginGateModal } from '@/components/LoginGateModal'
-import type { Professional, Category } from '@/lib/professionals-data'
+import { CATEGORIES } from '@/lib/professionals-data'
+import type { Professional } from '@/lib/professionals-data'
 
 const STATE_COLORS: Record<string, string> = {
   NSW: 'bg-blue-100 text-blue-700', VIC: 'bg-purple-100 text-purple-700',

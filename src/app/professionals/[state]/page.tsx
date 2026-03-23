@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { PROFESSIONALS, CATEGORIES, STATE_INFO } from '@/lib/professionals-data'
+import { PROFESSIONALS, STATE_INFO } from '@/lib/professionals-data'
 import { StateProfessionalsClient } from './StateProfessionalsClient'
 
 const VALID_STATES = ['nsw', 'vic', 'qld', 'wa', 'sa', 'act', 'tas', 'nt']
@@ -34,7 +34,6 @@ export default async function StateProfessionalsPage({ params }: { params: Promi
   if (!info) notFound()
 
   const pros = PROFESSIONALS.filter(p => p.state === s || p.regions.includes('All Australia'))
-  const cats = CATEGORIES
 
-  return <StateProfessionalsClient state={s} info={info} professionals={pros} categories={cats} />
+  return <StateProfessionalsClient state={s} info={info} professionals={pros} />
 }
