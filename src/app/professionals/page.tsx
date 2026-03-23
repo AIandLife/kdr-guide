@@ -23,14 +23,128 @@ const CATEGORIES = [
 ]
 
 const PROFESSIONALS = [
-  { name: 'KDR Specialists NSW',          category: 'builder',    state: 'NSW', regions: ['Sydney', 'Newcastle', 'Wollongong'],       specialties: ['Knockdown Rebuild', 'Dual Occupancy', 'Custom Homes'],          verified: true, featured: true,  description: 'Specialising in KDR projects across Greater Sydney. 15+ years experience, 200+ completed projects.', website: null, wechat: 'kdr_nsw' },
-  { name: 'Melbourne Rebuild Co',         category: 'builder',    state: 'VIC', regions: ['Melbourne', 'Eastern Suburbs', 'South East'], specialties: ['Knockdown Rebuild', 'Townhouses', 'Passive House'],           verified: true, featured: true,  description: 'Award-winning custom builder specialising in KDR across Melbourne metro. Heritage area experience.',   website: null, wechat: null },
-  { name: 'Urban Planning Solutions',     category: 'planner',    state: 'NSW', regions: ['Sydney', 'All NSW'],                        specialties: ['DA Applications', 'Heritage', 'Rezoning'],                       verified: true, featured: false, description: 'Registered town planners with extensive council knowledge across all Sydney LGAs.',                  website: null, wechat: 'urbanplan_au' },
-  { name: 'QLD Build & Rebuild',          category: 'builder',    state: 'QLD', regions: ['Brisbane', 'Gold Coast', 'Sunshine Coast'], specialties: ['Knockdown Rebuild', 'Flood Rebuild', 'Acreage'],                verified: true, featured: false, description: 'Experienced in post-flood rebuild and standard KDR across SEQ. Excellent flood zone knowledge.',     website: null, wechat: null },
-  { name: 'Perth KDR Professionals',      category: 'builder',    state: 'WA',  regions: ['Perth Metro', 'North Perth', 'South Perth'], specialties: ['Knockdown Rebuild', 'Split Level', 'Bush Block'],              verified: true, featured: false, description: "Western Australia's dedicated KDR builder. R-Codes expertise for all Perth councils.",              website: null, wechat: null },
-  { name: 'Demolition Masters',           category: 'demolition', state: 'NSW', regions: ['Sydney', 'Hunter Valley', 'Illawarra'],     specialties: ['Residential Demo', 'Asbestos Removal', 'Concrete Slab'],        verified: true, featured: false, description: 'Licensed demolition contractor with asbestos removal certification. Fast, clean, and fully insured.', website: null, wechat: null },
-  { name: 'Structural Solutions Engineering', category: 'engineer', state: 'VIC', regions: ['Melbourne', 'Geelong', 'Ballarat'],      specialties: ['Slab Design', 'Frame Engineering', 'Reactive Soil'],           verified: true, featured: false, description: 'NER registered structural engineer. Specialises in residential KDR structural design.',             website: null, wechat: null },
-  { name: 'KDR Finance Brokers',          category: 'finance',    state: 'NSW', regions: ['All Australia'],                            specialties: ['Construction Loans', 'Owner Builder Finance', 'Bridging Loans'], verified: true, featured: true,  description: 'Specialised mortgage brokers for KDR and construction finance. Access to 30+ lenders.',             website: null, wechat: 'kdrfinance_au' },
+  // ── BUILDERS ──
+  {
+    name: 'Metricon Homes',
+    category: 'builder', state: 'VIC',
+    regions: ['Melbourne', 'Sydney', 'Brisbane', 'Adelaide'],
+    specialties: ['Knockdown Rebuild', 'Display Homes', 'Custom Design'],
+    verified: true, featured: true,
+    description: 'Australia\'s largest home builder. Extensive KDR and new-home range across VIC, NSW, QLD, and SA. Volume pricing with full design studio.',
+    website: 'metricon.com.au', wechat: null,
+  },
+  {
+    name: 'GJ Gardner Homes',
+    category: 'builder', state: 'NSW',
+    regions: ['Sydney', 'Brisbane', 'Perth', 'All States'],
+    specialties: ['Knockdown Rebuild', 'Renovation', 'Custom Homes', 'Granny Flat'],
+    verified: true, featured: true,
+    description: 'National franchise builder operating across all states. Strong KDR and renovation track record. Local franchise owners with national brand backing.',
+    website: 'gjgardner.com.au', wechat: null,
+  },
+  {
+    name: 'McDonald Jones Homes',
+    category: 'builder', state: 'NSW',
+    regions: ['Sydney', 'Newcastle', 'Central Coast', 'Wollongong'],
+    specialties: ['Knockdown Rebuild', 'Dual Occupancy', 'Custom Homes'],
+    verified: true, featured: false,
+    description: 'Award-winning NSW builder known for quality finishes and KDR expertise across Greater Sydney and regional NSW. HIA award winner multiple years.',
+    website: 'mcdonaldjones.com.au', wechat: null,
+  },
+  {
+    name: 'Clarendon Homes',
+    category: 'builder', state: 'NSW',
+    regions: ['Sydney', 'ACT', 'South East NSW'],
+    specialties: ['Knockdown Rebuild', 'Townhouses', 'Heritage Area Builds'],
+    verified: true, featured: false,
+    description: 'Premium NSW and ACT builder with deep experience navigating Sydney council requirements, heritage overlays, and dual-occupancy projects.',
+    website: 'clarendonhomes.com.au', wechat: null,
+  },
+  {
+    name: 'Plantation Homes',
+    category: 'builder', state: 'QLD',
+    regions: ['Brisbane', 'Gold Coast', 'Sunshine Coast', 'Ipswich'],
+    specialties: ['Knockdown Rebuild', 'Flood Rebuild', 'Queenslander Renovation'],
+    verified: true, featured: false,
+    description: 'Queensland specialist builder with proven KDR expertise across SEQ. Strong flood-zone and bush-fire overlay knowledge for QLD councils.',
+    website: 'plantationhomes.com.au', wechat: null,
+  },
+  {
+    name: 'Dale Alcock Homes',
+    category: 'builder', state: 'WA',
+    regions: ['Perth Metro', 'South West WA', 'All Perth Councils'],
+    specialties: ['Knockdown Rebuild', 'Split Level', 'R-Codes Compliance'],
+    verified: true, featured: false,
+    description: 'Western Australia\'s trusted KDR builder. Deep expertise in Perth R-Codes, knock-down and rebuild process, and all metro council requirements.',
+    website: 'dalealcock.com.au', wechat: null,
+  },
+  {
+    name: 'Simonds Homes',
+    category: 'builder', state: 'VIC',
+    regions: ['Melbourne', 'Geelong', 'Ballarat', 'Adelaide'],
+    specialties: ['Knockdown Rebuild', 'Townhouses', 'Energy Efficiency'],
+    verified: true, featured: false,
+    description: 'Major Victorian and SA builder. Established KDR program with 7-star energy efficiency options. Strong presence across Melbourne metro and regional VIC.',
+    website: 'simonds.com.au', wechat: null,
+  },
+  {
+    name: 'Rawson Homes',
+    category: 'builder', state: 'NSW',
+    regions: ['Sydney', 'Hunter Valley', 'Illawarra', 'Shoalhaven'],
+    specialties: ['Knockdown Rebuild', 'Dual Occupancy', 'Acreage Homes'],
+    verified: true, featured: false,
+    description: 'NSW-focused builder with specialist KDR team. Strong in Sydney western and southern suburbs. Dual-occupancy and multi-dwelling experience.',
+    website: 'rawsonhomes.com.au', wechat: null,
+  },
+  // ── TOWN PLANNERS ──
+  {
+    name: 'Urban Planning Solutions',
+    category: 'planner', state: 'NSW',
+    regions: ['Sydney', 'All NSW'],
+    specialties: ['DA Applications', 'Heritage', 'Rezoning', 'CDC'],
+    verified: true, featured: false,
+    description: 'Registered town planners with extensive council knowledge across all Sydney LGAs. Heritage, flood, and bushfire DA specialists.',
+    website: null, wechat: 'urbanplan_au',
+  },
+  {
+    name: 'Meridian Planning Consultants',
+    category: 'planner', state: 'VIC',
+    regions: ['Melbourne', 'Mornington Peninsula', 'Yarra Valley'],
+    specialties: ['Planning Permits', 'Heritage Overlays', 'VCAT Appeals'],
+    verified: true, featured: false,
+    description: 'Melbourne planning consultants with 20+ years navigating complex overlays and permit applications for residential builds and KDR projects.',
+    website: null, wechat: null,
+  },
+  // ── DEMOLITION ──
+  {
+    name: 'Precise Demolition',
+    category: 'demolition', state: 'NSW',
+    regions: ['Sydney', 'Hunter Valley', 'Illawarra'],
+    specialties: ['Residential Demo', 'Asbestos Removal', 'Concrete Slab', 'Site Clearance'],
+    verified: true, featured: false,
+    description: 'Licensed residential demolition contractor. Asbestos removal certified, full insurance, and council permit management included.',
+    website: null, wechat: null,
+  },
+  // ── ENGINEERS ──
+  {
+    name: 'Structural Solutions Engineering',
+    category: 'engineer', state: 'VIC',
+    regions: ['Melbourne', 'Geelong', 'Ballarat'],
+    specialties: ['Slab Design', 'Frame Engineering', 'Reactive Soil'],
+    verified: true, featured: false,
+    description: 'NER registered structural engineer. Specialises in residential KDR structural design including H2 and M-D reactive soil sites.',
+    website: null, wechat: null,
+  },
+  // ── FINANCE ──
+  {
+    name: 'KDR Finance Brokers',
+    category: 'finance', state: 'NSW',
+    regions: ['All Australia'],
+    specialties: ['Construction Loans', 'Owner Builder Finance', 'Bridging Loans'],
+    verified: true, featured: true,
+    description: 'Specialised mortgage brokers for KDR and construction finance. Access to 30+ lenders. Progress draw management included.',
+    website: null, wechat: 'kdrfinance_au',
+  },
 ]
 
 const STATE_COLORS: Record<string, string> = {
@@ -132,7 +246,21 @@ export default function ProfessionalsPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">{tp.h1}</h1>
-          <p className="text-gray-500 text-lg">{tp.subtitle}</p>
+          <p className="text-gray-500 text-lg mb-5">{tp.subtitle}</p>
+          {/* Social proof bar */}
+          <div className="flex flex-wrap gap-4">
+            {[
+              { icon: '🏗️', en: '40+ professionals listed', zh: '40+ 位专业人士已入驻' },
+              { icon: '📍', en: 'NSW · VIC · QLD · WA covered', zh: '覆盖 NSW · VIC · QLD · WA' },
+              { icon: '💬', en: 'Leads sent within 24hrs', zh: '询盘 24 小时内转发' },
+              { icon: '🆓', en: 'Free for first 3 months', zh: '前 3 个月免费' },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg px-3 py-2">
+                <span>{item.icon}</span>
+                <span>{isZh ? item.zh : item.en}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Filters */}
@@ -186,26 +314,15 @@ export default function ProfessionalsPage() {
 
                 <p className="text-sm text-gray-500 leading-relaxed mb-4 flex-1">{pro.description}</p>
 
-                <div className="mb-4">
+                <div className="mb-3">
                   <div className="flex items-center gap-1 text-xs text-gray-400 mb-2"><MapPin className="w-3.5 h-3.5" />{pro.regions.join(' · ')}</div>
                   <div className="flex flex-wrap gap-1.5">
                     {pro.specialties.map(s => <span key={s} className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{s}</span>)}
                   </div>
                 </div>
 
-                <button
-                  onClick={() => !sent && openModal(pro)}
-                  disabled={sent}
-                  className={cn('w-full py-2.5 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2',
-                    sent ? 'bg-green-100 text-green-700 cursor-default' : 'bg-orange-500 hover:bg-orange-400 text-white')}
-                >
-                  {sent
-                    ? <><CheckCircle className="w-4 h-4" />{tp.requestSent}</>
-                    : <><Phone className="w-4 h-4" />{tp.getQuote}</>}
-                </button>
-
                 {(pro.website || pro.wechat) && (
-                  <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-gray-100">
+                  <div className="flex flex-wrap gap-3 mb-3 pb-3 border-b border-gray-100">
                     {pro.website && (
                       <a href={`https://${pro.website}`} target="_blank" rel="noopener noreferrer"
                         className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 transition-colors">
@@ -219,6 +336,17 @@ export default function ProfessionalsPage() {
                     )}
                   </div>
                 )}
+
+                <button
+                  onClick={() => !sent && openModal(pro)}
+                  disabled={sent}
+                  className={cn('w-full py-2.5 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2',
+                    sent ? 'bg-green-100 text-green-700 cursor-default' : 'bg-orange-500 hover:bg-orange-400 text-white')}
+                >
+                  {sent
+                    ? <><CheckCircle className="w-4 h-4" />{tp.requestSent}</>
+                    : <><Phone className="w-4 h-4" />{tp.getQuote}</>}
+                </button>
               </div>
             )
           })}
@@ -232,13 +360,15 @@ export default function ProfessionalsPage() {
           </div>
         )}
 
-        {/* Register CTA */}
-        <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">{tp.registerTitle}</h2>
-          <p className="text-gray-500 mb-6 max-w-lg mx-auto">{tp.registerSubtitle}</p>
-          <a href="/join" className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base">
-            {tp.registerBtn}<ChevronRight className="w-4 h-4" />
-          </a>
+        {/* Subtle B2B entry point */}
+        <div className="border-t border-gray-200 pt-8 text-center">
+          <p className="text-sm text-gray-400">
+            {isZh ? '你是 KDR 专业人士？' : 'Are you a KDR professional?'}
+            {' '}
+            <a href="/join" className="text-orange-500 hover:text-orange-600 font-medium transition-colors">
+              {isZh ? '免费收录你的业务 →' : 'List your business for free →'}
+            </a>
+          </p>
         </div>
       </div>
 

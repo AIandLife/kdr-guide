@@ -5,7 +5,7 @@ const client = new Anthropic()
 
 export async function POST(req: Request) {
   try {
-    const { suburb, state, lotSize, lang = 'en' } = await req.json()
+    const { suburb, state, lotSize, lang = 'en', projectType = 'kdr' } = await req.json()
 
     if (!suburb) {
       return Response.json({ error: 'Suburb is required' }, { status: 400 })
@@ -44,75 +44,146 @@ ${lotSize ? `- User's Lot Size: ${lotSize} sqm` : ''}
         : `No specific data found for "${suburb}". Provide general Australian KDR guidance.`
 
     const isZh = lang === 'zh'
-    const prompt = `You are Australia's leading Knockdown Rebuild (KDR) expert. A homeowner has asked about KDR feasibility for their property.
 
-${isZh ? 'IMPORTANT: All text fields in the JSON (verdict, messages, titles, details, etc.) must be written in Simplified Chinese. Keep technical terms like "DA", "CDC", "Council" in English.' : ''}
+    const PROJECT_TYPE_LABELS: Record<string, { en: string; zh: string }> = {
+      'kdr': { en: 'Knockdown & Rebuild (KDR)', zh: '推倒重建 (KDR)' },
+      'renovation': { en: 'Major Renovation', zh: '大型翻新' },
+      'extension': { en: 'Extension / Addition', zh: '扩建 / 加建' },
+      'granny-flat': { en: 'Granny Flat / Secondary Dwelling', zh: '独立辅助住宅 (Granny Flat)' },
+    }
+    const projectLabel = PROJECT_TYPE_LABELS[projectType] || PROJECT_TYPE_LABELS['kdr']
+    const projectLabelText = isZh ? projectLabel.zh : projectLabel.en
 
+    const projectContext = projectType === 'kdr'
+      ? ''
+      : projectType === 'renovation'
+        ? `
+PROJECT TYPE: Major Renovation (NOT knockdown rebuild)
+- Focus on: council approval requirements for renovation, heritage impacts, building permit vs DA threshold
+- Costs: renovation typically $1,500–$4,500/sqm depending on scope
+- No demolition cost (unless partial), focus on scope of works, structural changes
+- Key risks: hidden structural issues, asbestos in older homes, heritage restrictions on facade/materials
+- Do NOT mention lot size minimum requirements (not relevant to renovation)
+`
+        : projectType === 'extension'
+          ? `
+PROJECT TYPE: Extension / Home Addition (adding floor space to existing home)
+- Focus on: setback requirements, site coverage limits, floor space ratio (FSR), height limits
+- Whether CDC or DA applies depends on size and type of extension
+- Costs: typically $2,500–$5,000/sqm for quality extension
+- Key considerations: impact on neighbours, BASIX requirements, structural tie-in
+- Lot size minimums may apply for ground floor extensions affecting site coverage
+`
+          : projectType === 'granny-flat'
+            ? `
+PROJECT TYPE: Granny Flat / Secondary Dwelling
+- Under NSW SEPP, granny flats under 60sqm on lots 450sqm+ can often get CDC (complying development)
+- Other states have different rules — check state-specific secondary dwelling policies
+- Costs: typically $120,000–$250,000 for a self-contained 1–2 bedroom unit
+- Key considerations: utilities connection, separate access, rental income potential
+- Often faster approval than full DA — this is a key selling point
+`
+            : ''
+
+    const zhInstruction = isZh ? `
+LANGUAGE RULE — MUST FOLLOW EXACTLY:
+You are writing for a Chinese-speaking Australian homeowner. ALL narrative text fields must be in Simplified Chinese.
+
+Fields that MUST be in Simplified Chinese:
+- feasibilityLabel (use one of: "非常可行" | "可行" | "有条件可行" | "较难" | "非常困难")
+- verdict (全中文，2-3句)
+- lotSizeCheck.message (全中文)
+- riskFlags[].title (全中文)
+- riskFlags[].detail (全中文)
+- approvalPath.description (全中文)
+- costEstimate.totalNote (全中文)
+- timeline.phases[].phase (全中文，如 "规划与设计"、"Council 审批"、"拆除"、"施工"、"竣工与收尾")
+- nextSteps[].title (全中文)
+- nextSteps[].detail (全中文)
+- professionals[].why (全中文)
+- professionals[].timing (全中文)
+- keyInsight (全中文，1句)
+
+Fields that MUST stay in English (used for system logic):
+- riskFlags[].level ("Low" | "Medium" | "High") — DO NOT translate
+- approvalPath.type ("CDC" | "DA" | "DA Required" | "Unknown") — DO NOT translate
+- nextSteps[].urgency ("First" | "Second" | "Third" | "When Ready") — DO NOT translate
+- professionals[].role (keep English role names) — DO NOT translate
+- suburb, state, council — keep as-is
+
+Technical terms you MAY keep in English within Chinese text: DA, CDC, Council, KDR, Builder, Town Planner.
+` : ''
+
+    const prompt = `You are Australia's leading property development expert specialising in residential projects. A homeowner has asked about feasibility for their property project.
+${zhInstruction}
+Project Type: ${projectLabelText}
+${projectContext}
 Suburb: ${suburb}
 ${state ? `State: ${state}` : ''}
 ${lotSize ? `Lot Size: ${lotSize} sqm` : ''}
 
 ${contextInfo}
 
-Generate a comprehensive, honest feasibility report. Return ONLY valid JSON in this exact structure:
+Generate a comprehensive, honest feasibility report tailored to the project type above. Return ONLY valid JSON in this exact structure:
 
 {
   "suburb": "${suburb}",
   "state": "${state || councilData?.state || 'Australia'}",
   "council": "${councilData?.council || 'Check with your local council'}",
+  "projectType": "${projectLabelText}",
   "feasibilityScore": <number 1-10, where 10 = definitely feasible, 1 = very unlikely>,
-  "feasibilityLabel": <"Highly Feasible" | "Feasible" | "Possible with Conditions" | "Difficult" | "Very Difficult">,
-  "verdict": <2-3 sentence plain English summary of whether they can KDR and key factors>,
+  "feasibilityLabel": ${isZh ? '<"非常可行" | "可行" | "有条件可行" | "较难" | "非常困难">' : '<"Highly Feasible" | "Feasible" | "Possible with Conditions" | "Difficult" | "Very Difficult">'},
+  "verdict": <${isZh ? '2-3句简体中文描述是否可以KDR及关键因素' : '2-3 sentence plain English summary of whether they can KDR and key factors'}>,
   "lotSizeCheck": {
     "passed": <true/false — null if no lot size provided>,
     "minRequired": <number or null>,
-    "message": <string>
+    "message": <${isZh ? '简体中文说明' : 'string'}>
   },
   "riskFlags": [
     {
       "type": <"heritage" | "flood" | "bushfire" | "zoning" | "slope" | "other">,
       "level": <"Low" | "Medium" | "High">,
-      "title": <short title>,
-      "detail": <1-2 sentences explaining impact on KDR>
+      "title": <${isZh ? '简体中文短标题' : 'short title'}>,
+      "detail": <${isZh ? '1-2句简体中文解释对KDR的影响' : '1-2 sentences explaining impact on KDR'}>
     }
   ],
   "approvalPath": {
     "type": <"CDC" | "DA" | "DA Required" | "Unknown">,
     "timelineWeeks": <[min, max] or null>,
-    "description": <2-3 sentences about the approval process for this area>
+    "description": <${isZh ? '2-3句简体中文描述该区域的审批流程' : '2-3 sentences about the approval process for this area'}>
   },
   "costEstimate": {
     "demolition": <[min, max] in AUD>,
     "buildPerSqm": <[min, max] in AUD>,
     "totalEstimate": <if lot size given, provide [min, max] for a typical 4BR home build, otherwise null>,
-    "totalNote": <string explaining what the total includes or "Provide your lot size for a total estimate">
+    "totalNote": <${isZh ? '简体中文说明总费用包含内容，如未提供地块面积则说明原因' : 'string explaining what the total includes or "Provide your lot size for a total estimate"'}>
   },
   "timeline": {
     "totalWeeks": <[min, max]>,
     "phases": [
-      {"phase": "Planning & Design", "weeks": "4–8"},
-      {"phase": "Council Approval", "weeks": ".."},
-      {"phase": "Demolition", "weeks": "1–2"},
-      {"phase": "Construction", "weeks": "20–30"},
-      {"phase": "Handover & Finishes", "weeks": "2–4"}
+      {"phase": ${isZh ? '"规划与设计"' : '"Planning & Design"'}, "weeks": "4–8"},
+      {"phase": ${isZh ? '"Council 审批"' : '"Council Approval"'}, "weeks": ".."},
+      {"phase": ${isZh ? '"拆除"' : '"Demolition"'}, "weeks": "1–2"},
+      {"phase": ${isZh ? '"施工建造"' : '"Construction"'}, "weeks": "20–30"},
+      {"phase": ${isZh ? '"竣工与收尾"' : '"Handover & Finishes"'}, "weeks": "2–4"}
     ]
   },
   "nextSteps": [
     {
       "step": <number>,
-      "title": <action title>,
-      "detail": <what to do and why>,
+      "title": <${isZh ? '简体中文行动标题' : 'action title'}>,
+      "detail": <${isZh ? '简体中文说明做什么及原因' : 'what to do and why'}>,
       "urgency": <"First" | "Second" | "Third" | "When Ready">
     }
   ],
   "professionals": [
     {
       "role": <"Town Planner" | "Builder" | "Demolition Contractor" | "Surveyor" | "Structural Engineer" | "Finance Broker" | "Arborist" | "Geotechnical Engineer">,
-      "why": <why needed for this specific property>,
-      "timing": <when in the process to engage them>
+      "why": <${isZh ? '简体中文说明为何该物业需要此专业人士' : 'why needed for this specific property'}>,
+      "timing": <${isZh ? '简体中文说明在流程中何时聘请' : 'when in the process to engage them'}>
     }
   ],
-  "keyInsight": <1 sentence — the single most important thing this homeowner needs to know>
+  "keyInsight": <${isZh ? '1句最重要的简体中文提示' : '1 sentence — the single most important thing this homeowner needs to know'}>
 }
 
 Be specific, honest, and practical. If risks are high, say so clearly. Use real Australian industry knowledge.`

@@ -23,6 +23,7 @@ interface FeasibilityResult {
   suburb: string
   state: string
   council: string
+  projectType?: string
   feasibilityScore: number
   feasibilityLabel: string
   verdict: string
@@ -73,7 +74,13 @@ function ScoreMeter({ score }: { score: number }) {
   )
 }
 
-function RiskBadge({ level }: { level: 'Low' | 'Medium' | 'High' }) {
+const RISK_LEVEL_ZH: Record<string, string> = {
+  Low: '低风险',
+  Medium: '中等风险',
+  High: '高风险',
+}
+
+function RiskBadge({ level, lang }: { level: 'Low' | 'Medium' | 'High'; lang: string }) {
   return (
     <span className={cn(
       'text-xs font-semibold px-2 py-0.5 rounded-full',
@@ -81,7 +88,7 @@ function RiskBadge({ level }: { level: 'Low' | 'Medium' | 'High' }) {
       level === 'Medium' && 'bg-yellow-100 text-yellow-700',
       level === 'High' && 'bg-red-100 text-red-700',
     )}>
-      {level}
+      {lang === 'zh' ? RISK_LEVEL_ZH[level] || level : level}
     </span>
   )
 }
@@ -99,6 +106,7 @@ function FeasibilityContent() {
   const [suburb, setSuburb] = useState(searchParams.get('suburb') || '')
   const [lotSize, setLotSize] = useState(searchParams.get('lotSize') || '')
   const [state, setState] = useState(searchParams.get('state') || '')
+  const [projectType, setProjectType] = useState(searchParams.get('projectType') || 'kdr')
   const [leadSubmitted, setLeadSubmitted] = useState(false)
   const [leadEmail, setLeadEmail] = useState('')
 
@@ -106,11 +114,13 @@ function FeasibilityContent() {
     const s = searchParams.get('suburb')
     if (s) {
       setSuburb(s)
-      fetchFeasibility(s, searchParams.get('lotSize') || '', searchParams.get('state') || '', lang)
+      const pt = searchParams.get('projectType') || 'kdr'
+      setProjectType(pt)
+      fetchFeasibility(s, searchParams.get('lotSize') || '', searchParams.get('state') || '', lang, pt)
     }
   }, [searchParams, lang])
 
-  const fetchFeasibility = async (sub: string, lot: string, st: string, l: string) => {
+  const fetchFeasibility = async (sub: string, lot: string, st: string, l: string, pt = 'kdr') => {
     if (!sub) return
     setLoading(true)
     setError('')
@@ -119,7 +129,7 @@ function FeasibilityContent() {
       const res = await fetch('/api/feasibility', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ suburb: sub, lotSize: lot ? Number(lot) : null, state: st, lang: l }),
+        body: JSON.stringify({ suburb: sub, lotSize: lot ? Number(lot) : null, state: st, lang: l, projectType: pt }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
@@ -133,11 +143,11 @@ function FeasibilityContent() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    const params = new URLSearchParams({ suburb, lang })
+    const params = new URLSearchParams({ suburb, lang, projectType })
     if (lotSize) params.set('lotSize', lotSize)
     if (state) params.set('state', state)
     router.push(`/feasibility?${params.toString()}`)
-    fetchFeasibility(suburb, lotSize, state, lang)
+    fetchFeasibility(suburb, lotSize, state, lang, projectType)
   }
 
   return (
@@ -147,6 +157,28 @@ function FeasibilityContent() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 mb-8 shadow-sm">
+          {/* Project type pills */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {[
+              { value: 'kdr', en: 'Knockdown & Rebuild', zh: '推倒重建' },
+              { value: 'renovation', en: 'Renovation', zh: '翻新' },
+              { value: 'extension', en: 'Extension', zh: '扩建' },
+              { value: 'granny-flat', en: 'Granny Flat', zh: 'Granny Flat' },
+            ].map(pt => (
+              <button
+                key={pt.value}
+                type="button"
+                onClick={() => setProjectType(pt.value)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                  projectType === pt.value
+                    ? 'bg-orange-500 text-white border-orange-500'
+                    : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-orange-300 hover:text-orange-600'
+                }`}
+              >
+                {lang === 'zh' ? pt.zh : pt.en}
+              </button>
+            ))}
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div className="sm:col-span-2 relative">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -198,7 +230,7 @@ function FeasibilityContent() {
           <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
             <XCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
             <p className="text-red-600 font-medium">{error}</p>
-            <button onClick={() => fetchFeasibility(suburb, lotSize, state, lang)} className="mt-4 text-sm text-gray-500 hover:text-gray-900 underline">
+            <button onClick={() => fetchFeasibility(suburb, lotSize, state, lang, projectType)} className="mt-4 text-sm text-gray-500 hover:text-gray-900 underline">
               {lang === 'zh' ? '重试' : 'Try again'}
             </button>
           </div>
@@ -211,9 +243,14 @@ function FeasibilityContent() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                 <ScoreMeter score={result.feasibilityScore} />
                 <div className="flex-1">
-                  <div className="flex flex-wrap items-center gap-3 mb-2">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
                     <h1 className="text-2xl font-bold text-gray-900">{result.suburb}</h1>
                     <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{result.state}</span>
+                    {result.projectType && (
+                      <span className="text-sm bg-orange-50 text-orange-600 border border-orange-200 px-3 py-1 rounded-full font-medium">
+                        {result.projectType}
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-gray-400 mb-3">{result.council}</p>
                   <div className={cn(
@@ -274,7 +311,7 @@ function FeasibilityContent() {
                           <Icon className="w-4 h-4 text-gray-500" />
                           <span className="text-sm font-medium text-gray-900">{flag.title}</span>
                         </div>
-                        <RiskBadge level={flag.level} />
+                        <RiskBadge level={flag.level} lang={lang} />
                       </div>
                       <p className="text-xs text-gray-500 leading-relaxed">{flag.detail}</p>
                     </div>

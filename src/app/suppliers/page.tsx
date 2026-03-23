@@ -147,6 +147,21 @@ export default function SuppliersPage() {
           </p>
         </div>
 
+        {/* Social proof bar */}
+        <div className="flex flex-wrap gap-3 mb-8">
+          {[
+            { icon: '🏭', en: '60+ suppliers listed', zh: '60+ 家供应商已收录' },
+            { icon: '✅', en: 'Verified suppliers prioritised', zh: '认证商家优先展示' },
+            { icon: '🌏', en: 'Local & China imports covered', zh: '澳洲本地 + 中国进口全覆盖' },
+            { icon: '💳', en: 'Verification from $99/yr', zh: '认证费仅 $99/年起' },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg px-3 py-2">
+              <span>{item.icon}</span>
+              <span>{isZh ? item.zh : item.en}</span>
+            </div>
+          ))}
+        </div>
+
         {/* Verification explainer */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           <div className="rounded-xl p-4 flex items-start gap-3 bg-green-50 border border-green-200">
@@ -391,33 +406,15 @@ export default function SuppliersPage() {
           </div>
         )}
 
-        {/* List Your Business CTA */}
-        <div className="rounded-2xl p-8 bg-orange-50 border border-orange-200">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900 mb-1">
-                {isZh ? '你是建材供应商？免费收录你的业务' : 'Are you a building materials supplier? List for free'}
-              </h2>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                {isZh
-                  ? '填写基本信息即可免费上架。申请认证后，联系方式和网站将对买家可见，并获得优先排名。'
-                  : 'Submit your basic info to list for free. Apply for verification to show contact details and get priority ranking.'}
-              </p>
-              <div className="flex flex-wrap gap-4 mt-3 text-xs text-gray-500">
-                <span>✓ {isZh ? '免费收录' : 'Free listing'}</span>
-                <span>✓ {isZh ? '认证后展示联系方式' : 'Contact shown after verification'}</span>
-                <span>✓ {isZh ? '认证费 AUD $99/年' : 'Verification: AUD $99/year'}</span>
-              </div>
-            </div>
-            <a
-              href="/suppliers/register"
-              className="shrink-0 inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-xl transition-all whitespace-nowrap"
-              style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
-            >
-              {isZh ? '立即收录' : 'List My Business'}
-              <ChevronRight className="w-4 h-4" />
+        {/* Subtle B2B entry point */}
+        <div className="border-t border-gray-200 pt-8 text-center">
+          <p className="text-sm text-gray-400">
+            {isZh ? '你是建材供应商？' : 'Are you a building materials supplier?'}
+            {' '}
+            <a href="/suppliers/register" className="text-orange-500 hover:text-orange-600 font-medium transition-colors">
+              {isZh ? '免费收录你的业务 →' : 'List your business for free →'}
             </a>
-          </div>
+          </p>
         </div>
       </div>
     </div>

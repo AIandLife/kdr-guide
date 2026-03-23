@@ -2,13 +2,92 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, MapPin, CheckCircle, ChevronRight, Building2, DollarSign, Clock, Users } from 'lucide-react'
+import { Search, CheckCircle, ChevronRight, Building2, DollarSign, Clock, Users, MapPin } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
+import { SuburbAutocomplete } from '@/components/SuburbAutocomplete'
 
 const PAIN_ICONS = [Building2, DollarSign, Clock, Users]
 const STEP_ICONS = [MapPin, Search, CheckCircle, Users]
+
+const SUBURB_TAGS = [
+  'Strathfield', 'Parramatta', 'Box Hill', 'Chatswood', 'Epping', 'Ryde', 'Kellyville',
+  'Hornsby', 'Sutherland', 'Glen Waverley', 'Doncaster', 'Brighton', 'Moonee Ponds',
+  'Frankston', 'Oakleigh', 'Norwood', 'Prospect', 'Unley', 'Glenelg', 'New Farm',
+  'Ascot', 'Bulimba', 'Kenmore', 'Cottesloe', 'Subiaco', 'Claremont', 'Duncraig',
+  'Wembley', 'Applecross', 'Como', 'Nedlands', 'Toowong', 'Taringa', 'Indooroopilly',
+  'Paddington', 'Woollahra', 'Mosman', 'Cremorne', 'Neutral Bay', 'Lindfield',
+  'Pymble', 'Turramurra', 'Waitara', 'Pennant Hills', 'Castle Hill', 'Baulkham Hills',
+]
+
+const SERVICE_TAGS = [
+  { label: 'KDR Builder', zh: 'KDR 建筑商' },
+  { label: 'Town Planner', zh: '城市规划师' },
+  { label: 'Demolition', zh: '拆除工程' },
+  { label: 'Surveyor', zh: '测量师' },
+  { label: 'Structural Engineer', zh: '结构工程师' },
+  { label: 'Architect', zh: '建筑设计师' },
+  { label: 'Interior Designer', zh: '室内设计师' },
+  { label: 'Finance Broker', zh: '贷款经纪人' },
+  { label: 'Arborist', zh: '树木师' },
+  { label: 'Landscape Designer', zh: '景观设计师' },
+  { label: 'Building Inspector', zh: '建筑检测师' },
+  { label: 'Energy Assessor', zh: '能源评估师' },
+  { label: 'Project Manager', zh: '项目经理' },
+  { label: 'Geotechnical Engineer', zh: '岩土工程师' },
+  { label: 'Pool Builder', zh: '泳池建造商' },
+  { label: 'Solar Installer', zh: '太阳能安装' },
+  { label: 'Certifier', zh: '认证工程师' },
+  { label: 'Building Designer', zh: '住宅设计师' },
+]
+
+function MarqueeSection({ lang }: { lang: string }) {
+  // Double each list for seamless infinite loop
+  const suburbs = [...SUBURB_TAGS, ...SUBURB_TAGS]
+  const services = [...SERVICE_TAGS, ...SERVICE_TAGS]
+
+  return (
+    <section className="py-16 overflow-hidden bg-white border-t border-gray-100">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-10 text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+          {lang === 'zh'
+            ? '你需要的，这里都有'
+            : 'Everything you need, all in one place'}
+        </h2>
+        <p className="text-gray-500 text-base max-w-lg mx-auto">
+          {lang === 'zh'
+            ? '查政策、估费用、找建筑商、比建材——全澳每个区都覆盖，一站搞定。'
+            : 'Check council rules, estimate costs, find builders, compare suppliers — covering every suburb across Australia.'}
+        </p>
+      </div>
+
+      {/* Row 1: Suburbs → scrolling left */}
+      <div className="marquee-track mb-3 relative">
+        <div className="flex gap-3 animate-marquee-left whitespace-nowrap w-max">
+          {suburbs.map((s, i) => (
+            <span key={i} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium bg-orange-50 text-orange-700 border border-orange-100 shrink-0">
+              <span className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
+              {s}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Row 2: Services → scrolling right */}
+      <div className="marquee-track relative">
+        <div className="flex gap-3 animate-marquee-right whitespace-nowrap w-max">
+          {services.map((s, i) => (
+            <span key={i} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 border border-gray-200 shrink-0">
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
+              {lang === 'zh' ? s.zh : s.label}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
 
 export default function HomePage() {
   const router = useRouter()
@@ -19,11 +98,12 @@ export default function HomePage() {
   const [suburb, setSuburb] = useState('')
   const [lotSize, setLotSize] = useState('')
   const [state, setState] = useState('')
+  const [projectType, setProjectType] = useState('kdr')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!suburb.trim()) return
-    const params = new URLSearchParams({ suburb: suburb.trim(), lang })
+    const params = new URLSearchParams({ suburb: suburb.trim(), lang, projectType })
     if (lotSize) params.set('lotSize', lotSize)
     if (state) params.set('state', state)
     router.push(`/feasibility?${params.toString()}`)
@@ -35,42 +115,61 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <SiteNav currentPath="/" />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden" style={{ background: 'linear-gradient(160deg, #fff7ed 0%, #ffffff 60%)' }}>
-        <div className="absolute top-0 left-1/3 w-96 h-96 rounded-full blur-3xl opacity-20 pointer-events-none" style={{ background: 'radial-gradient(circle, #fed7aa, transparent)' }} />
+      {/* Hero — two-column layout */}
+      <section className="relative overflow-hidden" style={{ background: 'linear-gradient(160deg, #fff7ed 0%, #ffffff 55%)' }}>
+        <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 pointer-events-none" style={{ background: 'radial-gradient(circle, #fed7aa, transparent)' }} />
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-16 relative">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 bg-orange-50 border border-orange-200">
-              <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-              <span className="text-orange-600 text-sm font-medium">{h.badge}</span>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-14 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+
+            {/* Left — headline + subtitle only */}
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 bg-orange-50 border border-orange-200">
+                <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                <span className="text-orange-600 text-sm font-medium">{h.badge}</span>
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight mb-5">
+                {h.h1a}<br />
+                <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #f97316, #fb923c)' }}>{h.h1b}</span>
+              </h1>
+
+              <p className="text-lg text-gray-500 leading-relaxed">{h.subtitle}</p>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-              {h.h1a}
-              <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #f97316, #fb923c)' }}> {h.h1b}</span>
-              <br />{h.h1c}
-            </h1>
-
-            <p className="text-xl text-gray-500 mb-10 max-w-2xl leading-relaxed">{h.subtitle}</p>
-
-            {/* Search Form */}
-            <div className="max-w-2xl rounded-2xl p-4 sm:p-6 bg-white border border-gray-200 shadow-lg shadow-gray-100">
+            {/* Right — Search Form */}
+            <div className="rounded-2xl p-5 sm:p-6 bg-white border border-gray-200 shadow-xl shadow-gray-100/60">
               <form onSubmit={handleSubmit}>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                {/* Project Type Pills */}
+                <div className="mb-4">
+                  <label className="block text-xs text-gray-500 mb-2 font-medium">{h.formProjectType}</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {h.formProjectTypes.map(pt => (
+                      <button
+                        key={pt.value}
+                        type="button"
+                        onClick={() => setProjectType(pt.value)}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border text-left ${
+                          projectType === pt.value
+                            ? 'bg-orange-500 text-white border-orange-500 shadow-sm'
+                            : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-orange-300 hover:text-orange-600'
+                        }`}
+                      >
+                        {pt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
                   <div className="sm:col-span-2">
                     <label className="block text-xs text-gray-500 mb-1.5 font-medium">{h.formSuburb}</label>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="text"
-                        value={suburb}
-                        onChange={e => setSuburb(e.target.value)}
-                        placeholder={h.formSuburbPlaceholder}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none bg-gray-50 border border-gray-200 focus:border-orange-400 transition-colors"
-                        required
-                      />
-                    </div>
+                    <SuburbAutocomplete
+                      value={suburb}
+                      onChange={setSuburb}
+                      onStateDetected={setState}
+                      placeholder={h.formSuburbPlaceholder}
+                    />
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1.5 font-medium">{h.formState}</label>
@@ -96,10 +195,10 @@ export default function HomePage() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-base shadow-lg"
-                  style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 24px rgba(249,115,22,0.3)' }}
-                  onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 32px rgba(249,115,22,0.5)')}
-                  onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 24px rgba(249,115,22,0.3)')}
+                  className="w-full text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-base"
+                  style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 20px rgba(249,115,22,0.35)' }}
+                  onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 28px rgba(249,115,22,0.5)')}
+                  onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(249,115,22,0.35)')}
                 >
                   <Search className="w-5 h-5" />
                   {h.formBtn}
@@ -108,23 +207,23 @@ export default function HomePage() {
                 <p className="text-center text-xs text-gray-400 mt-3">{h.formNote}</p>
               </form>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Stats */}
-      <section className="border-t border-b border-gray-100 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          </div>
+
+          {/* Stats bar — full width below both columns */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-10 pt-8 border-t border-orange-100">
             {h.stats.map(s => (
-              <div key={s.label} className="text-center">
-                <div className="text-3xl font-bold mb-1 text-orange-500">{s.value}</div>
-                <div className="text-sm text-gray-500">{s.label}</div>
+              <div key={s.label} className="flex items-center gap-3">
+                <span className="text-2xl font-bold text-orange-500">{s.value}</span>
+                <span className="text-sm text-gray-500 leading-tight">{s.label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
+
+      {/* Marquee — Coverage Section */}
+      <MarqueeSection lang={lang} />
 
       {/* Pain Points */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">

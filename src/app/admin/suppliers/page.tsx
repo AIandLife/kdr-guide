@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { CheckCircle, XCircle, Clock, Eye, EyeOff, RefreshCw } from 'lucide-react'
+import { useState } from 'react'
+import { CheckCircle, XCircle, Clock, Eye, EyeOff, RefreshCw, Database, Tag } from 'lucide-react'
+import { SUPPLIERS } from '@/lib/suppliers-data'
 
 interface SupplierRow {
   id: string
@@ -125,11 +126,43 @@ export default function AdminSuppliersPage() {
   return (
     <div className="min-h-screen" style={{ background: '#0d1117', color: '#e2e8f0' }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-white">Supplier Listings Admin</h1>
           <button onClick={() => load(secret)} className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
             <RefreshCw className="w-4 h-4" /> Refresh
           </button>
+        </div>
+
+        {/* Curated directory stats */}
+        <div className="rounded-2xl p-5 mb-8" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+          <div className="flex items-center gap-2 mb-4">
+            <Database className="w-4 h-4 text-orange-400" />
+            <span className="text-sm font-semibold text-white">Curated Supplier Directory</span>
+            <span className="text-xs text-slate-500">(static data, not DB submissions)</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: 'Total Listings', value: SUPPLIERS.length, color: '#f97316' },
+              { label: 'Real Businesses', value: SUPPLIERS.filter(s => s.seeded === true).length, color: '#22c55e' },
+              { label: 'Placeholders', value: SUPPLIERS.filter(s => s.seeded === false).length, color: '#94a3b8' },
+              { label: 'Featured', value: SUPPLIERS.filter(s => s.featured).length, color: '#a78bfa' },
+            ].map(({ label, value, color }) => (
+              <div key={label} className="rounded-xl p-4 text-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                <div className="text-2xl font-bold" style={{ color }}>{value}</div>
+                <div className="text-xs text-slate-400 mt-1">{label}</div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {SUPPLIERS.filter(s => s.seeded === false).map(s => (
+              <span key={s.id} className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)' }}>
+                <Tag className="w-3 h-3" /> {s.name}
+              </span>
+            ))}
+            {SUPPLIERS.filter(s => s.seeded === false).length > 0 && (
+              <span className="text-xs text-slate-500 self-center">← placeholders to replace with real businesses</span>
+            )}
+          </div>
         </div>
 
         {message && (
