@@ -313,6 +313,12 @@ export default function ProfessionalsPage() {
 
   const [activeCategory, setActiveCategory] = useState<string>('all')
   const [activeState, setActiveState] = useState<string>('all')
+
+  // Read ?category= from URL on mount (client-side only)
+  useEffect(() => {
+    const cat = new URLSearchParams(window.location.search).get('category')
+    if (cat) setActiveCategory(cat)
+  }, [])
   const [sentPros, setSentPros] = useState<Set<string>>(new Set())
 
   const [modal, setModal] = useState<ModalState>({ pro: null, step: 'form', submitting: false, error: '' })
