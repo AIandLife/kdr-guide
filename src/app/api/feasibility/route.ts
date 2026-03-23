@@ -2,6 +2,8 @@ import Anthropic from '@anthropic-ai/sdk'
 import { findCouncilBySuburb, findCouncil, STATE_COST_RANGES } from '@/lib/council-data'
 import { getLiveZoning, type LiveZoneData } from '@/lib/spatial-api'
 
+export const maxDuration = 30   // seconds — needs Vercel Pro; Hobby hard-caps at 10s
+
 const client = new Anthropic()
 
 function buildLiveZoneContext(z: LiveZoneData, lotSize: number | null): string {
@@ -36,11 +38,14 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Suburb is required' }, { status: 400 })
     }
 
-    // 1. Try live spatial API (if address + state provided)
+    // 1. Try live spatial API with a 4s timeout — skip gracefully if slow
     let liveZone: LiveZoneData | null = null
     if (state) {
       const lookupAddress = address || suburb
-      liveZone = await getLiveZoning(lookupAddress, state)
+      liveZone = await Promise.race([
+        getLiveZoning(lookupAddress, state),
+        new Promise<null>(resolve => setTimeout(() => resolve(null), 4000)),
+      ])
     }
 
     // 2. Try static council data
@@ -242,7 +247,7 @@ Be specific, honest, and practical. If risks are high, say so clearly. Use real 
 
     const response = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      max_tokens: 2000,
       messages: [
         {
           role: 'user',
