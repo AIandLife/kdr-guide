@@ -284,9 +284,11 @@ Be specific, honest, and practical. If risks are high, say so clearly. Use real 
     return Response.json(result)
 
   } catch (error) {
-    console.error('Feasibility API error:', error)
+    const msg = error instanceof Error ? error.message : String(error)
+    const stack = error instanceof Error ? error.stack?.split('\n').slice(0,4).join(' | ') : ''
+    console.error('Feasibility API error:', msg, stack)
     return Response.json(
-      { error: 'Failed to generate feasibility report. Please try again.' },
+      { error: `Failed: ${msg}` },
       { status: 500 }
     )
   }
