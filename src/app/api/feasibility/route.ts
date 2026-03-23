@@ -247,7 +247,7 @@ Be specific, honest, and practical. If risks are high, say so clearly. Use real 
 
     const response = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 3000,
       messages: [
         {
           role: 'user',
@@ -265,11 +265,21 @@ Be specific, honest, and practical. If risks are high, say so clearly. Use real 
 
     // The assistant prefill starts with '{', so prepend it back
     const rawText = '{' + content.text
-    // Find the end of the JSON object
+    // Find the last complete top-level closing brace
     const end = rawText.lastIndexOf('}')
     if (end === -1) throw new Error('No JSON found in response')
-    const jsonStr = rawText.slice(0, end + 1)
-    const result = JSON.parse(jsonStr)
+    let jsonStr = rawText.slice(0, end + 1)
+    let result: Record<string, unknown>
+    try {
+      result = JSON.parse(jsonStr)
+    } catch {
+      // Response was truncated — strip to the last complete top-level field
+      // by walking back from the last complete field separator
+      const safeEnd = jsonStr.lastIndexOf('",\n')
+      if (safeEnd === -1) throw new Error('JSON truncated and unrecoverable')
+      jsonStr = jsonStr.slice(0, safeEnd + 1) + '}'
+      result = JSON.parse(jsonStr)
+    }
     // Attach live zone metadata so the frontend can show a "live data" badge
     if (liveZone) {
       result._liveZone = {
