@@ -40,8 +40,18 @@ const PRO_CTA: Record<ArticleCategory, {
   },
   stories: {
     category: 'builder',
-    en: { title: 'Inspired? Start Your Own KDR.', desc: 'Find verified builders in your area to discuss your project.', btn: 'Find a Builder →' },
-    zh: { title: '受到启发了？开始你自己的推倒重建。', desc: '寻找你所在区域经过认证的建筑商，与他们讨论你的项目。', btn: '寻找建筑商 →' },
+    en: { title: 'Inspired? Start Your Own Project.', desc: 'Find verified builders in your area to discuss your project.', btn: 'Find a Builder →' },
+    zh: { title: '受到启发了？开始你自己的项目。', desc: '寻找你所在区域经过认证的建筑商，与他们讨论你的项目。', btn: '寻找建筑商 →' },
+  },
+  'granny-flat': {
+    category: 'builder',
+    en: { title: 'Looking for a Granny Flat Builder?', desc: 'Browse builders who specialise in secondary dwellings and granny flats across Australia.', btn: 'Find a Builder →' },
+    zh: { title: '寻找 Granny Flat 建筑商？', desc: '浏览全澳专注于辅助住宅和 Granny Flat 的建筑商。', btn: '寻找建筑商 →' },
+  },
+  renovation: {
+    category: 'builder',
+    en: { title: 'Planning a Renovation?', desc: 'Connect with experienced renovation and extension builders in your area.', btn: 'Find a Builder →' },
+    zh: { title: '计划翻新？', desc: '联系你所在区域有经验的翻新和扩建建筑商。', btn: '寻找建筑商 →' },
   },
 }
 
@@ -52,6 +62,8 @@ const COLOR_MAP: Record<string, string> = {
   purple: 'bg-purple-100 text-purple-700 border-purple-200',
   pink:   'bg-pink-100 text-pink-700 border-pink-200',
   cyan:   'bg-cyan-100 text-cyan-700 border-cyan-200',
+  teal:   'bg-teal-100 text-teal-700 border-teal-200',
+  amber:  'bg-amber-100 text-amber-700 border-amber-200',
 }
 
 export default function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {

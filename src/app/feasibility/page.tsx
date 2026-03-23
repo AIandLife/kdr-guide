@@ -19,6 +19,15 @@ interface RiskFlag {
   detail: string
 }
 
+interface LiveZoneMeta {
+  source: string
+  zoneCode: string
+  zoneName: string
+  fsr: string | null
+  maxHeight: number | null
+  minLotSize: number | null
+}
+
 interface FeasibilityResult {
   suburb: string
   state: string
@@ -40,6 +49,7 @@ interface FeasibilityResult {
   nextSteps: { step: number; title: string; detail: string; urgency: string }[]
   professionals: { role: string; why: string; timing: string }[]
   keyInsight: string
+  _liveZone?: LiveZoneMeta
 }
 
 const RISK_ICONS: Record<string, React.ElementType> = {
@@ -104,6 +114,7 @@ function FeasibilityContent() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [suburb, setSuburb] = useState(searchParams.get('suburb') || '')
+  const [address, setAddress] = useState(searchParams.get('address') || '')
   const [lotSize, setLotSize] = useState(searchParams.get('lotSize') || '')
   const [state, setState] = useState(searchParams.get('state') || '')
   const [projectType, setProjectType] = useState(searchParams.get('projectType') || 'kdr')
@@ -116,11 +127,11 @@ function FeasibilityContent() {
       setSuburb(s)
       const pt = searchParams.get('projectType') || 'kdr'
       setProjectType(pt)
-      fetchFeasibility(s, searchParams.get('lotSize') || '', searchParams.get('state') || '', lang, pt)
+      fetchFeasibility(s, searchParams.get('address') || '', searchParams.get('lotSize') || '', searchParams.get('state') || '', lang, pt)
     }
   }, [searchParams, lang])
 
-  const fetchFeasibility = async (sub: string, lot: string, st: string, l: string, pt = 'kdr') => {
+  const fetchFeasibility = async (sub: string, addr: string, lot: string, st: string, l: string, pt = 'kdr') => {
     if (!sub) return
     setLoading(true)
     setError('')
@@ -129,7 +140,7 @@ function FeasibilityContent() {
       const res = await fetch('/api/feasibility', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ suburb: sub, lotSize: lot ? Number(lot) : null, state: st, lang: l, projectType: pt }),
+        body: JSON.stringify({ suburb: sub, address: addr || null, lotSize: lot ? Number(lot) : null, state: st, lang: l, projectType: pt }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
@@ -144,10 +155,11 @@ function FeasibilityContent() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     const params = new URLSearchParams({ suburb, lang, projectType })
+    if (address) params.set('address', address)
     if (lotSize) params.set('lotSize', lotSize)
     if (state) params.set('state', state)
     router.push(`/feasibility?${params.toString()}`)
-    fetchFeasibility(suburb, lotSize, state, lang, projectType)
+    fetchFeasibility(suburb, address, lotSize, state, lang, projectType)
   }
 
   return (
@@ -209,6 +221,19 @@ function FeasibilityContent() {
               className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400"
             />
           </div>
+          {/* Street address — optional, enables live zoning lookup */}
+          <div className="mt-3 relative">
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-400" />
+            <input
+              type="text"
+              value={address}
+              onChange={e => setAddress(e.target.value)}
+              placeholder={lang === 'zh'
+                ? '街道地址（可选）— 填写后启用实时规划区数据，例如：123 Smith Street, Bondi'
+                : 'Street address (optional) — enables live zoning lookup, e.g. 123 Smith Street, Bondi'}
+              className="w-full bg-green-50 border border-green-200 rounded-xl pl-10 pr-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-400 text-sm"
+            />
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -230,7 +255,7 @@ function FeasibilityContent() {
           <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
             <XCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
             <p className="text-red-600 font-medium">{error}</p>
-            <button onClick={() => fetchFeasibility(suburb, lotSize, state, lang, projectType)} className="mt-4 text-sm text-gray-500 hover:text-gray-900 underline">
+            <button onClick={() => fetchFeasibility(suburb, address, lotSize, state, lang, projectType)} className="mt-4 text-sm text-gray-500 hover:text-gray-900 underline">
               {lang === 'zh' ? '重试' : 'Try again'}
             </button>
           </div>
@@ -238,6 +263,43 @@ function FeasibilityContent() {
 
         {result && !loading && (
           <div className="space-y-6">
+            {/* Live zone banner */}
+            {result._liveZone && (
+              <div className="flex flex-wrap items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm">
+                <span className="flex items-center gap-1.5 font-semibold text-green-700">
+                  <CheckCircle className="w-4 h-4" />
+                  {lang === 'zh' ? '实时规划数据' : 'Live Planning Data'}
+                </span>
+                <span className="text-green-600">
+                  {lang === 'zh'
+                    ? `已从${result._liveZone.source === 'nsw-eplan' ? 'NSW ePlanning Portal' : result._liveZone.source === 'vic-vicplan' ? 'VicPlan' : result._liveZone.source}读取实时分区数据`
+                    : `Zone data pulled live from ${result._liveZone.source === 'nsw-eplan' ? 'NSW ePlanning Portal' : result._liveZone.source === 'vic-vicplan' ? 'VicPlan' : result._liveZone.source}`}
+                </span>
+                <div className="flex flex-wrap gap-2 ml-auto">
+                  {result._liveZone.zoneCode && (
+                    <span className="bg-green-100 text-green-800 font-mono text-xs px-2 py-0.5 rounded-full border border-green-200">
+                      {result._liveZone.zoneCode} · {result._liveZone.zoneName}
+                    </span>
+                  )}
+                  {result._liveZone.fsr && (
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full border border-green-200">
+                      FSR {result._liveZone.fsr}
+                    </span>
+                  )}
+                  {result._liveZone.maxHeight && (
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full border border-green-200">
+                      {lang === 'zh' ? `限高 ${result._liveZone.maxHeight}m` : `Max ${result._liveZone.maxHeight}m`}
+                    </span>
+                  )}
+                  {result._liveZone.minLotSize && (
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full border border-green-200">
+                      {lang === 'zh' ? `最小地块 ${result._liveZone.minLotSize}m²` : `Min lot ${result._liveZone.minLotSize}m²`}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Header */}
             <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">

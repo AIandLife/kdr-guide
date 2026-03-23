@@ -229,7 +229,7 @@ const PROFESSIONALS = [
     specialties: ['DA Applications', 'Heritage', 'Rezoning', 'CDC'],
     verified: true, featured: false,
     description: 'Registered town planners with extensive council knowledge across all Sydney LGAs. Heritage, flood, and bushfire DA specialists.',
-    website: null, wechat: 'urbanplan_au',
+    website: null, wechat: null,
   },
   {
     name: 'Meridian Planning Consultants',
@@ -268,7 +268,7 @@ const PROFESSIONALS = [
     specialties: ['Construction Loans', 'Owner Builder Finance', 'Bridging Loans'],
     verified: true, featured: true,
     description: 'Specialised mortgage brokers for KDR and construction finance. Access to 30+ lenders. Progress draw management included.',
-    website: null, wechat: 'kdrfinance_au',
+    website: null, wechat: null,
   },
 ]
 

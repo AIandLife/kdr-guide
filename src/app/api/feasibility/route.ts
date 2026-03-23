@@ -1,22 +1,72 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { findCouncilBySuburb, findCouncil, STATE_COST_RANGES } from '@/lib/council-data'
+import { getLiveZoning, type LiveZoneData } from '@/lib/spatial-api'
 
 const client = new Anthropic()
 
+function buildLiveZoneContext(z: LiveZoneData, lotSize: number | null): string {
+  const sourceLabel: Record<string, string> = {
+    'nsw-eplan': 'NSW ePlanning Portal (live)',
+    'vic-vicplan': 'VicPlan MapShare (live)',
+    'qld-spatial': 'QLD Spatial (live)',
+    'wa-landgate': 'Landgate WA (live)',
+    'sa-planssa': 'PlanSA (live)',
+    'fallback': 'Static data',
+  }
+  const lines = [
+    `LIVE ZONING DATA (source: ${sourceLabel[z.source] || z.source}):`,
+    `- Zone Code: ${z.zoneCode}`,
+    `- Zone Name: ${z.zoneName}`,
+    z.fsr ? `- Floor Space Ratio (FSR): ${z.fsr}` : null,
+    z.maxHeight ? `- Maximum Building Height: ${z.maxHeight}m` : null,
+    z.minLotSize ? `- Minimum Lot Size: ${z.minLotSize} sqm` : null,
+    z.lep ? `- Planning Instrument: ${z.lep}` : null,
+    z.kdrPermitted !== null ? `- KDR / Residential Development: ${z.kdrPermitted ? 'PERMITTED in this zone' : 'NOT PERMITTED in this zone'}` : null,
+    ...z.notes,
+    lotSize && z.minLotSize ? `- User's Lot: ${lotSize} sqm vs zone minimum ${z.minLotSize} sqm — ${lotSize >= z.minLotSize ? 'MEETS MINIMUM' : 'BELOW MINIMUM'}` : null,
+  ].filter(Boolean).join('\n')
+  return lines
+}
+
 export async function POST(req: Request) {
   try {
-    const { suburb, state, lotSize, lang = 'en', projectType = 'kdr' } = await req.json()
+    const { suburb, state, lotSize, lang = 'en', projectType = 'kdr', address } = await req.json()
 
     if (!suburb) {
       return Response.json({ error: 'Suburb is required' }, { status: 400 })
     }
 
-    // Try to find council data
+    // 1. Try live spatial API (if address + state provided)
+    let liveZone: LiveZoneData | null = null
+    if (state) {
+      const lookupAddress = address || suburb
+      liveZone = await getLiveZoning(lookupAddress, state)
+    }
+
+    // 2. Try static council data
     const councilData = findCouncilBySuburb(suburb, state) || findCouncil(suburb)
     const costFallback = state ? STATE_COST_RANGES[state.toUpperCase()] : null
 
-    const contextInfo = councilData
-      ? `
+    // 3. Build context for AI — live data takes priority, supplemented by council static data
+    let contextInfo: string
+    if (liveZone) {
+      const liveCtx = buildLiveZoneContext(liveZone, lotSize ? Number(lotSize) : null)
+      const staticSupp = councilData ? `
+SUPPLEMENTARY COUNCIL DATA (${councilData.council}):
+- Heritage Risk: ${councilData.heritageRisk}
+- Flood Risk: ${councilData.floodRisk}
+- Bushfire Risk: ${councilData.bushfireRisk}
+- CDC Eligible: ${councilData.cdcEligible ? 'Yes' : 'No (DA required)'}
+- DA Timeline: ${councilData.daTimelineWeeks[0]}–${councilData.daTimelineWeeks[1]} weeks
+- Typical Demolition Cost: $${councilData.avgDemolitionCost[0].toLocaleString()}–$${councilData.avgDemolitionCost[1].toLocaleString()}
+- Typical Build Cost: $${councilData.avgBuildCostPerSqm[0].toLocaleString()}–$${councilData.avgBuildCostPerSqm[1].toLocaleString()} per sqm
+- Notes: ${councilData.notes}` : costFallback ? `
+State cost ranges for ${state}:
+- Demolition: $${costFallback.demolition[0].toLocaleString()}–$${costFallback.demolition[1].toLocaleString()}
+- Build: $${costFallback.buildPerSqm[0].toLocaleString()}–$${costFallback.buildPerSqm[1].toLocaleString()} per sqm` : ''
+      contextInfo = liveCtx + '\n' + staticSupp
+    } else if (councilData) {
+      contextInfo = `
 COUNCIL DATA FOUND:
 - Council: ${councilData.council}
 - State: ${councilData.state}
@@ -27,21 +77,23 @@ COUNCIL DATA FOUND:
 - Flood Risk: ${councilData.floodRisk}
 - Bushfire Risk: ${councilData.bushfireRisk}
 - CDC Eligible: ${councilData.cdcEligible ? 'Yes' : 'No (DA required)'}
-- DA Timeline: ${councilData.daTimelineWeeks[0]}-${councilData.daTimelineWeeks[1]} weeks
-- Typical Demolition Cost: $${councilData.avgDemolitionCost[0].toLocaleString()}-$${councilData.avgDemolitionCost[1].toLocaleString()}
-- Typical Build Cost: $${councilData.avgBuildCostPerSqm[0].toLocaleString()}-$${councilData.avgBuildCostPerSqm[1].toLocaleString()} per sqm
+- DA Timeline: ${councilData.daTimelineWeeks[0]}–${councilData.daTimelineWeeks[1]} weeks
+- Typical Demolition Cost: $${councilData.avgDemolitionCost[0].toLocaleString()}–$${councilData.avgDemolitionCost[1].toLocaleString()}
+- Typical Build Cost: $${councilData.avgBuildCostPerSqm[0].toLocaleString()}–$${councilData.avgBuildCostPerSqm[1].toLocaleString()} per sqm
 - Notes: ${councilData.notes}
 ${lotSize ? `- User's Lot Size: ${lotSize} sqm (min required: ${councilData.minLotSize} sqm — ${Number(lotSize) >= councilData.minLotSize ? 'MEETS MINIMUM' : 'BELOW MINIMUM'})` : ''}
 `
-      : costFallback
-        ? `
+    } else if (costFallback) {
+      contextInfo = `
 No specific council data found for "${suburb}".
 State cost ranges for ${state}:
-- Demolition: $${costFallback.demolition[0].toLocaleString()}-$${costFallback.demolition[1].toLocaleString()}
-- Build: $${costFallback.buildPerSqm[0].toLocaleString()}-$${costFallback.buildPerSqm[1].toLocaleString()} per sqm
+- Demolition: $${costFallback.demolition[0].toLocaleString()}–$${costFallback.demolition[1].toLocaleString()}
+- Build: $${costFallback.buildPerSqm[0].toLocaleString()}–$${costFallback.buildPerSqm[1].toLocaleString()} per sqm
 ${lotSize ? `- User's Lot Size: ${lotSize} sqm` : ''}
 `
-        : `No specific data found for "${suburb}". Provide general Australian KDR guidance.`
+    } else {
+      contextInfo = `No specific data found for "${suburb}". Provide general Australian KDR guidance.`
+    }
 
     const isZh = lang === 'zh'
 
@@ -213,6 +265,17 @@ Be specific, honest, and practical. If risks are high, say so clearly. Use real 
     if (end === -1) throw new Error('No JSON found in response')
     const jsonStr = rawText.slice(0, end + 1)
     const result = JSON.parse(jsonStr)
+    // Attach live zone metadata so the frontend can show a "live data" badge
+    if (liveZone) {
+      result._liveZone = {
+        source: liveZone.source,
+        zoneCode: liveZone.zoneCode,
+        zoneName: liveZone.zoneName,
+        fsr: liveZone.fsr,
+        maxHeight: liveZone.maxHeight,
+        minLotSize: liveZone.minLotSize,
+      }
+    }
     return Response.json(result)
 
   } catch (error) {

@@ -5,6 +5,8 @@ export type ArticleCategory =
   | 'zoning'
   | 'stories'
   | 'materials'
+  | 'granny-flat'
+  | 'renovation'
 
 export interface Article {
   slug: string
@@ -25,12 +27,14 @@ export interface Article {
 }
 
 export const CATEGORY_LABELS: Record<ArticleCategory, { en: string; zh: string; color: string }> = {
-  planning: { en: 'Planning & Approvals', zh: '规划与审批', color: 'blue' },
-  finance: { en: 'Finance', zh: '贷款与费用', color: 'green' },
-  construction: { en: 'Construction', zh: '建筑施工', color: 'orange' },
-  zoning: { en: 'Land & Zoning', zh: '土地与分区', color: 'purple' },
-  stories: { en: 'Real Stories', zh: '真实案例', color: 'pink' },
-  materials: { en: 'Materials & Products', zh: '建材与产品', color: 'cyan' },
+  planning:    { en: 'Planning & Approvals', zh: '规划与审批',  color: 'blue'   },
+  finance:     { en: 'Finance',              zh: '贷款与费用',  color: 'green'  },
+  construction:{ en: 'Construction',         zh: '建筑施工',    color: 'orange' },
+  zoning:      { en: 'Land & Zoning',        zh: '土地与分区',  color: 'purple' },
+  stories:     { en: 'Real Stories',         zh: '真实案例',    color: 'pink'   },
+  materials:   { en: 'Materials & Products', zh: '建材与产品',  color: 'cyan'   },
+  'granny-flat':{ en: 'Granny Flat',         zh: 'Granny Flat', color: 'teal'   },
+  renovation:  { en: 'Renovation',           zh: '翻新改造',    color: 'amber'  },
 }
 
 export const ARTICLES: Article[] = [
@@ -647,6 +651,567 @@ export const ARTICLES: Article[] = [
 <p>把钱花在每天触摸的地方——门把手、水龙头、台面。在隐蔽或易更换的地方节省——隔热材料、石膏板、屋顶瓦、檐板。这是优秀建筑商合理分配预算的方式。</p>
 
 <p>访问我们的<a href="/suppliers">建材商目录</a>，寻找拥有 KDR 经验的经认证本地和进口建材供应商。</p>
+    `,
+  },
+
+  // ── GRANNY FLAT & RENOVATION ARTICLES ─────────────────────────────────────
+
+  {
+    slug: 'kdr-vs-renovation-vs-granny-flat',
+    title: 'KDR vs Renovation vs Extension vs Granny Flat: Which Is Right for You?',
+    titleZh: '推倒重建 vs 翻新 vs 扩建 vs Granny Flat：哪种最适合你？',
+    excerpt: 'Four paths, one old house. Before you decide anything, here\'s the honest financial and practical comparison that most guides don\'t give you.',
+    excerptZh: '四条路，一栋旧房。在你做决定之前，这是大多数指南不会给你的真实财务和实用对比。',
+    category: 'renovation',
+    author: 'KDR Guide Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-22',
+    readMinutes: 9,
+    tags: ['KDR', 'Renovation', 'Extension', 'Granny Flat', 'Decision Guide'],
+    tagsZh: ['推倒重建', '翻新', '扩建', 'Granny Flat', '决策指南'],
+    content: `
+<p>You own an older home. Something needs to change. But which path makes the most sense — financially, practically, and for your life? Here's an honest comparison of all four options.</p>
+
+<h2>A Quick Decision Map</h2>
+<p>Before comparing costs, ask yourself these three questions:</p>
+<ol>
+<li><strong>Is the structure fundamentally sound?</strong> If the frame, foundations, and roof are solid, renovation is genuinely on the table. If not, you're looking at KDR.</li>
+<li><strong>Do you need more space, or just better space?</strong> Extension adds area. Renovation improves what exists. KDR rebuilds everything. Granny flat adds a separate dwelling.</li>
+<li><strong>Are you primarily solving a lifestyle problem or an investment problem?</strong> The answer changes the maths completely.</li>
+</ol>
+
+<h2>Option 1: Knockdown Rebuild (KDR)</h2>
+<p><strong>Best for:</strong> Old homes with structural problems, asbestos, poor layout that renovation can't fix, or homeowners who want a fully custom new home without moving suburb.</p>
+<p><strong>Cost range:</strong> $350,000–$700,000+ (build only, excluding land)</p>
+<p><strong>Timeline:</strong> 18–30 months from planning to move-in</p>
+<p><strong>Value created:</strong> Typically the highest uplift — new home adds 40–80% to land value in most suburbs</p>
+<p><strong>Key risks:</strong> Longest disruption (you must vacate), requires DA or CDC, construction cost overruns</p>
+<p><strong>Right move if:</strong> Your home is pre-1990s with structural issues, asbestos, or a layout no renovation can fix. Also right if you want to maximise the block's potential with a fully custom design.</p>
+
+<h2>Option 2: Major Renovation</h2>
+<p><strong>Best for:</strong> Homes with good bones that just need updating — kitchens, bathrooms, open-plan living, a second storey addition.</p>
+<p><strong>Cost range:</strong> $80,000–$400,000 depending on scope</p>
+<p><strong>Timeline:</strong> 6–18 months</p>
+<p><strong>Value created:</strong> Moderate — a $200K renovation rarely adds $200K in value. Rule of thumb: expect 60–80 cents return per dollar spent on renovations.</p>
+<p><strong>Key risks:</strong> Hidden costs (asbestos, old wiring, wet rot) discovered mid-project; budget blow-outs are extremely common</p>
+<p><strong>Right move if:</strong> Your home has a layout you love, the structure is sound, and you're primarily improving liveability rather than maximising value. Or if you're on a tight timeline and can't wait for a full rebuild.</p>
+
+<h2>Option 3: Extension / Addition</h2>
+<p><strong>Best for:</strong> Homes that need more space — an extra bedroom, a larger living area, or a second storey.</p>
+<p><strong>Cost range:</strong> $80,000–$250,000 for ground floor extension; $150,000–$400,000 for a second storey</p>
+<p><strong>Timeline:</strong> 3–12 months (DA/CDC approval time varies)</p>
+<p><strong>Value created:</strong> Good, especially second storey additions in land-constrained inner suburbs. A well-executed extension in Sydney or Melbourne can return $1.20–$1.50 for every dollar spent.</p>
+<p><strong>Key risks:</strong> Matching new work to existing structure and finishes; council setback and height limits may restrict what's possible</p>
+<p><strong>Right move if:</strong> You love your location and current home but genuinely need more space. Second storey additions in particular offer excellent ROI in established suburbs.</p>
+
+<h2>Option 4: Granny Flat / Secondary Dwelling</h2>
+<p><strong>Best for:</strong> Homeowners with a large enough block (typically 450m²+ in NSW) who want rental income, a space for family, or to add investment value.</p>
+<p><strong>Cost range:</strong> $80,000–$200,000</p>
+<p><strong>Timeline:</strong> 3–12 months (CDC pathway in NSW is as fast as 20 days)</p>
+<p><strong>Value created:</strong> Properties with granny flats achieve ~27% higher rental yields. Rental income of $300–$600/week is realistic in most metro suburbs.</p>
+<p><strong>Key risks:</strong> Cannot be sold separately; not available on all lot sizes; ongoing landlord responsibilities if renting</p>
+<p><strong>Right move if:</strong> Your lot is large enough, you want income or family accommodation, and you don't need to touch the main house.</p>
+
+<h2>The Honest Financial Summary</h2>
+<div class="overflow-x-auto"><table>
+<thead><tr><th>Option</th><th>Typical Cost</th><th>Timeline</th><th>Value Return</th><th>Disruption</th></tr></thead>
+<tbody>
+<tr><td>KDR</td><td>$350K–$700K+</td><td>18–30 months</td><td>Highest</td><td>Must vacate</td></tr>
+<tr><td>Renovation</td><td>$80K–$400K</td><td>6–18 months</td><td>Moderate (60–80¢/$)</td><td>Can stay (sometimes)</td></tr>
+<tr><td>Extension</td><td>$80K–$400K</td><td>3–12 months</td><td>Good ($1.20–$1.50/$)</td><td>Minimal</td></tr>
+<tr><td>Granny Flat</td><td>$80K–$200K</td><td>3–12 months</td><td>Income-focused</td><td>Minimal</td></tr>
+</tbody>
+</table></div>
+
+<p>The best choice depends entirely on your specific block, home condition, and goals. Run a free feasibility check on your block to get an AI assessment of which options are available to you.</p>
+    `,
+    contentZh: `
+<p>你拥有一栋老房子，某些地方需要改变。但哪条路在财务和实际操作上最合理？以下是对所有四个选项的真实对比。</p>
+
+<h2>快速决策地图</h2>
+<p>在比较成本之前，先问自己这三个问题：</p>
+<ol>
+<li><strong>房屋结构是否根本健全？</strong>如果框架、地基和屋顶都是坚固的，翻新确实是一个选项。如果不是，你就需要考虑推倒重建了。</li>
+<li><strong>你需要更多空间，还是更好的空间？</strong>扩建增加面积，翻新改善现有空间，推倒重建是全面重建，Granny Flat 增加独立住宅。</li>
+<li><strong>你主要是在解决生活品质问题还是投资问题？</strong>答案会完全改变计算方式。</li>
+</ol>
+
+<h2>选项一：推倒重建（KDR）</h2>
+<p><strong>最适合：</strong>有结构问题的旧房、含石棉的房子、翻新无法改善的糟糕布局，或者想要全定制新房而不换郊区的业主。</p>
+<p><strong>费用范围：</strong>$35–70 万以上（仅建设费，不含地价）</p>
+<p><strong>时间线：</strong>从规划到入住 18–30 个月</p>
+<p><strong>创造价值：</strong>通常是最高的——新房在大多数郊区为地皮增加 40–80% 的价值</p>
+<p><strong>主要风险：</strong>干扰时间最长（必须搬出），需要 DA 或 CDC，建设成本超支</p>
+<p><strong>正确选择：</strong>如果你的房子是 1990 年前建造的，有结构问题、石棉或布局问题无法通过翻新解决。也适合想最大化地块潜力、做全定制设计的情况。</p>
+
+<h2>选项二：大型翻新</h2>
+<p><strong>最适合：</strong>结构良好只需更新的房屋——厨房、浴室、开放式生活区、二楼加建。</p>
+<p><strong>费用范围：</strong>$8–40 万，视规模而定</p>
+<p><strong>时间线：</strong>6–18 个月</p>
+<p><strong>创造价值：</strong>适中——花 20 万翻新很少能增加 20 万的价值。经验法则：每花 1 元翻新，预期回报约 60–80 分。</p>
+<p><strong>主要风险：</strong>施工中途发现的隐藏成本（石棉、旧电线、湿腐）；预算超支极为常见</p>
+<p><strong>正确选择：</strong>如果你喜欢现有布局，结构良好，主要是改善生活质量而非最大化价值。或者时间紧迫，等不了完整重建。</p>
+
+<h2>选项三：扩建</h2>
+<p><strong>最适合：</strong>需要更多空间的房屋——额外卧室、更大的生活区或二楼。</p>
+<p><strong>费用范围：</strong>地面扩建 $8–25 万；二楼加建 $15–40 万</p>
+<p><strong>时间线：</strong>3–12 个月（DA/CDC 审批时间不等）</p>
+<p><strong>创造价值：</strong>良好，特别是土地紧缺的内城郊区的二楼加建。悉尼或墨尔本精心施工的扩建每花 1 元可回报 $1.20–$1.50。</p>
+<p><strong>主要风险：</strong>新旧工程的结构和装修匹配；Council 的退界和高度限制可能约束可能性</p>
+<p><strong>正确选择：</strong>如果你热爱现有位置和房屋，但真的需要更多空间。二楼加建在成熟郊区尤其提供优秀的投资回报。</p>
+
+<h2>选项四：Granny Flat / 辅助住宅</h2>
+<p><strong>最适合：</strong>地块足够大（NSW 通常需要 450m²+）、想要租金收入、为家人提供空间或增加投资价值的业主。</p>
+<p><strong>费用范围：</strong>$8–20 万</p>
+<p><strong>时间线：</strong>3–12 个月（NSW 的 CDC 通道最快 20 天）</p>
+<p><strong>创造价值：</strong>有 Granny Flat 的房产租金回报率高出约 27%。大多数都会区郊区每周租金 $300–$600 是现实的。</p>
+<p><strong>主要风险：</strong>不能单独出售；不是所有地块都符合条件；如果出租需要承担房东责任</p>
+<p><strong>正确选择：</strong>如果你的地块足够大，想要收入或家庭住所，且不需要改动主房屋。</p>
+
+<h2>真实财务摘要</h2>
+<div class="overflow-x-auto"><table>
+<thead><tr><th>选项</th><th>典型费用</th><th>时间线</th><th>价值回报</th><th>干扰程度</th></tr></thead>
+<tbody>
+<tr><td>推倒重建</td><td>$35–70 万+</td><td>18–30 个月</td><td>最高</td><td>必须搬出</td></tr>
+<tr><td>翻新</td><td>$8–40 万</td><td>6–18 个月</td><td>适中（每元 60–80 分）</td><td>有时可留住</td></tr>
+<tr><td>扩建</td><td>$8–40 万</td><td>3–12 个月</td><td>良好（每元 $1.20–1.50）</td><td>最小</td></tr>
+<tr><td>Granny Flat</td><td>$8–20 万</td><td>3–12 个月</td><td>以收益为主</td><td>最小</td></tr>
+</tbody>
+</table></div>
+
+<p>最佳选择完全取决于你的具体地块、房屋状况和目标。对你的地块进行免费可行性查询，获取 AI 评估，了解哪些选项适合你。</p>
+    `,
+  },
+
+  {
+    slug: 'granny-flat-rules-by-state-2026',
+    title: 'Australian Granny Flat Rules by State: The Complete 2026 Guide',
+    titleZh: '全澳 Granny Flat 各州规定完整指南（2026）',
+    excerpt: 'NSW, VIC, QLD, WA, SA, ACT — every state has different rules on size, lot size, approval type, and who can live there. Here\'s the definitive comparison.',
+    excerptZh: 'NSW、VIC、QLD、WA、SA、ACT——每个州对面积、地块大小、审批方式和居住限制都有不同规定。这是权威对比。',
+    category: 'granny-flat',
+    author: 'Sarah Chen',
+    authorRole: 'Registered Town Planner',
+    authorRoleZh: '注册城市规划师',
+    date: '2026-03-21',
+    readMinutes: 10,
+    tags: ['Granny Flat', 'Secondary Dwelling', 'State Regulations', 'NSW', 'VIC', 'QLD', 'WA'],
+    tagsZh: ['Granny Flat', '辅助住宅', '州级规定', '新南威尔士', '维多利亚', '昆士兰', '西澳'],
+    content: `
+<p>Granny flat rules in Australia are primarily set at the state level — not by individual councils. Councils can add local restrictions on top, but the state sets the floor. Here's what you need to know in each state as of 2026.</p>
+
+<h2>The Big Picture: 2024–2026 Reforms</h2>
+<p>Every state has loosened its granny flat rules in the past two years. The trend is clear: governments are using secondary dwellings as a tool to address the housing shortage. Key changes include higher size limits (from 60m² to 70–90m²), removal of family-only rental restrictions, and in WA's case, the complete removal of minimum lot size requirements.</p>
+
+<h2>New South Wales (NSW)</h2>
+<p><strong>Maximum size:</strong> 70m² (increased from 60m² in 2024)</p>
+<p><strong>Minimum lot size:</strong> 450m² — no exceptions for the complying development pathway</p>
+<p><strong>Approval:</strong> Complying Development Certificate (CDC) if the block meets all requirements — assessed by a private certifier in about 20 days. Development Application (DA) for non-standard sites.</p>
+<p><strong>Additional CDC requirements:</strong> 12m minimum street frontage, 3m rear setback, 0.9m side setbacks</p>
+<p><strong>Can you rent to non-family?</strong> Yes — since 2020, NSW allows rental to anyone</p>
+<p><strong>Separate sale?</strong> No — granny flats cannot be strata titled or sold separately from the main home</p>
+<p><strong>Heritage/bushfire zones:</strong> In bushfire Attack Level (BAL) 40 or higher zones, the CDC pathway is unavailable — you must lodge a DA. Heritage conservation areas may require additional design controls.</p>
+<p><strong>Key insight:</strong> NSW has the most structured approval system. If your block is 450m²+ with 12m frontage, the CDC pathway is fast and reliable. Smaller blocks must go through DA, which is discretionary.</p>
+
+<h2>Victoria</h2>
+<p><strong>Maximum size:</strong> 60m²</p>
+<p><strong>Minimum lot size:</strong> No fixed state minimum — varies by council zone</p>
+<p><strong>Approval:</strong> In most residential zones, <strong>no planning permit is required</strong>. A building permit is always required. This makes VIC the most permissive state for granny flats.</p>
+<p><strong>Exceptions requiring a planning permit:</strong> Heritage Overlay, Bushfire Management Overlay, Floodway Overlay, Neighbourhood Residential Zone (NRZ) in some councils</p>
+<p><strong>Can you rent to non-family?</strong> Yes</p>
+<p><strong>Separate sale?</strong> No</p>
+<p><strong>Key insight:</strong> Victoria removed the planning permit requirement for small second homes in late 2023. If you're in a standard residential zone, you only need a building permit — typically 4–8 weeks. This is the fastest path in Australia for most homeowners.</p>
+
+<h2>Queensland</h2>
+<p><strong>Maximum size:</strong> 80m² in Brisbane; varies by council (Ipswich 50m², Gold Coast 60m²)</p>
+<p><strong>Minimum lot size:</strong> Flexible — in Brisbane, 400m²+ lots can generally support a secondary dwelling</p>
+<p><strong>Approval:</strong> Varies significantly by council. Brisbane City Council has a defined pathway; regional councils vary widely.</p>
+<p><strong>Can you rent to non-family?</strong> Yes — rules updated 2022–2024</p>
+<p><strong>Separate sale?</strong> No</p>
+<p><strong>Key insight:</strong> QLD is the most variable state. Always check your specific council's planning scheme — the rules in Logan, Gold Coast, Sunshine Coast, and Brisbane are all different. A town planner familiar with your council is essential.</p>
+
+<h2>Western Australia (WA)</h2>
+<p><strong>Maximum size:</strong> 70m²</p>
+<p><strong>Minimum lot size:</strong> <strong>None</strong> — WA removed the 350m² minimum in April 2024</p>
+<p><strong>Approval:</strong> No development approval needed if the design complies with the Residential Design Codes (R-Codes). A building permit is still required.</p>
+<p><strong>Can you rent to non-family?</strong> Yes</p>
+<p><strong>Separate sale?</strong> No</p>
+<p><strong>Key insight:</strong> WA's April 2024 reform was the most significant granny flat deregulation in Australia. Removing the lot size minimum means virtually any suburban block can now accommodate an ancillary dwelling. If you're in Perth, the path is now straightforward: design to R-Code compliance, get a building permit, build.</p>
+
+<h2>South Australia (SA)</h2>
+<p><strong>Maximum size:</strong> 70m² (increased from 60m²)</p>
+<p><strong>Minimum lot size:</strong> 450m² in most cases</p>
+<p><strong>Approval:</strong> Development approval is always required — there's no exempt or complying pathway</p>
+<p><strong>Can you rent to non-family?</strong> Yes — family-only restriction recently removed</p>
+<p><strong>Separate sale?</strong> No</p>
+<p><strong>Key insight:</strong> SA requires a DA for every granny flat — no fast-track complying pathway. Budget 8–16 weeks for approval. On the positive side, the family-only rental restriction was removed, making granny flats a genuine investment tool in SA.</p>
+
+<h2>Australian Capital Territory (ACT)</h2>
+<p><strong>Maximum size:</strong> Up to 90m² (most generous limit in Australia)</p>
+<p><strong>Minimum lot size:</strong> 500m²</p>
+<p><strong>Approval:</strong> Development approval required</p>
+<p><strong>Can you rent to non-family?</strong> Yes</p>
+<p><strong>Separate sale?</strong> No</p>
+<p><strong>Key insight:</strong> ACT allows the largest secondary dwellings (90m²) but requires water-sensitive design — a rainwater tank is mandatory. The planning process is managed by the ACT Planning Authority.</p>
+
+<h2>Quick Comparison Table</h2>
+<div class="overflow-x-auto"><table>
+<thead><tr><th>State</th><th>Max Size</th><th>Min Lot</th><th>Fast-Track?</th><th>Rent Anyone?</th></tr></thead>
+<tbody>
+<tr><td><strong>NSW</strong></td><td>70m²</td><td>450m²</td><td>Yes (CDC ~20 days)</td><td>Yes</td></tr>
+<tr><td><strong>VIC</strong></td><td>60m²</td><td>None (varies)</td><td>Yes (no planning permit)</td><td>Yes</td></tr>
+<tr><td><strong>QLD</strong></td><td>50–80m²</td><td>~400m²</td><td>Varies by council</td><td>Yes</td></tr>
+<tr><td><strong>WA</strong></td><td>70m²</td><td><strong>None</strong></td><td>Yes (R-Code compliant)</td><td>Yes</td></tr>
+<tr><td><strong>SA</strong></td><td>70m²</td><td>450m²</td><td>No (DA always required)</td><td>Yes</td></tr>
+<tr><td><strong>ACT</strong></td><td>90m²</td><td>500m²</td><td>No (DA required)</td><td>Yes</td></tr>
+</tbody>
+</table></div>
+
+<p>Not sure if your block qualifies? Run a free feasibility check — our AI tool can assess your suburb's zoning and flag any overlay issues that would affect your granny flat approval path.</p>
+    `,
+    contentZh: `
+<p>澳洲的 Granny Flat 规定主要由州级制定——而非由各个 Council 决定。Council 可以在此基础上增加本地限制，但州级设定基准。以下是截至 2026 年各州的规定。</p>
+
+<h2>整体趋势：2024–2026 年改革</h2>
+<p>每个州在过去两年都放宽了 Granny Flat 规定。趋势很明确：政府正在把辅助住宅作为解决住房短缺的工具。主要变化包括：面积上限提高（从 60m² 到 70–90m²）、取消仅限家人出租的限制，以及西澳完全取消最小地块要求。</p>
+
+<h2>新南威尔士州（NSW）</h2>
+<p><strong>最大面积：</strong>70m²（2024 年从 60m² 提升）</p>
+<p><strong>最小地块：</strong>450m²——合规开发通道无例外</p>
+<p><strong>审批：</strong>如果地块满足所有要求，可使用合规开发证书（CDC）——由私人认证人员评估，约 20 天。非标准地块需申请 DA。</p>
+<p><strong>CDC 额外要求：</strong>最少 12m 临街面，3m 后退，0.9m 侧退</p>
+<p><strong>能否出租给非家人？</strong>可以——自 2020 年起，NSW 允许向任何人出租</p>
+<p><strong>能否单独出售？</strong>不能——Granny Flat 不能单独进行产权分割或与主房分开出售</p>
+<p><strong>遗产/丛林火灾区：</strong>在丛林火灾袭击等级（BAL）40 或以上的区域，不能使用 CDC 通道——必须提交 DA。遗产保护区可能需要额外的设计控制。</p>
+<p><strong>关键提示：</strong>NSW 拥有最结构化的审批体系。如果你的地块是 450m²+ 且临街面 12m，CDC 通道快速可靠。较小地块必须通过 DA，具有酌情处理性质。</p>
+
+<h2>维多利亚州（VIC）</h2>
+<p><strong>最大面积：</strong>60m²</p>
+<p><strong>最小地块：</strong>无固定州级最低要求——因 Council 分区而异</p>
+<p><strong>审批：</strong>在大多数住宅区，<strong>无需规划许可</strong>。建筑许可始终需要。这使 VIC 成为澳洲对 Granny Flat 最宽松的州。</p>
+<p><strong>需要规划许可的例外情况：</strong>遗产叠加、丛林火灾管理叠加、洪泛区叠加、部分 Council 的邻里住宅区（NRZ）</p>
+<p><strong>能否出租给非家人？</strong>可以</p>
+<p><strong>关键提示：</strong>维多利亚于 2023 年底取消了小型第二住宅的规划许可要求。如果你在标准住宅区，只需要建筑许可——通常 4–8 周。这是澳洲大多数业主最快的申请路径。</p>
+
+<h2>昆士兰州（QLD）</h2>
+<p><strong>最大面积：</strong>Brisbane 为 80m²；各 Council 不同（Ipswich 50m²，Gold Coast 60m²）</p>
+<p><strong>最小地块：</strong>弹性——Brisbane 400m²+ 的地块通常可以支持辅助住宅</p>
+<p><strong>审批：</strong>各 Council 差异显著。Brisbane City Council 有明确通道；地区 Council 差异很大。</p>
+<p><strong>关键提示：</strong>QLD 是差异最大的州。务必查看你所在 Council 的规划方案——Logan、Gold Coast、Sunshine Coast 和 Brisbane 的规定都不同。需要熟悉你所在 Council 的城市规划师。</p>
+
+<h2>西澳大利亚州（WA）</h2>
+<p><strong>最大面积：</strong>70m²</p>
+<p><strong>最小地块：</strong><strong>无要求</strong>——WA 于 2024 年 4 月取消了 350m² 的最低要求</p>
+<p><strong>审批：</strong>如果设计符合住宅设计规范（R-Codes），无需开发审批。仍需建筑许可。</p>
+<p><strong>关键提示：</strong>WA 2024 年 4 月的改革是澳洲 Granny Flat 最重大的去监管化举措。取消地块面积最低要求意味着几乎任何郊区地块现在都可以建造附属住宅。如果你在珀斯，路径现在很直接：按 R-Code 合规设计，获取建筑许可，开始建设。</p>
+
+<h2>南澳大利亚州（SA）</h2>
+<p><strong>最大面积：</strong>70m²（从 60m² 提高）</p>
+<p><strong>最小地块：</strong>大多数情况下 450m²</p>
+<p><strong>审批：</strong>始终需要开发审批——没有豁免或合规开发通道</p>
+<p><strong>关键提示：</strong>SA 每个 Granny Flat 都需要 DA——没有快速合规通道。预计审批需要 8–16 周。好消息是，仅限家人出租的限制已被取消，使 Granny Flat 成为 SA 真正的投资工具。</p>
+
+<h2>澳大利亚首都领地（ACT）</h2>
+<p><strong>最大面积：</strong>最高 90m²（澳洲最宽松的限制）</p>
+<p><strong>最小地块：</strong>500m²</p>
+<p><strong>审批：</strong>需要开发审批</p>
+<p><strong>关键提示：</strong>ACT 允许最大的辅助住宅（90m²），但需要水敏感设计——雨水箱是强制要求的。规划过程由 ACT 规划局管理。</p>
+
+<h2>快速对比表</h2>
+<div class="overflow-x-auto"><table>
+<thead><tr><th>州</th><th>最大面积</th><th>最小地块</th><th>快速通道？</th><th>可租任何人？</th></tr></thead>
+<tbody>
+<tr><td><strong>NSW</strong></td><td>70m²</td><td>450m²</td><td>是（CDC 约 20 天）</td><td>是</td></tr>
+<tr><td><strong>VIC</strong></td><td>60m²</td><td>无（因地区而异）</td><td>是（无需规划许可）</td><td>是</td></tr>
+<tr><td><strong>QLD</strong></td><td>50–80m²</td><td>约 400m²</td><td>因 Council 而异</td><td>是</td></tr>
+<tr><td><strong>WA</strong></td><td>70m²</td><td><strong>无</strong></td><td>是（R-Code 合规即可）</td><td>是</td></tr>
+<tr><td><strong>SA</strong></td><td>70m²</td><td>450m²</td><td>否（始终需要 DA）</td><td>是</td></tr>
+<tr><td><strong>ACT</strong></td><td>90m²</td><td>500m²</td><td>否（需要 DA）</td><td>是</td></tr>
+</tbody>
+</table></div>
+
+<p>不确定你的地块是否符合条件？进行免费可行性查询——我们的 AI 工具可以评估你郊区的分区，并标记可能影响你 Granny Flat 审批路径的任何叠加区。</p>
+    `,
+  },
+
+  {
+    slug: 'granny-flat-cost-guide-2026',
+    title: 'How Much Does a Granny Flat Cost in Australia? (2026 Real Numbers)',
+    titleZh: '澳洲建一个 Granny Flat 要多少钱？（2026 年真实数字）',
+    excerpt: 'From a basic studio to a fully self-contained 2-bedroom dwelling — here are the real build costs, hidden extras, and how to get the best value for your budget.',
+    excerptZh: '从基础单间到全配套 2 卧室住宅——这是真实的建设成本、隐藏额外费用，以及如何在预算内获得最佳价值。',
+    category: 'granny-flat',
+    author: 'Tom Richards',
+    authorRole: 'Project Manager, 12 years KDR',
+    authorRoleZh: '项目经理，12 年 KDR 经验',
+    date: '2026-03-18',
+    readMinutes: 7,
+    tags: ['Granny Flat', 'Cost', 'Budget', 'Secondary Dwelling', '2026'],
+    tagsZh: ['Granny Flat', '费用', '预算', '辅助住宅', '2026'],
+    content: `
+<p>The honest answer is: a granny flat in Australia costs between $80,000 and $200,000+. That's a wide range, and it exists for good reason. Here's how to understand where your project will sit and what drives the price.</p>
+
+<h2>Cost by Build Type</h2>
+
+<div class="overflow-x-auto"><table>
+<thead><tr><th>Build Type</th><th>Size</th><th>Cost Range</th><th>Timeline</th></tr></thead>
+<tbody>
+<tr><td>Prefabricated / modular</td><td>30–50m²</td><td>$80,000–$130,000</td><td>6–12 weeks on-site</td></tr>
+<tr><td>Kit home (owner-assembled)</td><td>40–60m²</td><td>$90,000–$140,000</td><td>3–6 months</td></tr>
+<tr><td>Volume builder (standard range)</td><td>50–70m²</td><td>$120,000–$160,000</td><td>4–6 months</td></tr>
+<tr><td>Custom builder (architect-designed)</td><td>50–70m²</td><td>$160,000–$220,000+</td><td>6–10 months</td></tr>
+</tbody>
+</table></div>
+
+<h2>What's Included in the Build Price — and What Isn't</h2>
+<p>Builder quotes typically include the structure, fit-out, kitchen, bathroom, and standard inclusions. They usually <strong>do not include</strong>:</p>
+<ul>
+<li>Site preparation and demolition of existing structures ($5,000–$20,000)</li>
+<li>Connections to water, sewer, and electricity ($8,000–$25,000 depending on distance from mains)</li>
+<li>Council/certifier fees and application costs ($3,000–$8,000)</li>
+<li>Landscaping and driveway works ($5,000–$15,000)</li>
+<li>Architect or draftsperson fees if not included ($3,000–$12,000)</li>
+</ul>
+<p><strong>Realistic all-in budget:</strong> Add 20–30% to the builder's base quote to estimate your true project cost.</p>
+
+<h2>Cost by State</h2>
+<p>Labour and materials costs vary significantly across Australia:</p>
+<div class="overflow-x-auto"><table>
+<thead><tr><th>State</th><th>Typical cost per m² (standard)</th><th>60m² all-in estimate</th></tr></thead>
+<tbody>
+<tr><td>NSW (Sydney metro)</td><td>$2,500–$3,500/m²</td><td>$150,000–$210,000</td></tr>
+<tr><td>VIC (Melbourne metro)</td><td>$2,200–$3,000/m²</td><td>$130,000–$180,000</td></tr>
+<tr><td>QLD (Brisbane / SEQ)</td><td>$2,000–$2,800/m²</td><td>$120,000–$170,000</td></tr>
+<tr><td>WA (Perth metro)</td><td>$1,900–$2,600/m²</td><td>$115,000–$160,000</td></tr>
+<tr><td>SA (Adelaide)</td><td>$1,800–$2,500/m²</td><td>$110,000–$150,000</td></tr>
+</tbody>
+</table></div>
+
+<h2>Prefab vs Stick-Built: Which Is Better Value?</h2>
+<p>Prefabricated granny flats have improved significantly in quality and are often 15–25% cheaper than site-built equivalents. The main trade-offs:</p>
+<ul>
+<li><strong>Prefab pros:</strong> Faster (weeks not months on your block), factory quality control, less weather disruption</li>
+<li><strong>Prefab cons:</strong> Limited customisation, crane delivery adds cost for tight access blocks, some lenders value them lower</li>
+<li><strong>Stick-built pros:</strong> Full customisation, matches main house style better, standard bank valuation</li>
+<li><strong>Stick-built cons:</strong> Longer build time, more weather-dependent, more coordination required</li>
+</ul>
+<p>For most suburban blocks with good access, prefab is excellent value — especially for a straightforward studio or 1-bedroom unit aimed at rental income.</p>
+
+<h2>The Rental Income Calculation</h2>
+<p>Before committing to a budget, run the numbers on your expected return:</p>
+<ul>
+<li>Studio/1-bed in Sydney suburbs: $350–$500/week = $18,200–$26,000/year</li>
+<li>2-bed in Melbourne suburbs: $350–$500/week = $18,200–$26,000/year</li>
+<li>2-bed in Brisbane: $300–$450/week = $15,600–$23,400/year</li>
+</ul>
+<p>At $150,000 total project cost with $22,000 annual rent, that's a 14.7% gross yield — significantly better than most investment properties. Factor in maintenance, vacancy, and tax before getting too excited, but the fundamentals are strong.</p>
+
+<h2>Five Ways to Control Costs</h2>
+<ol>
+<li><strong>Use a granny flat specialist</strong> — not a general builder. Specialists have streamlined the process and buy materials in volume.</li>
+<li><strong>Choose a standard design</strong> — custom designs add $15,000–$30,000 in architect/draftsperson fees and often don't add proportionate value.</li>
+<li><strong>Check services connection early</strong> — the biggest surprise cost is discovering the sewer line is 30 metres away. Get a services diagram before quoting.</li>
+<li><strong>Avoid relocating the kitchen or bathroom</strong> — wet areas are expensive. A design that clusters plumbing reduces cost significantly.</li>
+<li><strong>Get three builder quotes</strong> — granny flat pricing varies 20–30% between builders for identical specifications.</li>
+</ol>
+    `,
+    contentZh: `
+<p>诚实的回答是：澳洲 Granny Flat 的费用在 $8 万到 $20 万以上之间。这个范围很宽，原因充分。以下是如何理解你的项目会在哪里，以及什么驱动了价格。</p>
+
+<h2>按建造类型的费用</h2>
+<div class="overflow-x-auto"><table>
+<thead><tr><th>建造类型</th><th>面积</th><th>费用范围</th><th>时间线</th></tr></thead>
+<tbody>
+<tr><td>预制 / 模块化</td><td>30–50m²</td><td>$8–13 万</td><td>6–12 周现场工作</td></tr>
+<tr><td>套件房屋（业主自组装）</td><td>40–60m²</td><td>$9–14 万</td><td>3–6 个月</td></tr>
+<tr><td>量产建筑商（标准范围）</td><td>50–70m²</td><td>$12–16 万</td><td>4–6 个月</td></tr>
+<tr><td>定制建筑商（建筑师设计）</td><td>50–70m²</td><td>$16–22 万以上</td><td>6–10 个月</td></tr>
+</tbody>
+</table></div>
+
+<h2>建设价格包含什么——以及不包含什么</h2>
+<p>建筑商报价通常包括结构、装修、厨房、浴室和标准配置。通常<strong>不包含</strong>：</p>
+<ul>
+<li>场地准备和拆除现有结构（$5,000–$20,000）</li>
+<li>水、排污和电力连接（$8,000–$25,000，取决于距主管线的距离）</li>
+<li>Council/认证人员费用和申请成本（$3,000–$8,000）</li>
+<li>园林和车道工程（$5,000–$15,000）</li>
+<li>建筑师或绘图员费用（如未包含）（$3,000–$12,000）</li>
+</ul>
+<p><strong>实际全包预算：</strong>在建筑商基础报价上加 20–30% 来估算你的真实项目成本。</p>
+
+<h2>各州费用</h2>
+<div class="overflow-x-auto"><table>
+<thead><tr><th>州</th><th>典型费用/m²（标准）</th><th>60m² 全包估算</th></tr></thead>
+<tbody>
+<tr><td>NSW（悉尼都会区）</td><td>$2,500–$3,500/m²</td><td>$15–21 万</td></tr>
+<tr><td>VIC（墨尔本都会区）</td><td>$2,200–$3,000/m²</td><td>$13–18 万</td></tr>
+<tr><td>QLD（Brisbane / SEQ）</td><td>$2,000–$2,800/m²</td><td>$12–17 万</td></tr>
+<tr><td>WA（珀斯都会区）</td><td>$1,900–$2,600/m²</td><td>$11.5–16 万</td></tr>
+<tr><td>SA（阿德莱德）</td><td>$1,800–$2,500/m²</td><td>$11–15 万</td></tr>
+</tbody>
+</table></div>
+
+<h2>预制 vs 现场建造：哪个更有价值？</h2>
+<p>预制 Granny Flat 在质量上已显著改善，通常比现场建造便宜 15–25%。主要权衡：</p>
+<ul>
+<li><strong>预制优点：</strong>更快（在你的地块上只需几周而非几个月），工厂质量控制，减少天气干扰</li>
+<li><strong>预制缺点：</strong>定制空间有限，狭窄通道的地块需要额外起重机费用，一些贷款机构对其估值较低</li>
+<li><strong>现场建造优点：</strong>完全定制，与主房风格更协调，标准银行估值</li>
+<li><strong>现场建造缺点：</strong>建设时间更长，更受天气影响，需要更多协调</li>
+</ul>
+<p>对于大多数通道条件良好的郊区地块，预制是极好的性价比——特别是针对租金收入的直接单间或一居室。</p>
+
+<h2>租金收入计算</h2>
+<p>在确定预算之前，计算你的预期回报：</p>
+<ul>
+<li>悉尼郊区单间/一居室：$350–$500/周 = 每年 $18,200–$26,000</li>
+<li>墨尔本郊区 2 居室：$350–$500/周 = 每年 $18,200–$26,000</li>
+<li>Brisbane 2 居室：$300–$450/周 = 每年 $15,600–$23,400</li>
+</ul>
+<p>以 15 万总项目成本和 2.2 万年租金计算，毛收益率为 14.7%——远高于大多数投资房产。在太过兴奋之前，请考虑维护、空置和税务因素，但基本面是强劲的。</p>
+
+<h2>控制成本的五种方法</h2>
+<ol>
+<li><strong>使用 Granny Flat 专业建筑商</strong>——而不是普通建筑商。专业建筑商已优化了流程并批量采购材料。</li>
+<li><strong>选择标准设计</strong>——定制设计会额外增加 $15,000–$30,000 的建筑师/绘图员费用，通常不会带来相应的价值提升。</li>
+<li><strong>尽早检查管线连接</strong>——最大的意外成本是发现排污管线在 30 米以外。在报价前获取管线图。</li>
+<li><strong>避免移动厨房或浴室</strong>——湿区费用昂贵。将管道集中的设计可以显著降低成本。</li>
+<li><strong>获取三个建筑商报价</strong>——相同规格的 Granny Flat，不同建筑商的报价差异可达 20–30%。</li>
+</ol>
+    `,
+  },
+
+  {
+    slug: 'renting-out-granny-flat-australia',
+    title: 'Renting Out Your Granny Flat: Income, Tax, and Everything You Need to Know',
+    titleZh: '出租你的 Granny Flat：收入、税务及你需要知道的一切',
+    excerpt: 'All states now allow you to rent your granny flat to anyone. Here\'s the honest guide to rental income, landlord responsibilities, tax implications, and the family arrangement rules.',
+    excerptZh: '所有州现在都允许你将 Granny Flat 出租给任何人。这是关于租金收入、房东责任、税务影响和家庭安排规则的真实指南。',
+    category: 'granny-flat',
+    author: 'James Hartley',
+    authorRole: 'Construction Finance Specialist',
+    authorRoleZh: '建筑贷款专家',
+    date: '2026-03-14',
+    readMinutes: 8,
+    tags: ['Granny Flat', 'Rental Income', 'Tax', 'Investment', 'Landlord'],
+    tagsZh: ['Granny Flat', '租金收入', '税务', '投资', '房东'],
+    content: `
+<p>The family-only rental restriction is gone in every major state. Your granny flat can now be rented to anyone — students, couples, professionals, or strangers. That changes the investment equation significantly. Here's everything you need to know before you sign a lease.</p>
+
+<h2>Rental Income Potential by State (2026)</h2>
+<div class="overflow-x-auto"><table>
+<thead><tr><th>City / State</th><th>Studio/1-bed (weekly)</th><th>2-bed (weekly)</th><th>Annual (2-bed)</th></tr></thead>
+<tbody>
+<tr><td>Sydney (NSW)</td><td>$380–$520</td><td>$450–$650</td><td>$23,400–$33,800</td></tr>
+<tr><td>Melbourne (VIC)</td><td>$320–$460</td><td>$400–$580</td><td>$20,800–$30,160</td></tr>
+<tr><td>Brisbane (QLD)</td><td>$300–$420</td><td>$370–$520</td><td>$19,240–$27,040</td></tr>
+<tr><td>Perth (WA)</td><td>$320–$450</td><td>$400–$560</td><td>$20,800–$29,120</td></tr>
+<tr><td>Adelaide (SA)</td><td>$260–$380</td><td>$320–$460</td><td>$16,640–$23,920</td></tr>
+</tbody>
+</table></div>
+
+<h2>Tax: What You Must Declare</h2>
+<p>Rental income from a granny flat is assessable income — you must declare it on your tax return at your marginal rate. There is no exemption simply because it's on your own property.</p>
+<p><strong>What you can deduct against rental income:</strong></p>
+<ul>
+<li>Interest on the portion of your home loan used to fund the granny flat</li>
+<li>Depreciation on the building (2.5% per year) and fixtures</li>
+<li>Maintenance and repairs (not improvements)</li>
+<li>Property management fees if using an agent</li>
+<li>Council rates (apportioned to the granny flat area)</li>
+<li>Insurance (granny flat proportion)</li>
+</ul>
+<p><strong>Important — CGT implication:</strong> Renting your granny flat to a third party means that portion of your property is no longer fully covered by the main residence CGT exemption. When you sell, you may owe capital gains tax on the granny flat portion. Talk to a tax accountant before renting.</p>
+
+<h2>Family Arrangements vs Commercial Rental</h2>
+<p>There are two fundamentally different scenarios, and the tax treatment differs:</p>
+<p><strong>Commercial rental</strong> (to unrelated tenants at market rent): Rental income is assessable, deductions apply, potential CGT exposure on sale.</p>
+<p><strong>Granny flat arrangement</strong> (formal agreement with a family member): The ATO recognises "granny flat arrangements" as a distinct category. If you enter a formal granny flat arrangement (a written agreement where a family member lives there in exchange for a lump sum payment or care), the CGT implications are different — the main residence exemption may still apply. The ATO has a specific ruling on this (TR 2022/1). Get tax advice before structuring a family arrangement.</p>
+
+<h2>Landlord Responsibilities</h2>
+<p>Renting your granny flat makes you a landlord under state tenancy legislation — the same rules that apply to investment properties apply here:</p>
+<ul>
+<li>Provide a written lease (standard residential tenancy agreement)</li>
+<li>Lodge a rental bond with the relevant state authority (RTA in QLD, NSW Fair Trading, Consumer Affairs VIC, etc.)</li>
+<li>Maintain the property in a habitable condition</li>
+<li>Conduct a condition report at start and end of tenancy</li>
+<li>Give proper notice before entering the property</li>
+<li>Follow state-specific rules on rent increases and lease termination</li>
+</ul>
+<p>The fact that the tenant lives on the same block as you doesn't create any special exemption — all standard tenancy rights and obligations apply.</p>
+
+<h2>Practical Considerations: Sharing a Block</h2>
+<p>Before signing a lease with a third-party tenant, think carefully about:</p>
+<ul>
+<li><strong>Shared services:</strong> Who pays for water? If on one meter, how do you apportion costs?</li>
+<li><strong>Parking:</strong> Is there space for both the main home and granny flat occupants?</li>
+<li><strong>Privacy:</strong> Can the tenant access their unit without walking through your garden?</li>
+<li><strong>Noise and amenity:</strong> How close is the granny flat entry to your main bedroom windows?</li>
+</ul>
+<p>These aren't deal-breakers, but they're worth designing for before you build — changing access paths and utility metering after construction is expensive.</p>
+
+<h2>Insurance</h2>
+<p>Your standard home insurance may not cover a rented secondary dwelling. Tell your insurer before renting — you may need landlord insurance for the granny flat portion, which covers malicious damage by tenants, loss of rent, and tenant liability. Landlord insurance for a granny flat typically costs $800–$1,500/year.</p>
+    `,
+    contentZh: `
+<p>所有主要州的仅限家人出租限制已经消除。你的 Granny Flat 现在可以出租给任何人——学生、情侣、专业人士或陌生人。这显著改变了投资方程。在签署租约之前，以下是你需要了解的一切。</p>
+
+<h2>2026 年各州租金收入潜力</h2>
+<div class="overflow-x-auto"><table>
+<thead><tr><th>城市/州</th><th>单间/一居室（周租）</th><th>2 居室（周租）</th><th>年收入（2 居室）</th></tr></thead>
+<tbody>
+<tr><td>悉尼（NSW）</td><td>$380–$520</td><td>$450–$650</td><td>$23,400–$33,800</td></tr>
+<tr><td>墨尔本（VIC）</td><td>$320–$460</td><td>$400–$580</td><td>$20,800–$30,160</td></tr>
+<tr><td>布里斯班（QLD）</td><td>$300–$420</td><td>$370–$520</td><td>$19,240–$27,040</td></tr>
+<tr><td>珀斯（WA）</td><td>$320–$450</td><td>$400–$560</td><td>$20,800–$29,120</td></tr>
+<tr><td>阿德莱德（SA）</td><td>$260–$380</td><td>$320–$460</td><td>$16,640–$23,920</td></tr>
+</tbody>
+</table></div>
+
+<h2>税务：你必须申报什么</h2>
+<p>Granny Flat 的租金收入属于应税收入——你必须按边际税率在税务申报中申报。仅仅因为它在你自己的房产上，并没有豁免。</p>
+<p><strong>可以从租金收入中扣除的项目：</strong></p>
+<ul>
+<li>用于资助 Granny Flat 的房屋贷款部分的利息</li>
+<li>建筑（每年 2.5%）和设备折旧</li>
+<li>维修和保养（非改善）</li>
+<li>如果使用代理人的房产管理费</li>
+<li>Council 费率（按 Granny Flat 面积比例分摊）</li>
+<li>保险（Granny Flat 比例）</li>
+</ul>
+<p><strong>重要——资本利得税影响：</strong>将你的 Granny Flat 出租给第三方意味着你的房产该部分不再完全受主要住所 CGT 豁免保护。出售时，你可能需要为 Granny Flat 部分缴纳资本利得税。在出租之前咨询税务会计师。</p>
+
+<h2>家庭安排 vs 商业出租</h2>
+<p>有两种根本不同的情况，税务处理也不同：</p>
+<p><strong>商业出租</strong>（以市场租金出租给无关联租客）：租金收入应税，可申请扣除，出售时可能有 CGT 风险。</p>
+<p><strong>Granny Flat 安排</strong>（与家庭成员的正式协议）：ATO 将"Granny Flat 安排"认定为独立类别。如果你签订正式的 Granny Flat 安排（家庭成员住在那里，以换取一次性付款或照顾），CGT 影响不同——主要住所豁免可能仍然适用。ATO 对此有专门裁定（TR 2022/1）。在构建家庭安排之前获取税务建议。</p>
+
+<h2>房东责任</h2>
+<p>出租你的 Granny Flat 使你成为州租赁法下的房东——适用于投资房产的相同规则也适用于此：</p>
+<ul>
+<li>提供书面租约（标准住宅租赁协议）</li>
+<li>向相关州机构缴纳押金（昆士兰 RTA、NSW Fair Trading、VIC 消费事务局等）</li>
+<li>保持房产处于适合居住的状态</li>
+<li>在租赁开始和结束时进行状况报告</li>
+<li>在进入房产前给予适当通知</li>
+<li>遵守各州关于租金上涨和终止租约的具体规定</li>
+</ul>
+<p>租客居住在与你相同的地块上并不会创造任何特殊豁免——所有标准租赁权利和义务均适用。</p>
+
+<h2>实际考量：共用一块地</h2>
+<p>在与第三方租客签署租约之前，请仔细考虑：</p>
+<ul>
+<li><strong>共用设施：</strong>谁支付水费？如果共用一个水表，如何分摊费用？</li>
+<li><strong>停车位：</strong>主房和 Granny Flat 住户是否都有停车空间？</li>
+<li><strong>隐私：</strong>租客能否在不穿越你的花园的情况下进入他们的单元？</li>
+<li><strong>噪音和环境：</strong>Granny Flat 入口距你的主卧窗户有多近？</li>
+</ul>
+<p>这些不是问题所在，但值得在建造前进行设计——施工后更改通道路径和公用事业计量方式是昂贵的。</p>
+
+<h2>保险</h2>
+<p>你的标准房屋保险可能不覆盖出租的辅助住宅。在出租之前告知保险公司——你可能需要为 Granny Flat 部分购买房东保险，涵盖租客造成的恶意损坏、租金损失和租客责任。Granny Flat 的房东保险通常每年 $800–$1,500。</p>
     `,
   },
 
