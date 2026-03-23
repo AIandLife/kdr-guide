@@ -10,6 +10,8 @@ import { cn } from '@/lib/cn'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
+import { LoginGateModal } from '@/components/LoginGateModal'
+import { useAuth } from '@/lib/auth-context'
 import { SEED_SIGNALS, PROJECT_LABELS, formatTimeAgo, type DemandSignal } from '@/lib/demand-signals'
 
 // ── Demand Signal Feed ────────────────────────────────────────────────────────
@@ -310,9 +312,11 @@ export default function ProfessionalsPage() {
   const t = translations[lang]
   const tp = t.professionals
   const isZh = lang === 'zh'
+  const { user } = useAuth()
 
   const [activeCategory, setActiveCategory] = useState<string>('all')
   const [activeState, setActiveState] = useState<string>('all')
+  const [loginGatePro, setLoginGatePro] = useState<typeof PROFESSIONALS[0] | null>(null)
 
   // Read ?category= from URL on mount (client-side only)
   useEffect(() => {
@@ -331,8 +335,12 @@ export default function ProfessionalsPage() {
   })
 
   function openModal(pro: typeof PROFESSIONALS[0]) {
+    if (!user) {
+      setLoginGatePro(pro)
+      return
+    }
     setModal({ pro, step: 'form', submitting: false, error: '' })
-    setForm({ userName: '', userEmail: '', userPhone: '', suburb: '', projectType: '', timeline: '', message: '' })
+    setForm({ userName: '', userEmail: user.email ?? '', userPhone: '', suburb: '', projectType: '', timeline: '', message: '' })
   }
 
   function closeModal() {
@@ -347,18 +355,19 @@ export default function ProfessionalsPage() {
     }
     setModal(m => ({ ...m, submitting: true, error: '' }))
     try {
-      const res = await fetch('/api/leads/create', {
+      // Save to DB (linked to user account if logged in)
+      await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          proName: modal.pro.name,
-          proCategory: modal.pro.category,
-          proState: modal.pro.state,
-          ...form,
+          homeowner_id: user?.id ?? null,
+          professional_name: modal.pro.name,
+          professional_category: modal.pro.category,
+          message: form.message,
+          suburb: form.suburb,
+          project_type: form.projectType,
         }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
       setSentPros(prev => new Set([...prev, modal.pro!.name]))
       setModal(m => ({ ...m, step: 'success', submitting: false }))
     } catch (e: unknown) {
@@ -489,6 +498,14 @@ export default function ProfessionalsPage() {
           </p>
         </div>
       </div>
+
+      {/* ── Login Gate Modal ── */}
+      {loginGatePro && (
+        <LoginGateModal
+          onClose={() => setLoginGatePro(null)}
+          redirectAfter="/professionals"
+        />
+      )}
 
       {/* ── Lead Modal ── */}
       {modal.pro && (

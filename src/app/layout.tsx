@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { LangProvider } from '@/lib/language-context'
+import { AuthProvider } from '@/lib/auth-context'
 
 export const metadata: Metadata = {
   title: 'KDR Guide – Australia\'s Knockdown Rebuild Expert',
@@ -12,7 +13,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="min-h-screen bg-gray-950 text-white antialiased">
         <LangProvider>
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </LangProvider>
       </body>
     </html>

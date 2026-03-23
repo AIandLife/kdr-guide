@@ -315,7 +315,7 @@ export default function SupplierRegisterPage() {
                 <li>✓ {isZh ? '后续推荐算法中获得更高权重' : 'Higher weight in our recommendation algorithm'}</li>
               </ul>
               <p className="text-xs text-gray-400 mt-3">
-                {isZh ? '认证费用：AUD $99/年（审核通过后收取）' : 'Verification fee: AUD $99/year (charged after approval)'}
+                {isZh ? '认证审核通过后，我们会联系你完成后续步骤。' : 'After approval we\'ll reach out to complete the next steps.'}
               </p>
             </div>
 

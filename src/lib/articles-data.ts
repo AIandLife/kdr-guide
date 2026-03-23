@@ -649,4 +649,558 @@ export const ARTICLES: Article[] = [
 <p>访问我们的<a href="/suppliers">建材商目录</a>，寻找拥有 KDR 经验的经认证本地和进口建材供应商。</p>
     `,
   },
+
+  // ── NEW 2026 ARTICLES ──────────────────────────────────────────────────────
+
+  {
+    slug: 'rba-rates-construction-loans-2026',
+    title: 'RBA Rate Cuts & Construction Loans: What KDR Borrowers Need to Know in 2026',
+    titleZh: 'RBA 降息 & 建筑贷款：2026 年推倒重建借款人必知',
+    excerpt: 'After a sustained rate cycle, the RBA has moved. Here\'s what that means for your construction loan repayments, draw schedules, and how to lock in the best deal now.',
+    excerptZh: '经历了持续的利率周期后，RBA 开始行动。这对你的建筑贷款还款、分批支付计划意味着什么，以及如何现在锁定最佳利率。',
+    category: 'finance',
+    author: 'James Hartley',
+    authorRole: 'Construction Finance Specialist',
+    authorRoleZh: '建筑贷款专家',
+    date: '2026-03-20',
+    readMinutes: 8,
+    tags: ['Finance', 'RBA', 'Interest Rates', 'Construction Loans', '2026'],
+    tagsZh: ['贷款', 'RBA', '利率', '建筑贷款', '2026'],
+    content: `
+<p>The RBA's rate decisions in late 2024 and into 2025 set the tone for borrowing conditions in 2026. For anyone planning a knockdown rebuild, understanding how construction loans work in the current environment — and how rates affect your actual repayments — can save you significant money.</p>
+
+<h2>How Construction Loans Are Different</h2>
+<p>Unlike a standard home loan where you draw the full amount on day one, a construction loan releases funds in <strong>progress draws</strong> — typically 5–6 stages tied to build milestones: slab, frame, lock-up, fixing, and completion.</p>
+<p>This matters for your repayments: you only pay interest on the amount drawn to date. If your build costs $800,000 and you've drawn $200,000 at frame stage, you're only paying interest on $200,000 — not the full amount. This is called the <strong>interest-only period</strong> and typically runs until completion.</p>
+
+<h2>What the Rate Environment Means for You</h2>
+<p>With the cash rate lower than its 2023–24 peak, construction loan variable rates from major lenders are broadly sitting in the <strong>6.0–7.5% range</strong> depending on LVR and lender. The key metric for KDR borrowers is the all-in cost over the build period — typically 12–18 months of interest-only payments followed by principal-and-interest repayments once you move in.</p>
+<p><strong>Example:</strong> $1M construction loan, 6.5% interest rate, 14-month build averaging 60% drawn: interest cost over the build ≈ $45,500. Worth factoring into your total project budget.</p>
+
+<h2>Fixed vs Variable for Construction Loans</h2>
+<p>Most lenders don't offer fixed rates during the construction (interest-only) phase. The draw-down nature makes it difficult to fix — you're not sure exactly when each draw happens. Once construction is complete and you convert to a standard home loan, you can then choose to fix.</p>
+<p>Given current rate conditions, many borrowers are choosing to stay variable for now and reassess at completion. Get advice from a broker before deciding.</p>
+
+<h2>The Valuation Challenge</h2>
+<p>Banks lend against the <strong>on-completion value</strong> of the property, not the build cost. If your block is worth $700K and the completed home is valued at $1.4M, the bank will lend based on that $1.4M figure (typically up to 80% LVR = $1.12M). But if the valuer comes in lower than expected, you may need more equity — a common source of surprise for KDR borrowers.</p>
+<p><strong>Tip:</strong> Get a pre-build valuation estimate from an independent valuer before committing to your builder contract. Some brokers include this as part of their service.</p>
+
+<h2>Top Tips for KDR Borrowers in 2026</h2>
+<ul>
+<li>Use a broker who specialises in construction lending — not every broker understands progress draws and bank requirements for KDR</li>
+<li>Get pre-approval before signing with a builder — some builders require proof of finance before locking in a slot</li>
+<li>Factor 3–4% cost contingency into your loan amount — price variations during builds are common</li>
+<li>Ask your broker about bridging finance options if you're staying in the existing home during demolition planning</li>
+</ul>
+    `,
+    contentZh: `
+<p>RBA 在 2024 年底至 2025 年的利率决定奠定了 2026 年借贷环境的基调。对于任何计划推倒重建的人来说，了解建筑贷款在当前环境下的运作方式——以及利率如何影响你的实际还款——可以为你节省大量资金。</p>
+
+<h2>建筑贷款与普通贷款的区别</h2>
+<p>与普通房屋贷款在第一天就全额提款不同，建筑贷款按<strong>分批提款</strong>方式释放资金——通常分为 5–6 个阶段，与建设里程碑挂钩：地基、框架、锁闭、装修和竣工。</p>
+<p>这对你的还款很重要：你只需支付迄今提取金额的利息。如果你的建设费用为 80 万，框架阶段已提取 20 万，你只需支付 20 万的利息——而不是全部金额。这称为<strong>只付利息期</strong>，通常持续到竣工。</p>
+
+<h2>利率环境对你意味着什么</h2>
+<p>随着现金利率低于 2023–24 年的峰值，主要贷款机构的建筑贷款浮动利率大致在 <strong>6.0–7.5%</strong>，具体取决于贷款价值比和贷款机构。KDR 借款人的关键指标是建设期间的综合成本——通常是 12–18 个月的只付利息还款，之后在入住后转为本息还款。</p>
+<p><strong>示例：</strong>100 万建筑贷款，6.5% 利率，14 个月建设期平均提取 60%：建设期间利息成本约 4.55 万。值得纳入你的项目总预算。</p>
+
+<h2>建筑贷款固定利率 vs 浮动利率</h2>
+<p>大多数贷款机构在建设（只付利息）阶段不提供固定利率。分批提款的性质使得固定利率难以实现——你无法确定每次提款的确切时间。建设完成并转换为标准房屋贷款后，你可以选择固定利率。</p>
+<p>考虑到当前利率状况，许多借款人选择暂时保持浮动利率，并在竣工时重新评估。在做决定之前请向经纪人咨询。</p>
+
+<h2>估值挑战</h2>
+<p>银行根据房产的<strong>竣工价值</strong>而非建设成本放贷。如果你的地块价值 70 万，竣工后房屋估值 140 万，银行将基于 140 万的数字放贷（通常最高 80% 贷款价值比 = 112 万）。但如果估价师给出的估值低于预期，你可能需要更多自有资金——这是 KDR 借款人常见的惊喜。</p>
+<p><strong>建议：</strong>在与建筑商签约之前，从独立估价师处获取建前估值。一些经纪人将此作为服务的一部分。</p>
+
+<h2>2026 年 KDR 借款人建议</h2>
+<ul>
+<li>使用专注于建筑贷款的经纪人——并非每个经纪人都了解分批提款和银行对 KDR 的要求</li>
+<li>在与建筑商签约前获得预批准——一些建筑商需要资金证明才能锁定档期</li>
+<li>在贷款金额中计入 3–4% 的成本应急储备——建设期间的价格变动很常见</li>
+<li>如果在拆除规划期间仍居住在现有住宅中，询问经纪人关于过桥贷款的选择</li>
+</ul>
+    `,
+  },
+
+  {
+    slug: 'neighbour-objections-da-what-happens',
+    title: 'When Your Neighbour Objects to Your DA: What Actually Happens',
+    titleZh: '邻居反对你的 DA 申请会怎样？真实情况解析',
+    excerpt: 'Fear of neighbour objections stops many homeowners from pursuing legitimate developments. Here\'s the reality of what happens, what rights neighbours actually have, and how councils decide.',
+    excerptZh: '对邻居反对的恐惧让许多业主放弃了合法的开发申请。这里是真实情况——邻居实际上有哪些权利，以及 Council 如何做出决定。',
+    category: 'planning',
+    author: 'Sarah Chen',
+    authorRole: 'Registered Town Planner',
+    authorRoleZh: '注册城市规划师',
+    date: '2026-03-15',
+    readMinutes: 7,
+    tags: ['DA', 'Neighbours', 'Objections', 'Council', 'Planning'],
+    tagsZh: ['DA', '邻居', '反对', 'Council', '规划'],
+    content: `
+<p>One of the most common fears among people planning a knockdown rebuild or major development is: "What if my neighbour objects?" The reality is more nuanced — and often more manageable — than people expect.</p>
+
+<h2>The Notification Process</h2>
+<p>When you lodge a DA, council will notify adjoining and nearby neighbours — typically within 20–50 metres depending on the council and development type. Neighbours get 14–28 days to submit written submissions. This is standard and expected; receiving an objection doesn't mean your DA will be refused.</p>
+
+<h2>What Grounds for Objection Are Valid?</h2>
+<p>This is the key point most people don't know: neighbours can only object on <strong>planning-relevant grounds</strong>. Valid grounds include:</p>
+<ul>
+<li>Privacy impacts (overlooking of outdoor living areas or windows)</li>
+<li>Overshadowing (loss of solar access to living areas or solar panels)</li>
+<li>Visual bulk and scale (the building feels out of character)</li>
+<li>Traffic and parking impacts</li>
+<li>Heritage impacts (in heritage conservation areas)</li>
+</ul>
+<p><strong>Not valid grounds:</strong> "I just don't want them to build," personal disputes, concerns about construction noise during the build, or general preference for the neighbourhood to stay the same.</p>
+
+<h2>How Council Weighs Objections</h2>
+<p>Council planners are required to assess your DA against the relevant planning controls — not against the volume of objections. Receiving 50 objection letters doesn't automatically mean refusal; receiving one detailed, well-founded objection can carry more weight. Councils look at:</p>
+<ul>
+<li>Whether the objection raises legitimate planning concerns</li>
+<li>Whether those concerns can be addressed through conditions</li>
+<li>Whether the development complies with the relevant controls despite the concerns</li>
+</ul>
+
+<h2>What Happens If Your DA Goes to a Panel?</h2>
+<p>If your DA is complex or contentious, it may be referred to a Local Planning Panel (LPP) instead of being determined by council staff. This happens more often for larger developments, heritage matters, or when councillors have a conflict of interest. The LPP is an independent body and often more consistent in its decision-making than council.</p>
+
+<h2>Practical Steps to Manage Neighbour Relations</h2>
+<ol>
+<li><strong>Talk to neighbours early</strong> — before lodging. Show them the plans. Many objections come from surprise, not genuine opposition.</li>
+<li><strong>Address privacy proactively</strong> — screen planting, high sill windows on shared boundaries, and privacy louvres cost very little but eliminate the most common objection ground.</li>
+<li><strong>Shadow diagrams matter</strong> — if your build is two-storey, get proper shadow diagrams prepared. If you can show minimal impact on neighbouring solar access, you pre-empt the objection.</li>
+<li><strong>Engage a planner</strong> — a town planner can review your plans before lodgement and identify objection risks so you can address them in the design.</li>
+</ol>
+
+<p>The bottom line: a well-designed, compliant KDR development will usually be approved even with objections, especially if your town planner has anticipated and addressed likely concerns in the Statement of Environmental Effects.</p>
+    `,
+    contentZh: `
+<p>计划推倒重建或重大开发的人中，最常见的担忧之一是："如果我的邻居反对怎么办？"现实情况比人们预期的更为微妙——也更容易处理。</p>
+
+<h2>通知流程</h2>
+<p>当你提交 DA 时，Council 会通知相邻和附近的邻居——根据 Council 和开发类型，通常在 20–50 米范围内。邻居有 14–28 天时间提交书面意见。这是标准且预期的；收到反对意见并不意味着你的 DA 会被拒绝。</p>
+
+<h2>哪些反对理由是有效的？</h2>
+<p>这是大多数人不知道的关键点：邻居只能基于<strong>规划相关理由</strong>提出反对。有效理由包括：</p>
+<ul>
+<li>隐私影响（俯瞰邻居的室外生活区域或窗户）</li>
+<li>遮挡阳光（减少邻居生活区域或太阳能板的日照）</li>
+<li>视觉体量和规模（建筑感觉与周边不协调）</li>
+<li>交通和停车影响</li>
+<li>遗产影响（在遗产保护区内）</li>
+</ul>
+<p><strong>无效理由：</strong>"我就是不想让他们建"、个人纠纷、对建设期间噪音的担忧，或对邻居保持不变的一般偏好。</p>
+
+<h2>Council 如何权衡反对意见</h2>
+<p>Council 规划师需要根据相关规划控制来评估你的 DA——而非根据反对意见的数量。收到 50 封反对信并不自动意味着被拒绝；一封详细、有根据的反对意见可能更有分量。Council 会考虑：</p>
+<ul>
+<li>反对意见是否提出了合法的规划关切</li>
+<li>这些关切是否可以通过附加条件解决</li>
+<li>尽管有这些关切，开发项目是否仍符合相关控制要求</li>
+</ul>
+
+<h2>如果你的 DA 被提交给审议团怎么办？</h2>
+<p>如果你的 DA 复杂或有争议，可能会被转至地方规划审议团（LPP）而非由 Council 工作人员决定。这在较大开发、遗产事务或议员存在利益冲突时更常见。LPP 是一个独立机构，决策通常比 Council 更为一致。</p>
+
+<h2>管理邻居关系的实用步骤</h2>
+<ol>
+<li><strong>提前与邻居沟通</strong>——在提交之前。给他们看设计图。许多反对来自惊讶，而非真正的反对。</li>
+<li><strong>主动解决隐私问题</strong>——在共用边界种植屏障植物、设置高窗台窗户和隐私百叶窗，成本很低，但能消除最常见的反对理由。</li>
+<li><strong>阴影图很重要</strong>——如果你的建筑是两层，要准备适当的阴影图。如果你能证明对邻居日照影响最小，就能预先消除反对意见。</li>
+<li><strong>聘请规划师</strong>——城市规划师可以在提交前审查你的设计并识别反对风险，这样你就可以在设计中解决这些问题。</li>
+</ol>
+
+<p>结论：一个设计良好、符合规定的 KDR 开发通常会获得批准，即使有反对意见，特别是如果你的城市规划师已经在环境影响说明中预见并解决了可能的关切。</p>
+    `,
+  },
+
+  {
+    slug: 'dual-occupancy-vs-kdr-numbers',
+    title: 'Dual Occupancy vs Single KDR: Running the Numbers in 2026',
+    titleZh: '双住宅开发 vs 单栋推倒重建：2026 年数字对比',
+    excerpt: 'If your block is large enough, you may have a choice: build one quality home, or two smaller ones. The financial difference can be substantial — but so are the risks.',
+    excerptZh: '如果你的地块足够大，你可能面临选择：建一栋高质量住宅，还是两栋较小的？财务差异可能相当可观——但风险也同样如此。',
+    category: 'zoning',
+    author: 'Michael Wong',
+    authorRole: 'Property Development Advisor',
+    authorRoleZh: '房产开发顾问',
+    date: '2026-03-10',
+    readMinutes: 9,
+    tags: ['Dual Occupancy', 'Investment', 'Zoning', 'Development', 'ROI'],
+    tagsZh: ['双住宅', '投资', '分区', '开发', '回报率'],
+    content: `
+<p>One question we hear constantly from homeowners with larger blocks: "Should I just do a dual occupancy instead?" The answer depends on your council's zoning, your lot size, your financial position, and what you're actually trying to achieve.</p>
+
+<h2>What Is Dual Occupancy?</h2>
+<p>Dual occupancy means two dwellings on a single lot — either attached (side-by-side) or detached (one behind the other). The key distinction from a granny flat: both dwellings can typically be strata-titled and sold separately, making dual occ a genuine investment strategy.</p>
+
+<h2>When Is Dual Occ Allowed?</h2>
+<p>This varies dramatically by state and council:</p>
+<ul>
+<li><strong>NSW:</strong> Most R2 Low Density Residential zones allow dual occupancy as either complying development (if the block is large enough) or via DA. Minimum lot sizes typically range from 400–600m². Check your council's LEP.</li>
+<li><strong>VIC:</strong> ResCode controls dual occupancy. Most residential zones allow two dwellings on lots above 500m². The Neighbourhood Residential Zone (NRZ) is the most restrictive.</li>
+<li><strong>QLD:</strong> Dual occupancy (duplex) is generally permitted in Low-Medium Density zones. The 400m² minimum is common but varies.</li>
+<li><strong>WA:</strong> The R-Codes allow dual occ from R20 and above, which covers most suburban areas.</li>
+</ul>
+
+<h2>The Numbers: Single KDR vs Dual Occ</h2>
+<p>Let's use a real example: 700m² block in Western Sydney, current value $900K.</p>
+
+<div class="overflow-x-auto"><table>
+<thead><tr><th>Item</th><th>Single KDR (4-bed)</th><th>Dual Occ (2×3-bed)</th></tr></thead>
+<tbody>
+<tr><td>Build cost</td><td>$550,000</td><td>$780,000</td></tr>
+<tr><td>Demo + site</td><td>$40,000</td><td>$40,000</td></tr>
+<tr><td>Planning + DA</td><td>$15,000</td><td>$25,000</td></tr>
+<tr><td>Total project cost</td><td>$1,505,000</td><td>$1,745,000</td></tr>
+<tr><td>Completed value</td><td>$1,700,000</td><td>$2,100,000 (2×$1.05M)</td></tr>
+<tr><td>Equity created</td><td>$195,000</td><td>$355,000</td></tr>
+<tr><td>Rental yield (if keeping)</td><td>~$2,800/wk (whole home)</td><td>~$1,450/wk × 2 = $2,900/wk</td></tr>
+</tbody>
+</table></div>
+
+<p>On paper, dual occ creates more equity and similar rental yield. But the risks are higher: more complex build, longer DA, more things that can go wrong.</p>
+
+<h2>Hidden Costs of Dual Occ</h2>
+<ul>
+<li><strong>Strata costs:</strong> Strata titling each dwelling costs $15,000–$25,000</li>
+<li><strong>Longer DA:</strong> Dual occ DAs typically take 3–6 months longer than a standard KDR DA</li>
+<li><strong>Higher build complexity:</strong> Party walls, shared drainage, sound separation — all add cost and coordination</li>
+<li><strong>Finance complications:</strong> Banks may be more cautious with dual occ construction loans</li>
+<li><strong>CGT if selling:</strong> If this isn't your primary residence, CGT applies to the profit on sale</li>
+</ul>
+
+<h2>Who Should Consider Dual Occ?</h2>
+<p>Dual occ makes sense if: your lot is genuinely large enough (700m²+ in most states), you're comfortable with a more complex project and longer timeline, you want to retain one dwelling and sell the other to offset costs, or you're an investor seeking higher returns and can handle the holding costs during the 24–30 month project.</p>
+
+<p>If you primarily want a great family home with minimal stress, a single KDR on a well-designed brief will almost always deliver a better outcome. Talk to both a town planner and a finance broker before deciding — the regulatory and financial picture varies significantly by suburb.</p>
+    `,
+    contentZh: `
+<p>我们经常听到拥有较大地块的业主提问："我是不是应该做双住宅开发？"答案取决于你的 Council 分区、地块大小、财务状况，以及你真正想要实现什么。</p>
+
+<h2>什么是双住宅开发？</h2>
+<p>双住宅开发是指在一块地上建造两套住宅——可以是相连的（并排）或独立的（一前一后）。与 Granny Flat 的主要区别在于：两套住宅通常可以分开进行产权分割（Strata）并单独出售，使双住宅成为真正的投资策略。</p>
+
+<h2>双住宅何时被允许？</h2>
+<p>这因州和 Council 而差异很大：</p>
+<ul>
+<li><strong>新南威尔士州：</strong>大多数 R2 低密度住宅区允许双住宅开发，可以是合规开发（如果地块足够大）或通过 DA 申请。最小地块通常为 400–600 平方米。查看你的 Council LEP。</li>
+<li><strong>维多利亚州：</strong>ResCode 控制双住宅。大多数住宅区允许在 500 平方米以上的地块上建造两套住宅。邻里住宅区（NRZ）限制最严格。</li>
+<li><strong>昆士兰州：</strong>双住宅（Duplex）通常在中低密度区允许。400 平方米最小值很常见，但因地而异。</li>
+<li><strong>西澳大利亚州：</strong>R 代码允许 R20 及以上的双住宅，覆盖了大多数郊区。</li>
+</ul>
+
+<h2>数字对比：单栋 KDR vs 双住宅</h2>
+<p>让我们用一个真实例子：悉尼西部一块 700 平方米的地，当前价值 90 万。</p>
+
+<div class="overflow-x-auto"><table>
+<thead><tr><th>项目</th><th>单栋 KDR（4 卧）</th><th>双住宅（2×3 卧）</th></tr></thead>
+<tbody>
+<tr><td>建设成本</td><td>$55 万</td><td>$78 万</td></tr>
+<tr><td>拆除 + 场地</td><td>$4 万</td><td>$4 万</td></tr>
+<tr><td>规划 + DA</td><td>$1.5 万</td><td>$2.5 万</td></tr>
+<tr><td>项目总成本</td><td>$150.5 万</td><td>$174.5 万</td></tr>
+<tr><td>竣工价值</td><td>$170 万</td><td>$210 万（2×$105 万）</td></tr>
+<tr><td>创造的权益</td><td>$19.5 万</td><td>$35.5 万</td></tr>
+<tr><td>租金回报（如持有）</td><td>~$2,800/周</td><td>~$1,450/周×2=$2,900/周</td></tr>
+</tbody>
+</table></div>
+
+<p>从表面看，双住宅创造更多权益，租金回报相近。但风险更高：建设更复杂，DA 更长，出问题的可能性更多。</p>
+
+<h2>双住宅的隐藏成本</h2>
+<ul>
+<li><strong>产权分割成本：</strong>每套住宅的产权分割费用 $1.5–2.5 万</li>
+<li><strong>更长的 DA：</strong>双住宅 DA 通常比标准 KDR DA 多需要 3–6 个月</li>
+<li><strong>更高的建设复杂性：</strong>共用墙、共用排水、隔音——都增加成本和协调难度</li>
+<li><strong>融资复杂性：</strong>银行对双住宅建筑贷款可能更为谨慎</li>
+<li><strong>出售时的资本利得税：</strong>如果这不是你的主要住所，出售利润需缴纳 CGT</li>
+</ul>
+
+<h2>谁应该考虑双住宅？</h2>
+<p>双住宅在以下情况下有意义：地块确实足够大（大多数州 700 平方米以上），你能接受更复杂的项目和更长的时间线，你想保留一套住宅同时出售另一套以抵消成本，或者你是寻求更高回报的投资者，能够承担 24–30 个月项目期间的持有成本。</p>
+
+<p>如果你主要想要一个压力最小的优质家庭住宅，一个设计良好的单栋 KDR 几乎总会带来更好的结果。在做决定之前，同时咨询城市规划师和贷款经纪人——各郊区的监管和财务状况差异很大。</p>
+    `,
+  },
+
+  {
+    slug: '7-star-energy-ncc-2022-kdr',
+    title: '7-Star Energy Rating: What Every KDR Builder Must Do in 2026',
+    titleZh: '7 星能效评级：2026 年每位 KDR 建筑商必须做到的',
+    excerpt: 'NCC 2022 introduced mandatory 7-star NatHERS energy ratings for new homes. Here\'s exactly what that means for your build cost, design, and material choices.',
+    excerptZh: 'NCC 2022 引入了新住宅强制性 7 星 NatHERS 能效评级。这对你的建设成本、设计和建材选择意味着什么。',
+    category: 'construction',
+    author: 'KDR Guide Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-05',
+    readMinutes: 6,
+    tags: ['Energy Rating', 'NCC 2022', '7-Star', 'Sustainability', 'Building Code'],
+    tagsZh: ['能效评级', 'NCC 2022', '7 星', '可持续', '建筑规范'],
+    content: `
+<p>If you're doing a knockdown rebuild in 2026, your new home must meet 7-star NatHERS (Nationwide House Energy Rating Scheme) requirements under NCC 2022. This isn't optional — it's a mandatory building code requirement enforced by your private certifier or council.</p>
+
+<h2>What Changed with NCC 2022</h2>
+<p>Before May 2023, the minimum standard was 6 stars. NCC 2022 raised this to 7 stars for the thermal envelope (heating and cooling energy) and introduced an additional requirement for an overall home energy budget (which includes hot water, lighting, and pool/spa equipment where applicable).</p>
+<p>The practical effect: your builder and energy assessor need to work together from the design stage — retrofitting compliance late in the design process is expensive and disruptive.</p>
+
+<h2>What Gets You to 7 Stars?</h2>
+<p>A NatHERS energy assessor runs software simulations of your design. The rating depends on a combination of factors:</p>
+<ul>
+<li><strong>Insulation:</strong> Ceiling, wall, and underfloor insulation values (R-values)</li>
+<li><strong>Glazing:</strong> Window-to-floor-area ratio, glass type (double-glazed vs single), and orientation</li>
+<li><strong>Shading:</strong> Eaves, external blinds, and overhangs</li>
+<li><strong>Air sealing:</strong> Reducing draughts reduces heating/cooling load</li>
+<li><strong>Orientation:</strong> North-facing living areas and minimising east/west glass</li>
+</ul>
+
+<h2>Cost Impact on Your KDR</h2>
+<p>Meeting 7-star adds approximately <strong>$8,000–$20,000</strong> to a typical build, depending on the design. The biggest cost drivers are:</p>
+<ul>
+<li>Double glazing throughout (adds ~$8,000–$15,000 vs single-glazed)</li>
+<li>Additional ceiling insulation (usually R6.0+ in most climate zones)</li>
+<li>Sealing and draught-proofing during construction</li>
+</ul>
+<p>However, the long-term energy savings are real. A well-rated home can reduce heating and cooling costs by 30–50% compared to a 5-star home. Over 10 years, that's often $15,000–$30,000 in savings.</p>
+
+<h2>Common Pitfalls</h2>
+<p><strong>Late assessment:</strong> Some builders get the energy assessment done after finalising plans, then discover compliance requires expensive changes. Get assessment done at concept stage.</p>
+<p><strong>Window placement:</strong> Large west-facing windows are a common 7-star killer in warmer climates. Your architect or draftsperson should understand passive solar design principles.</p>
+<p><strong>Ceiling fans and natural ventilation:</strong> These are underrated compliance helpers. A design with good cross-ventilation and ceiling fans in bedrooms can achieve 7 stars without expensive mechanical systems.</p>
+
+<h2>Ask Your Builder These Questions</h2>
+<ol>
+<li>Do you work with an energy assessor from the design stage, or only at documentation?</li>
+<li>What insulation spec do you use as your standard, and how does it compare to NCC minimum?</li>
+<li>What glazing do you recommend for our climate zone, and what are the alternatives?</li>
+<li>Can you show me energy assessments from similar recent builds?</li>
+</ol>
+    `,
+    contentZh: `
+<p>如果你在 2026 年进行推倒重建，你的新家必须符合 NCC 2022 规定的 7 星 NatHERS（全国住宅能效评级方案）要求。这不是可选的——这是由你的私人认证人员或 Council 强制执行的建筑规范要求。</p>
+
+<h2>NCC 2022 改变了什么</h2>
+<p>在 2023 年 5 月之前，最低标准是 6 星。NCC 2022 将热包络（供暖和制冷能耗）提高到 7 星，并引入了额外的总体家庭能耗预算要求（包括热水、照明，以及适用情况下的泳池/水疗设备）。</p>
+<p>实际影响：你的建筑商和能效评估师需要从设计阶段开始合作——在设计过程后期才进行合规改造既昂贵又费事。</p>
+
+<h2>如何达到 7 星？</h2>
+<p>NatHERS 能效评估师运行软件模拟你的设计。评级取决于以下因素的组合：</p>
+<ul>
+<li><strong>隔热：</strong>天花板、墙壁和地板下的隔热值（R 值）</li>
+<li><strong>玻璃：</strong>窗墙比、玻璃类型（双层 vs 单层）和朝向</li>
+<li><strong>遮阳：</strong>屋檐、外部百叶和悬挑</li>
+<li><strong>气密性：</strong>减少穿堂风可降低供暖/制冷负荷</li>
+<li><strong>朝向：</strong>北向生活区和最小化东西向玻璃</li>
+</ul>
+
+<h2>对你的 KDR 建设成本的影响</h2>
+<p>达到 7 星标准约为典型建设增加 <strong>$8,000–$20,000</strong>，具体取决于设计。最大的成本驱动因素是：</p>
+<ul>
+<li>全屋双层玻璃（与单层玻璃相比增加约 $8,000–$15,000）</li>
+<li>额外天花板隔热（大多数气候区通常需要 R6.0 以上）</li>
+<li>施工期间的密封和防穿堂风</li>
+</ul>
+<p>然而，长期的能源节省是真实的。与 5 星住宅相比，评级良好的住宅可以将供暖和制冷费用降低 30–50%。10 年内，通常可节省 $15,000–$30,000。</p>
+
+<h2>常见误区</h2>
+<p><strong>晚期评估：</strong>一些建筑商在完成设计后才进行能效评估，然后发现合规需要进行昂贵的修改。应在概念设计阶段就进行评估。</p>
+<p><strong>窗户位置：</strong>大面积西向窗户是温暖气候中达到 7 星的常见障碍。你的建筑师或绘图员应该了解被动式太阳能设计原则。</p>
+<p><strong>吊扇和自然通风：</strong>这些是被低估的合规助手。一个具有良好穿越通风和卧室吊扇的设计可以在没有昂贵机械系统的情况下达到 7 星。</p>
+
+<h2>问你的建筑商这些问题</h2>
+<ol>
+<li>你是从设计阶段还是只在文件准备阶段与能效评估师合作？</li>
+<li>你标准使用什么隔热规格，与 NCC 最低要求相比如何？</li>
+<li>你为我们的气候区推荐什么玻璃，有哪些替代方案？</li>
+<li>你能展示来自类似近期建设的能效评估报告吗？</li>
+</ol>
+    `,
+  },
+
+  {
+    slug: 'what-delays-your-build',
+    title: '7 Things That Will Delay Your KDR Build (And How to Avoid Them)',
+    titleZh: '7 件会拖延你推倒重建的事（以及如何避免）',
+    excerpt: 'Most KDR builds run over schedule. These are the seven most common causes of delay — and the steps you can take before you even sign a building contract to protect your timeline.',
+    excerptZh: '大多数推倒重建项目都会超期。这是七个最常见的延误原因——以及在你签订建筑合同之前可以采取的保护时间线的步骤。',
+    category: 'construction',
+    author: 'Tom Richards',
+    authorRole: 'Project Manager, 12 years KDR',
+    authorRoleZh: '项目经理，12 年 KDR 经验',
+    date: '2026-02-22',
+    readMinutes: 7,
+    tags: ['Timeline', 'Build Delays', 'Project Management', 'Builder', 'Construction'],
+    tagsZh: ['时间线', '工期延误', '项目管理', '建筑商', '施工'],
+    content: `
+<p>A 14-month build that takes 22 months. That's not unusual — it's actually fairly common. And the consequences are real: rent costs, living disruption, holding costs on your loan. Here are the seven most common causes of KDR delay, and what you can do about each.</p>
+
+<h2>1. DA Approval Longer Than Expected</h2>
+<p>Councils routinely take longer than their published timeframes. Sydney metropolitan councils average 70–100+ days for DA determination, despite a 40-day statutory target. Heritage and complex sites can take 6–12 months.</p>
+<p><strong>Fix:</strong> Start the DA process as early as possible. Consider a complying development certificate (CDC) where the project qualifies — CDCs are assessed by private certifiers and typically take 10–20 days. Engage a town planner who knows your council's requirements to avoid requests for additional information (RAIs) that pause the clock.</p>
+
+<h2>2. Engineering and Soil Issues</h2>
+<p>Reactive clay soil, underground water, old drainage infrastructure, or unexpected rock — these are discovered after demolition and can add $20,000–$80,000 in costs and 4–8 weeks of delay.</p>
+<p><strong>Fix:</strong> Commission a geotechnical report before finalising your design and builder contract. It costs $1,500–$3,000 and can save multiples of that in surprises.</p>
+
+<h2>3. Builder Capacity Problems</h2>
+<p>The builder wins your job, then assigns an inexperienced site supervisor. Or they take on too many projects. Result: slow responses, long gaps between trades, poor coordination.</p>
+<p><strong>Fix:</strong> Ask specifically who will be your site supervisor and how many active sites they're managing. Ask to speak to two or three recent clients before signing. Check that the builder's contract has a liquidated damages clause for delays.</p>
+
+<h2>4. Variations and Scope Creep</h2>
+<p>Changing your mind mid-build is the single biggest controllable cause of delay. A variation for a bathroom relocation can set back the frame by three weeks — each trade needs to be rescheduled.</p>
+<p><strong>Fix:</strong> Make all decisions before signing the contract. Walk through a display home, review every fixture and fitting selection. Changes after contract signing cost double what they would have cost in the design phase.</p>
+
+<h2>5. Trade Availability</h2>
+<p>In 2026, experienced concreters, electricians, and tilers are still in high demand. A builder who doesn't have strong trade relationships may find themselves waiting weeks for key trades.</p>
+<p><strong>Fix:</strong> Ask your builder about their trade relationships during the tender process. Builders with high-volume programs tend to have more reliable trade access. Look for builders who employ some trades directly (like their own concreters) rather than relying entirely on subcontractors.</p>
+
+<h2>6. Neighbour and Authority Disputes</h2>
+<p>Disputes about property boundaries, boundary fencing, tree removal, or dust and noise complaints can result in stop-work orders or significant neighbour negotiation delays.</p>
+<p><strong>Fix:</strong> Commission a surveyor to identify boundary pegs before demolition. Communicate proactively with neighbours about the build timeline. Ensure your builder has a clear dust and waste management plan.</p>
+
+<h2>7. Defects and Rework</h2>
+<p>Nothing delays a build like having to redo work. Frame shrinkage, waterproofing failure, and tiling on uneven surfaces are common rework triggers.</p>
+<p><strong>Fix:</strong> Appoint an independent building inspector at key stages (frame, pre-plaster, practical completion). It costs $600–$1,200 per inspection but catches problems when they're still cheap to fix.</p>
+    `,
+    contentZh: `
+<p>一个计划 14 个月的建设项目实际花了 22 个月。这并不罕见——实际上相当普遍。后果是真实的：租金成本、生活干扰、贷款持有成本。以下是 KDR 延误的七个最常见原因，以及每个原因的应对方法。</p>
+
+<h2>1. DA 审批时间比预期长</h2>
+<p>Council 通常比其公布的时间框架花费更长时间。尽管法定目标是 40 天，悉尼都会区 Council 平均需要 70–100 天以上来确定 DA。遗产地点和复杂地点可能需要 6–12 个月。</p>
+<p><strong>解决方案：</strong>尽早开始 DA 流程。在项目符合条件的情况下，考虑合规开发证书（CDC）——CDC 由私人认证人员评估，通常需要 10–20 天。聘请熟悉你所在 Council 要求的城市规划师，避免因额外信息请求（RAI）暂停计时。</p>
+
+<h2>2. 工程和土壤问题</h2>
+<p>膨胀黏土、地下水、旧排水设施或意外岩石——这些在拆除后才被发现，可能增加 $2–8 万的费用和 4–8 周的延误。</p>
+<p><strong>解决方案：</strong>在完成设计和与建筑商签约之前委托岩土工程报告。费用 $1,500–$3,000，可以节省数倍的意外支出。</p>
+
+<h2>3. 建筑商产能问题</h2>
+<p>建筑商赢得你的项目，然后指派一名缺乏经验的工地监督员。或者他们承接了太多项目。结果：响应慢、工种之间长时间间隔、协调不良。</p>
+<p><strong>解决方案：</strong>具体询问谁将是你的工地监督员，以及他们管理多少个活跃工地。在签约前要求与两三个近期客户交谈。确认建筑商合同中有关于延误的违约金条款。</p>
+
+<h2>4. 变更和范围蔓延</h2>
+<p>在施工过程中改变想法是最大的可控延误原因。浴室重新定位的一个变更可能使框架推迟三周——每个工种都需要重新安排。</p>
+<p><strong>解决方案：</strong>在签约前做好所有决定。参观展示房，审查每一个固定装置和配件选择。签约后的变更成本是设计阶段的两倍。</p>
+
+<h2>5. 工种可用性</h2>
+<p>到 2026 年，经验丰富的混凝土工、电工和贴砖工仍然需求旺盛。没有强大工种关系的建筑商可能发现自己在等待关键工种数周。</p>
+<p><strong>解决方案：</strong>在招标过程中询问建筑商关于其工种关系。高产量项目的建筑商往往有更可靠的工种获取渠道。寻找直接雇用部分工种（如自己的混凝土工）的建筑商，而非完全依赖分包商。</p>
+
+<h2>6. 邻居和机构纠纷</h2>
+<p>关于产权边界、边界围栏、树木移除或尘土噪音投诉的纠纷可能导致停工令或重大邻居协商延误。</p>
+<p><strong>解决方案：</strong>在拆除前委托测量师确认边界桩。主动与邻居沟通建设时间线。确保你的建筑商有明确的尘土和废物管理计划。</p>
+
+<h2>7. 缺陷和返工</h2>
+<p>没有什么比返工更能拖延建设。框架收缩、防水失败和不平整表面的贴砖是常见的返工触发因素。</p>
+<p><strong>解决方案：</strong>在关键阶段（框架、预石膏板、实际完工）委任独立建筑检查员。每次检查费用 $600–$1,200，但能在问题便宜修复时及时发现。</p>
+    `,
+  },
+
+  {
+    slug: 'box-hill-townhouse-development',
+    title: 'Box Hill Townhouse: How One Family Turned a Single Block Into Four Homes',
+    titleZh: 'Box Hill 联排别墅：一家人如何把一块地变成四套住宅',
+    excerpt: 'The Chen family\'s journey from a single-storey fibro home on a 900m² Box Hill block to four modern townhouses — the numbers, the challenges, and what they\'d do differently.',
+    excerptZh: '陈家从 Box Hill 一块 900 平方米地上的单层旧屋，到四套现代联排别墅的历程——数字、挑战，以及他们如果重来会怎么做。',
+    category: 'stories',
+    author: 'KDR Guide Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-02-15',
+    readMinutes: 10,
+    tags: ['Success Story', 'Townhouses', 'Box Hill', 'Development', 'Investment'],
+    tagsZh: ['成功案例', '联排别墅', 'Box Hill', '开发', '投资'],
+    content: `
+<p>In 2023, the Chen family owned a 1960s fibro home on a 900m² block in Box Hill — one of Melbourne's most sought-after growth corridors. Their parents had bought the block in 1989 for $85,000. By the time they started planning, the land alone was worth $1.4 million.</p>
+
+<h2>The Initial Question</h2>
+<p>James Chen, the eldest son, posed the question that started everything: "We could renovate, we could sell, or we could build. But what if we built four townhouses?" It took a year of planning to find out whether that was even possible.</p>
+
+<h2>The Zoning Check</h2>
+<p>Box Hill falls within the City of Whitehorse. A town planner confirmed the block was zoned General Residential Zone Schedule 1 (GRZ1), which allows medium-density development with council permission. The 900m² size — well above Whitehorse's 250m² minimum per dwelling for townhouses — made four dwellings viable in principle.</p>
+<p>However, the block had a significant challenge: a 3-metre easement along the rear boundary and a protected native tree near the centre, which an arborist assessed as having a 6-metre Tree Protection Zone.</p>
+
+<h2>The Design Process</h2>
+<p>Working with a local architect experienced in Whitehorse, the Chens spent five months developing plans that worked around the tree and easement. The final design: four 3-bedroom, 2.5-bathroom townhouses arranged in a U-shape, with shared visitor parking at the front.</p>
+<p>Total gross floor area per townhouse: 180m². Each with a private courtyard, single garage, and storage.</p>
+
+<h2>The Numbers</h2>
+<table>
+<thead><tr><th>Item</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td>Town planner & architect</td><td>$65,000</td></tr>
+<tr><td>Planning permit (DA)</td><td>$8,200</td></tr>
+<tr><td>Demolition</td><td>$48,000</td></tr>
+<tr><td>Construction (4 townhouses)</td><td>$1,940,000</td></tr>
+<tr><td>Landscaping & fencing</td><td>$62,000</td></tr>
+<tr><td>Strata titling (4 lots)</td><td>$42,000</td></tr>
+<tr><td>Finance costs (construction loan)</td><td>$89,000</td></tr>
+<tr><td>Contingency used</td><td>$67,000</td></tr>
+<tr><td><strong>Total project cost</strong></td><td><strong>$2,321,200</strong></td></tr>
+</tbody>
+</table>
+<p>Add land value ($1.4M) and total cost is $3.72M. Final valuations on completion (mid-2025): each townhouse valued at $1.05M = <strong>$4.2M total</strong>. Equity created: approximately $480,000.</p>
+
+<h2>What Took Longest</h2>
+<p>The planning permit took 11 months — significantly longer than the 60-day expectation. An objection from a neighbour about overlooking triggered a revised design and an additional two months of council review. The tree protection zone also required an arborist report at multiple stages.</p>
+<p>"We thought 6 months, it took 11. That was the biggest surprise," James said. "But once we got the permit, the build itself went relatively smoothly."</p>
+
+<h2>What They'd Do Differently</h2>
+<ul>
+<li><strong>Commission the geotechnical report earlier.</strong> They discovered reactive clay soil during excavation, requiring a more expensive raft slab. Cost: additional $34,000.</li>
+<li><strong>Communicate with the neighbours before lodging.</strong> The objection from next door was a surprise and could likely have been avoided with early conversation and design adjustments.</li>
+<li><strong>Lock in the builder earlier.</strong> Their preferred builder was fully booked; they waited 6 months for a slot to open up. That was 6 months of holding costs on the loan.</li>
+</ul>
+
+<h2>The Outcome</h2>
+<p>The family retained two townhouses (one for James, one for his parents) and sold two. The sale of those two units — at $1.05M each — effectively paid for the entire project, leaving the family with two debt-free properties valued at $2.1M combined.</p>
+<p>"We started with one old house worth $1.4M including land. We ended up with two new townhouses worth $2.1M, debt-free. That's what good planning can do." — James Chen</p>
+    `,
+    contentZh: `
+<p>2023 年，陈家在 Box Hill 拥有一栋 900 平方米地块上的 1960 年代石棉瓦旧房——这里是墨尔本最受追捧的增长走廊之一。他们的父母在 1989 年以 8.5 万买下这块地。到他们开始规划时，仅地皮就价值 140 万。</p>
+
+<h2>最初的问题</h2>
+<p>大儿子陈炜提出了引发一切的问题："我们可以翻新、可以出售，或者我们可以建房。但如果我们建四套联排别墅呢？"花了一年时间规划，才弄清楚这是否可行。</p>
+
+<h2>分区核查</h2>
+<p>Box Hill 属于 Whitehorse 市政区。一位城市规划师确认该地块被划为通用住宅区 GRZ1，允许经 Council 批准的中密度开发。900 平方米的面积——远超 Whitehorse 对联排别墅每套 250 平方米的最低要求——原则上使四套住宅成为可行方案。</p>
+<p>然而，地块有一个重大挑战：后边界有一条 3 米宽的地役权，中间附近有一棵受保护的当地树木，树艺师评估其树木保护区为 6 米。</p>
+
+<h2>设计过程</h2>
+<p>与一位熟悉 Whitehorse 的本地建筑师合作，陈家花了五个月时间开发绕过树木和地役权的设计方案。最终设计：四套 3 卧室 2.5 浴室联排别墅，排列成 U 形，前面设有共用访客停车位。</p>
+<p>每套联排别墅总建筑面积：180 平方米。每套都有私人庭院、单车库和储藏室。</p>
+
+<h2>数字详情</h2>
+<table>
+<thead><tr><th>项目</th><th>费用</th></tr></thead>
+<tbody>
+<tr><td>城市规划师和建筑师</td><td>$6.5 万</td></tr>
+<tr><td>规划许可（DA）</td><td>$8,200</td></tr>
+<tr><td>拆除</td><td>$4.8 万</td></tr>
+<tr><td>施工（4 套联排）</td><td>$194 万</td></tr>
+<tr><td>园林和围栏</td><td>$6.2 万</td></tr>
+<tr><td>产权分割（4 个地块）</td><td>$4.2 万</td></tr>
+<tr><td>融资成本（建筑贷款）</td><td>$8.9 万</td></tr>
+<tr><td>使用的应急储备</td><td>$6.7 万</td></tr>
+<tr><td><strong>项目总成本</strong></td><td><strong>$232.12 万</strong></td></tr>
+</tbody>
+</table>
+<p>加上地皮价值（140 万），总成本 372 万。竣工时（2025 年中）最终估值：每套联排估值 105 万 = <strong>总计 420 万</strong>。创造的权益：约 48 万。</p>
+
+<h2>耗时最长的事</h2>
+<p>规划许可花了 11 个月——远超预期的 60 天。一位邻居关于俯瞰问题的反对意见触发了设计修改，以及额外两个月的 Council 审查。树木保护区还需要在多个阶段提交树艺师报告。</p>
+<p>"我们以为 6 个月，结果花了 11 个月。这是最大的意外，"陈炜说。"但一旦获得许可，建设本身就相对顺利了。"</p>
+
+<h2>如果重来他们会怎么做</h2>
+<ul>
+<li><strong>更早委托岩土工程报告。</strong>他们在挖掘过程中发现了膨胀黏土，需要更昂贵的筏形基础。额外费用：$3.4 万。</li>
+<li><strong>在提交申请前与邻居沟通。</strong>隔壁邻居的反对是个意外，通过早期沟通和设计调整可能可以避免。</li>
+<li><strong>更早锁定建筑商。</strong>他们首选的建筑商档期全满；他们等了 6 个月才有档期。那是 6 个月的贷款持有成本。</li>
+</ul>
+
+<h2>最终结果</h2>
+<p>家人保留了两套联排（一套给陈炜，一套给父母），出售了两套。出售这两套——每套 105 万——实际上支付了整个项目的费用，让家人拥有两套合计估值 210 万的无债务房产。</p>
+<p>"我们从一栋含地皮价值 140 万的旧房开始。最终得到两套价值 210 万、无债务的新联排别墅。这就是良好规划的力量。" —— 陈炜</p>
+    `,
+  },
 ]

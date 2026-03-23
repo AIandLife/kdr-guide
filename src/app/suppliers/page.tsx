@@ -153,7 +153,7 @@ export default function SuppliersPage() {
             { icon: '🏭', en: '60+ suppliers listed', zh: '60+ 家供应商已收录' },
             { icon: '✅', en: 'Verified suppliers prioritised', zh: '认证商家优先展示' },
             { icon: '🌏', en: 'Local & China imports covered', zh: '澳洲本地 + 中国进口全覆盖' },
-            { icon: '💳', en: 'Verification from $99/yr', zh: '认证费仅 $99/年起' },
+            { icon: '🆓', en: 'Free to list your business', zh: '免费收录你的业务' },
           ].map((item, i) => (
             <div key={i} className="flex items-center gap-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg px-3 py-2">
               <span>{item.icon}</span>

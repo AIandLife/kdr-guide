@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Building2, ArrowLeft, Menu, X } from 'lucide-react'
+import { Building2, ArrowLeft, Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { LangToggle } from '@/components/LangToggle'
+import { useAuth } from '@/lib/auth-context'
+import { createClient } from '@/lib/supabase/client'
 
 interface SiteNavProps {
   backHref?: string
@@ -15,7 +17,10 @@ interface SiteNavProps {
 export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
   const { lang } = useLang()
   const t = translations[lang]
+  const isZh = lang === 'zh'
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const { user, loading } = useAuth()
 
   const links = [
     { href: '/guide',         label: t.nav.guide },
@@ -23,6 +28,15 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
     { href: '/articles',      label: t.nav.articles },
     { href: '/suppliers',     label: t.nav.suppliers },
   ]
+
+  const handleSignOut = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    setUserMenuOpen(false)
+    window.location.href = '/'
+  }
+
+  const avatarLetter = user?.email?.[0].toUpperCase() ?? '?'
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
@@ -67,13 +81,50 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
           })}
         </div>
 
-        {/* Right: lang toggle + CTA + mobile menu */}
+        {/* Right: lang toggle + CTA/user + mobile menu */}
         <div className="flex items-center gap-2 shrink-0">
           <LangToggle />
           <a href="/feasibility"
             className="hidden sm:inline-flex items-center bg-orange-500 hover:bg-orange-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm shadow-orange-200">
             {t.nav.cta}
           </a>
+
+          {/* User avatar / login */}
+          {!loading && (
+            user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(v => !v)}
+                  className="w-8 h-8 rounded-full bg-orange-500 text-white text-sm font-bold flex items-center justify-center hover:bg-orange-400 transition-colors"
+                >
+                  {avatarLetter}
+                </button>
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-10 w-48 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-50">
+                    <p className="px-4 py-2 text-xs text-gray-400 border-b border-gray-100 truncate">{user.email}</p>
+                    <a href="/dashboard"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <LayoutDashboard className="w-4 h-4" />
+                      {isZh ? '我的后台' : 'My Dashboard'}
+                    </a>
+                    <button onClick={handleSignOut}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors">
+                      <LogOut className="w-4 h-4" />
+                      {isZh ? '退出登录' : 'Sign out'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <a href="/login"
+                className="hidden sm:flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors px-2 py-1.5 rounded-lg hover:bg-gray-100">
+                <User className="w-4 h-4" />
+                {isZh ? '登录' : 'Sign in'}
+              </a>
+            )
+          )}
+
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileOpen(v => !v)}
@@ -95,11 +146,22 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
               {link.label}
             </a>
           ))}
-          <div className="pt-2 pb-1">
+          <div className="pt-2 pb-1 space-y-2">
             <a href="/feasibility"
               className="block w-full text-center bg-orange-500 hover:bg-orange-400 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors">
               {t.nav.cta}
             </a>
+            {user ? (
+              <a href="/dashboard/pro"
+                className="block w-full text-center border border-gray-200 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+                {isZh ? '我的后台' : 'My Dashboard'}
+              </a>
+            ) : (
+              <a href="/login"
+                className="block w-full text-center border border-gray-200 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+                {isZh ? '登录' : 'Sign in'}
+              </a>
+            )}
           </div>
         </div>
       )}
