@@ -4,7 +4,7 @@ import { useState } from 'react'
 import {
   CheckCircle, ChevronRight, Loader2, Shield, Star, Phone,
   HardHat, FileText, Zap, Droplets, Hammer, DollarSign, Briefcase, Ruler,
-  CreditCard, Lock
+  CreditCard, Lock, PenTool
 } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { SiteNav } from '@/components/SiteNav'
@@ -12,6 +12,7 @@ import { cn } from '@/lib/cn'
 
 const CATEGORIES = [
   { id: 'Builder', label: 'Builder（建筑商）', icon: HardHat },
+  { id: 'Building Designer', label: 'Building Designer / Architect（建筑设计师 / 建筑师）', icon: PenTool },
   { id: 'Town Planner', label: 'Town Planner（城市规划师）', icon: FileText },
   { id: 'Demolition', label: 'Demolition（拆房商）', icon: Hammer },
   { id: 'Structural Engineer', label: 'Structural Engineer（结构工程师）', icon: Ruler },
@@ -40,6 +41,10 @@ const VERIFY_BENEFITS_ZH = [
 const VERIFY_DOCS: Record<string, { label: string; labelZh: string; placeholder: string }[]> = {
   Builder: [
     { label: 'Builder\'s Licence Number', labelZh: '建筑执照号码', placeholder: 'e.g. BLD123456' },
+    { label: 'ABN', labelZh: 'ABN', placeholder: 'XX XXX XXX XXX' },
+  ],
+  'Building Designer': [
+    { label: 'Building Designer Registration / Architect Registration', labelZh: '建筑设计师 / 注册建筑师号码', placeholder: 'e.g. BD12345 or ARBV-12345' },
     { label: 'ABN', labelZh: 'ABN', placeholder: 'XX XXX XXX XXX' },
   ],
   'Town Planner': [

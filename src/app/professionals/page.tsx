@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import {
   CheckCircle, MapPin, Phone, ChevronRight,
   Briefcase, HardHat, Ruler, Zap, Droplets, FileText, DollarSign,
-  Globe, MessageCircle, X, Building2, TrendingUp, Activity
+  Globe, MessageCircle, X, Building2, TrendingUp, Activity, PenTool
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useLang } from '@/lib/language-context'
@@ -137,14 +137,15 @@ function DemandFeed({ isZh }: { isZh: boolean }) {
 }
 
 const CATEGORIES = [
-  { id: 'builder',     label: 'Builders',       icon: HardHat,    color: 'orange' },
-  { id: 'planner',     label: 'Town Planners',   icon: FileText,   color: 'blue'   },
-  { id: 'demolition',  label: 'Demolition',      icon: Building2,  color: 'red'    },
-  { id: 'engineer',    label: 'Engineers',       icon: Ruler,      color: 'purple' },
-  { id: 'electrician', label: 'Electricians',    icon: Zap,        color: 'yellow' },
-  { id: 'plumber',     label: 'Plumbers',        icon: Droplets,   color: 'cyan'   },
-  { id: 'finance',     label: 'Finance',         icon: DollarSign, color: 'green'  },
-  { id: 'other',       label: 'Other',           icon: Briefcase,  color: 'gray'   },
+  { id: 'builder',     label: 'Builders',          icon: HardHat,    color: 'orange' },
+  { id: 'designer',    label: 'Building Designers', icon: PenTool,    color: 'indigo' },
+  { id: 'planner',     label: 'Town Planners',      icon: FileText,   color: 'blue'   },
+  { id: 'demolition',  label: 'Demolition',         icon: Building2,  color: 'red'    },
+  { id: 'engineer',    label: 'Engineers',          icon: Ruler,      color: 'purple' },
+  { id: 'electrician', label: 'Electricians',       icon: Zap,        color: 'yellow' },
+  { id: 'plumber',     label: 'Plumbers',           icon: Droplets,   color: 'cyan'   },
+  { id: 'finance',     label: 'Finance',            icon: DollarSign, color: 'green'  },
+  { id: 'other',       label: 'Other',              icon: Briefcase,  color: 'gray'   },
 ]
 
 const PROFESSIONALS = [
@@ -221,6 +222,43 @@ const PROFESSIONALS = [
     description: 'NSW-focused builder with specialist KDR team. Strong in Sydney western and southern suburbs. Dual-occupancy and multi-dwelling experience.',
     website: 'rawsonhomes.com.au', wechat: null,
   },
+  // ── BUILDING DESIGNERS ──
+  {
+    name: 'Buildplan Design Studio',
+    category: 'designer', state: 'NSW',
+    regions: ['Sydney', 'Wollongong', 'Central Coast'],
+    specialties: ['KDR Design', 'Dual Occupancy', 'Granny Flat', 'DA Drawings'],
+    verified: true, featured: true,
+    description: 'Registered building designers specialising in KDR and dual occupancy projects across Greater Sydney. Full design and documentation service from concept to DA-ready plans.',
+    website: null, wechat: null,
+  },
+  {
+    name: 'Blueprint Residential Design',
+    category: 'designer', state: 'VIC',
+    regions: ['Melbourne', 'Geelong', 'Mornington Peninsula'],
+    specialties: ['Custom Home Design', 'KDR', 'Extensions', 'Planning Permit Drawings'],
+    verified: true, featured: false,
+    description: 'Melbourne-based residential designers with 15+ years of custom home and KDR experience. Coordinate with structural engineers and town planners for a seamless approval process.',
+    website: null, wechat: null,
+  },
+  {
+    name: 'ProDraft Building Designers',
+    category: 'designer', state: 'QLD',
+    regions: ['Brisbane', 'Gold Coast', 'Sunshine Coast'],
+    specialties: ['House Plans', 'KDR', 'Granny Flat', 'Council Submissions'],
+    verified: true, featured: false,
+    description: 'QLD-licensed building designers providing full design documentation for KDR, dual occupancy, and secondary dwellings. Experienced with Brisbane City Plan 2014.',
+    website: null, wechat: null,
+  },
+  {
+    name: 'Form & Function Architects',
+    category: 'designer', state: 'WA',
+    regions: ['Perth', 'Fremantle', 'Swan Valley'],
+    specialties: ['Architectural Design', 'KDR', 'Heritage Areas', 'Custom Homes'],
+    verified: true, featured: false,
+    description: 'Registered architects providing full residential design services across Perth metropolitan area. Heritage area specialists with JDAP/LDAP submission experience.',
+    website: null, wechat: null,
+  },
   // ── TOWN PLANNERS ──
   {
     name: 'Urban Planning Solutions',
@@ -283,6 +321,7 @@ const COLOR_MAP: Record<string, string> = {
   red: 'bg-red-100 text-red-600', purple: 'bg-purple-100 text-purple-600',
   yellow: 'bg-yellow-100 text-yellow-600', cyan: 'bg-cyan-100 text-cyan-600',
   green: 'bg-green-100 text-green-600', gray: 'bg-gray-100 text-gray-600',
+  indigo: 'bg-indigo-100 text-indigo-600',
 }
 
 const PROJECT_TYPES_EN = ['Knockdown Rebuild', 'Dual Occupancy', 'Renovation', 'New Build', 'Not sure yet']
