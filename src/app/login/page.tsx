@@ -48,7 +48,7 @@ function LoginForm() {
             <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-md shadow-orange-200">
               <Building2 className="w-6 h-6 text-white" />
             </div>
-            <span className="font-bold text-xl text-gray-900">KDR Guide</span>
+            <span className="font-bold text-xl text-gray-900">AusBuildCircle</span>
           </a>
           <h1 className="text-2xl font-bold text-gray-900 mb-1">
             {isZh ? '登录 / 注册' : 'Sign in'}

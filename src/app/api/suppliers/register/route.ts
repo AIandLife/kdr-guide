@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
-      subject: `[KDR Guide] New Supplier Listing — ${businessName} (${status})`,
+      subject: `[澳洲建房圈] New Supplier Listing — ${businessName} (${status})`,
       html: `
         <h2>New Supplier Listing Submitted</h2>
         <table style="border-collapse:collapse;width:100%">
@@ -94,15 +94,15 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
-      subject: `Your KDR Guide listing has been received — ${businessName}`,
+      subject: `Your 澳洲建房圈 listing has been received — ${businessName}`,
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto">
           <div style="background:#f97316;padding:24px;border-radius:12px 12px 0 0;text-align:center">
-            <h1 style="color:white;margin:0;font-size:22px">KDR Guide — Listing Received</h1>
+            <h1 style="color:white;margin:0;font-size:22px">澳洲建房圈 — Listing Received</h1>
           </div>
           <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
             <p>Hi ${contactName},</p>
-            <p>Thank you for submitting <strong>${businessName}</strong> to the KDR Guide directory.</p>
+            <p>Thank you for submitting <strong>${businessName}</strong> to the 澳洲建房圈 directory.</p>
             ${status === 'unverified'
               ? `<div style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:16px 0">
                   <p style="margin:0 0 8px;font-weight:bold">Current status: Unverified</p>
@@ -115,7 +115,7 @@ export async function POST(req: Request) {
                 </div>`
             }
             <p>Questions? Reply to this email anytime.</p>
-            <p>The KDR Guide Team</p>
+            <p>The 澳洲建房圈 Team</p>
           </div>
         </div>
       `,

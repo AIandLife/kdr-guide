@@ -52,22 +52,22 @@ export async function POST(req: Request) {
       await resend.emails.send({
         from: FROM_EMAIL,
         to: supplier.email,
-        subject: `✅ Your KDR Guide listing is now Verified — ${supplier.business_name}`,
+        subject: `✅ Your 澳洲建房圈 listing is now Verified — ${supplier.business_name}`,
         html: `
           <div style="font-family:sans-serif;max-width:560px;margin:0 auto">
             <div style="background:#f97316;padding:24px;border-radius:12px 12px 0 0;text-align:center">
-              <h1 style="color:white;margin:0;font-size:22px">You're Verified on KDR Guide</h1>
+              <h1 style="color:white;margin:0;font-size:22px">You're Verified on 澳洲建房圈</h1>
             </div>
             <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
               <p>Hi ${supplier.contact_name},</p>
-              <p>Great news — <strong>${supplier.business_name}</strong> has been verified on KDR Guide. Your full profile is now publicly visible in our directory, including your contact details, website, and WeChat.</p>
+              <p>Great news — <strong>${supplier.business_name}</strong> has been verified on 澳洲建房圈. Your full profile is now publicly visible in our directory, including your contact details, website, and WeChat.</p>
               <div style="background:white;border:2px solid #22c55e;border-radius:8px;padding:16px;margin:16px 0">
                 <p style="margin:0;color:#16a34a;font-weight:bold">✅ Verified status active</p>
                 <p style="margin:8px 0 0;color:#6b7280;font-size:14px">Your listing now appears with priority ranking and the Verified badge. Homeowners can see your contact details and reach you directly.</p>
               </div>
               ${adminNotes ? `<p style="color:#6b7280;font-size:14px">Note from our team: ${adminNotes}</p>` : ''}
               <p>View your listing: <a href="https://kdr-guide.vercel.app/suppliers">kdr-guide.vercel.app/suppliers</a></p>
-              <p>The KDR Guide Team</p>
+              <p>The 澳洲建房圈 Team</p>
             </div>
           </div>
         `,
@@ -76,14 +76,14 @@ export async function POST(req: Request) {
       await resend.emails.send({
         from: FROM_EMAIL,
         to: supplier.email,
-        subject: `KDR Guide — Verification update for ${supplier.business_name}`,
+        subject: `澳洲建房圈 — Verification update for ${supplier.business_name}`,
         html: `
           <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px">
             <p>Hi ${supplier.contact_name},</p>
             <p>We've reviewed your verification application for <strong>${supplier.business_name}</strong>.</p>
             ${adminNotes ? `<p>Feedback from our team: ${adminNotes}</p>` : ''}
             <p>Please reply to this email if you have questions or would like to resubmit.</p>
-            <p>The KDR Guide Team</p>
+            <p>The 澳洲建房圈 Team</p>
           </div>
         `,
       }).catch(() => {})

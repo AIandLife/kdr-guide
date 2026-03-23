@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ state: st
   if (!info) return {}
   const count = PROFESSIONALS.filter(p => p.state === s || p.regions.includes('All Australia')).length
   return {
-    title: `KDR Professionals in ${info.name} (${s}) — Builders, Designers & Planners | KDR Guide`,
+    title: `KDR Professionals in ${info.name} (${s}) — Builders, Designers & Planners | AusBuildCircle`,
     description: `Find verified knockdown rebuild specialists in ${info.name}. ${count}+ builders, building designers, town planners, finance brokers and engineers serving ${info.city} and surrounds.`,
     alternates: { canonical: `/professionals/${state}` },
     openGraph: {

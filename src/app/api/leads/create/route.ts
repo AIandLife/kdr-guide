@@ -75,7 +75,7 @@ export async function POST(req: Request) {
               ${timeline ? `<p style="margin:4px 0 0"><strong>Timeline:</strong> ${timeline}</p>` : ''}
             </div>
             <p style="font-size:14px;color:#6b7280">While you wait, you can <a href="https://kdr-guide.vercel.app/feasibility" style="color:#f97316">run a free AI feasibility check</a> on your suburb to prepare for the conversation.</p>
-            <p style="font-size:14px">The KDR Guide Team</p>
+            <p style="font-size:14px">The 澳洲建房圈 Team</p>
           </div>
         </div>
       `,

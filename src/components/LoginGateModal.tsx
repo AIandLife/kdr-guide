@@ -49,7 +49,7 @@ export function LoginGateModal({ onClose, redirectAfter = '/professionals' }: Lo
             <div className="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center">
               <Building2 className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-gray-900 text-sm">KDR Guide</span>
+            <span className="font-bold text-gray-900 text-sm">AusBuildCircle</span>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
             <X className="w-4 h-4" />

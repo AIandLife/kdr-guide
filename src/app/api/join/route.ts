@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
-      subject: `[KDR Guide] New Professional Application — ${businessName}`,
+      subject: `[澳洲建房圈] New Professional Application — ${businessName}`,
       html: `
         <h2>New Professional Application</h2>
         <table style="border-collapse:collapse;width:100%">
@@ -74,15 +74,15 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
-      subject: `Welcome to KDR Guide Professional Network — ${businessName}`,
+      subject: `Welcome to 澳洲建房圈 Professional Network — ${businessName}`,
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto">
           <div style="background:#f97316;padding:24px;border-radius:12px 12px 0 0;text-align:center">
-            <h1 style="color:white;margin:0;font-size:24px">Welcome to KDR Guide</h1>
+            <h1 style="color:white;margin:0;font-size:24px">Welcome to 澳洲建房圈</h1>
           </div>
           <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
             <p>Hi ${contactName},</p>
-            <p>Thank you for applying to join the <strong>KDR Guide Professional Network</strong>. We've received your application for <strong>${businessName}</strong> and our team will review it shortly.</p>
+            <p>Thank you for applying to join the <strong>澳洲建房圈 Professional Network</strong>. We've received your application for <strong>${businessName}</strong> and our team will review it shortly.</p>
 
             <div style="background:white;border:2px solid #f97316;border-radius:8px;padding:16px;margin:20px 0">
               <h3 style="margin:0 0 8px;color:#f97316">🎉 Your Free Trial</h3>
@@ -97,7 +97,7 @@ export async function POST(req: Request) {
             <p>Once approved, your business will be listed in our directory, connecting you with homeowners actively planning knockdown rebuild projects in your area.</p>
 
             <p>Questions? Reply to this email anytime.</p>
-            <p>The KDR Guide Team</p>
+            <p>The 澳洲建房圈 Team</p>
           </div>
         </div>
       `,

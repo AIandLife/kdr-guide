@@ -45,7 +45,7 @@ function dbToSupplier(d: DbSupplier): Supplier {
     specialties: d.specialties || [],
     specialtiesZh: d.specialties || [],
     verified: d.status === 'verified',
-    verifiedNote: d.status === 'verified' ? 'Self-verified via KDR Guide' : undefined,
+    verifiedNote: d.status === 'verified' ? 'Self-verified via AusBuildCircle' : undefined,
     googleRating: d.google_rating ?? undefined,
     googleReviews: d.google_reviews ?? undefined,
     website: d.website ?? undefined,

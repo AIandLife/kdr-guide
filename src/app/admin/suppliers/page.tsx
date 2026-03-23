@@ -99,7 +99,7 @@ export default function AdminSuppliersPage() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d1117' }}>
         <div className="w-full max-w-sm p-8 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-          <h1 className="text-xl font-bold text-white mb-6 text-center">KDR Guide Admin</h1>
+          <h1 className="text-xl font-bold text-white mb-6 text-center">澳洲建房圈 Admin</h1>
           <input
             type="password"
             placeholder="Admin password"

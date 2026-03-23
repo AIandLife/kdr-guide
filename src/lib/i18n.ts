@@ -4,7 +4,7 @@ export const translations = {
   en: {
     // Nav
     nav: {
-      brand: 'KDR Guide',
+      brand: 'AusBuildCircle',
       tagline: 'Australia',
       guide: 'Process Guide',
       professionals: 'Find Builders',
@@ -123,7 +123,7 @@ export const translations = {
   zh: {
     // Nav
     nav: {
-      brand: 'KDR 建房指南',
+      brand: '澳洲建房圈',
       tagline: '澳洲',
       guide: '建房流程',
       professionals: '寻找建筑商',

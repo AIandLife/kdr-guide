@@ -4,7 +4,7 @@ import { LangProvider } from '@/lib/language-context'
 import { AuthProvider } from '@/lib/auth-context'
 
 export const metadata: Metadata = {
-  title: 'KDR Guide – Australia\'s Knockdown Rebuild Expert',
+  title: 'AusBuildCircle 澳洲建房圈 – Australia\'s Knockdown Rebuild Expert',
   description: 'Enter your address and find out if your property is eligible for knockdown rebuild in Australia. AI-powered feasibility check, cost estimates, and builder matching.',
 }
 

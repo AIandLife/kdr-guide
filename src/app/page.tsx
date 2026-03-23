@@ -338,7 +338,7 @@ export default function HomePage() {
               </div>
             </div>
             <p className="text-xs text-gray-400">
-              {lang === 'zh' ? '搜索公众号：KDR建房指南' : 'Search: KDR Guide Australia'}
+              {lang === 'zh' ? '搜索公众号：澳洲建房圈' : 'Search: AusBuildCircle'}
             </p>
           </div>
 
