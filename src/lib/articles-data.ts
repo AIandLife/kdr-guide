@@ -44,7 +44,7 @@ export const ARTICLES: Article[] = [
     author: 'KDR Guide Editorial',
     authorRole: 'Editorial Team',
     authorRoleZh: '编辑团队',
-    date: '2025-11-15',
+    date: '2026-03-18',
     readMinutes: 8,
     tags: ['DA', 'CDC', 'Approval', 'Council', 'Planning'],
     tagsZh: ['DA申请', 'CDC', '审批', 'Council', '规划'],
@@ -137,7 +137,7 @@ export const ARTICLES: Article[] = [
     author: 'KDR Guide Editorial',
     authorRole: 'Editorial Team',
     authorRoleZh: '编辑团队',
-    date: '2025-10-28',
+    date: '2026-03-10',
     readMinutes: 10,
     tags: ['Cost', 'Budget', 'Demolition', 'Build Cost', 'Finance'],
     tagsZh: ['费用', '预算', '拆除', '建筑成本', '贷款'],
@@ -167,16 +167,26 @@ export const ARTICLES: Article[] = [
 <h3>5. Landscaping and External Works ($15,000–$50,000)</h3>
 <p>Often underestimated. Driveway, fencing, lawn, garden, letterbox, clothesline — the list adds up quickly.</p>
 
-<h2>State-by-State Summary</h2>
+<h2>State-by-State Build Cost Summary</h2>
+<p>All figures are per m² of floor area and reflect 2026 market rates. Budget = project/volume builder; Mid-range = custom or semi-custom; Premium = architect-designed, high-specification finish.</p>
 <table>
-  <thead><tr><th>State</th><th>Demolition</th><th>Build (mid-range/m²)</th></tr></thead>
+  <thead>
+    <tr>
+      <th>State</th>
+      <th>Demolition</th>
+      <th>Budget (per m²)</th>
+      <th>Mid-range (per m²)</th>
+      <th>Premium (per m²)</th>
+    </tr>
+  </thead>
   <tbody>
-    <tr><td>NSW (Sydney)</td><td>$18,000–$30,000</td><td>$2,800–$3,800</td></tr>
-    <tr><td>VIC (Melbourne)</td><td>$15,000–$25,000</td><td>$2,600–$3,600</td></tr>
-    <tr><td>QLD (Brisbane)</td><td>$12,000–$22,000</td><td>$2,400–$3,200</td></tr>
-    <tr><td>WA (Perth)</td><td>$12,000–$20,000</td><td>$2,200–$3,000</td></tr>
+    <tr><td>NSW (Sydney)</td><td>$18,000–$30,000</td><td>$1,900–$2,400</td><td>$2,800–$3,800</td><td>$4,500–$7,000+</td></tr>
+    <tr><td>VIC (Melbourne)</td><td>$15,000–$25,000</td><td>$1,800–$2,300</td><td>$2,600–$3,600</td><td>$4,200–$6,500+</td></tr>
+    <tr><td>QLD (Brisbane)</td><td>$12,000–$22,000</td><td>$1,700–$2,200</td><td>$2,400–$3,200</td><td>$4,000–$6,000+</td></tr>
+    <tr><td>WA (Perth)</td><td>$12,000–$20,000</td><td>$1,600–$2,100</td><td>$2,200–$3,000</td><td>$3,800–$5,500+</td></tr>
   </tbody>
 </table>
+<p><em>Note: These are indicative ranges only. Final costs depend on design complexity, site conditions, materials selected, and current builder availability. Always obtain 2–3 fixed-price tenders before committing.</em></p>
 
 <h2>The Biggest Cost Variables</h2>
 <p>Three things move the number most: <strong>size of the new home</strong>, <strong>level of finish</strong>, and <strong>site conditions</strong> (slope, soil type, services). Always get a soil test done early — reactive clay or rock can add $20,000–$50,000 to your slab cost.</p>
@@ -210,16 +220,26 @@ export const ARTICLES: Article[] = [
 <h3>5. 景观和外部工程（$15,000–$50,000）</h3>
 <p>这部分常被低估。车道、围栏、草坪、花园、信箱、晾衣架——加起来相当可观。</p>
 
-<h2>各州费用参考</h2>
+<h2>各州建筑费用参考（2026）</h2>
+<p>以下为每平方米建筑面积的参考价格。经济型 = 量产/项目建筑商；中档 = 定制或半定制；高端 = 建筑师设计、高规格装修。</p>
 <table>
-  <thead><tr><th>州</th><th>拆除费用</th><th>建筑费用（中档/平方米）</th></tr></thead>
+  <thead>
+    <tr>
+      <th>州</th>
+      <th>拆除费用</th>
+      <th>经济型（/㎡）</th>
+      <th>中档（/㎡）</th>
+      <th>高端（/㎡）</th>
+    </tr>
+  </thead>
   <tbody>
-    <tr><td>NSW（悉尼）</td><td>$18,000–$30,000</td><td>$2,800–$3,800</td></tr>
-    <tr><td>VIC（墨尔本）</td><td>$15,000–$25,000</td><td>$2,600–$3,600</td></tr>
-    <tr><td>QLD（布里斯班）</td><td>$12,000–$22,000</td><td>$2,400–$3,200</td></tr>
-    <tr><td>WA（珀斯）</td><td>$12,000–$20,000</td><td>$2,200–$3,000</td></tr>
+    <tr><td>NSW（悉尼）</td><td>$18,000–$30,000</td><td>$1,900–$2,400</td><td>$2,800–$3,800</td><td>$4,500–$7,000+</td></tr>
+    <tr><td>VIC（墨尔本）</td><td>$15,000–$25,000</td><td>$1,800–$2,300</td><td>$2,600–$3,600</td><td>$4,200–$6,500+</td></tr>
+    <tr><td>QLD（布里斯班）</td><td>$12,000–$22,000</td><td>$1,700–$2,200</td><td>$2,400–$3,200</td><td>$4,000–$6,000+</td></tr>
+    <tr><td>WA（珀斯）</td><td>$12,000–$20,000</td><td>$1,600–$2,100</td><td>$2,200–$3,000</td><td>$3,800–$5,500+</td></tr>
   </tbody>
 </table>
+<p><em>注意：以上为参考区间，最终费用取决于设计复杂度、场地条件、选材和当前建筑商档期。请务必在签约前获取 2–3 家固定价格报价。</em></p>
 
 <h2>影响价格最大的因素</h2>
 <p>影响总价最大的三个因素：<strong>新房面积</strong>、<strong>装修等级</strong>和<strong>场地条件</strong>（坡度、土壤类型、管道服务）。建议尽早进行土壤测试——活性黏土或岩石地基可能为你的地基额外增加 $20,000–$50,000。</p>
@@ -238,7 +258,7 @@ export const ARTICLES: Article[] = [
     author: 'KDR Guide Editorial',
     authorRole: 'Editorial Team',
     authorRoleZh: '编辑团队',
-    date: '2025-10-10',
+    date: '2026-02-24',
     readMinutes: 7,
     tags: ['Heritage', 'Council', 'DA', 'Planning', 'Overlay'],
     tagsZh: ['遗产保护', 'Council', 'DA申请', '规划', '保护条款'],
@@ -309,7 +329,7 @@ export const ARTICLES: Article[] = [
     author: 'KDR Guide Editorial',
     authorRole: 'Editorial Team',
     authorRoleZh: '编辑团队',
-    date: '2025-09-22',
+    date: '2026-02-12',
     readMinutes: 9,
     tags: ['Finance', 'Construction Loan', 'Mortgage', 'Lender', 'Interest'],
     tagsZh: ['贷款', '建筑贷款', '按揭', '银行', '利息'],
@@ -408,7 +428,7 @@ export const ARTICLES: Article[] = [
     author: 'KDR Guide Editorial',
     authorRole: 'Editorial Team',
     authorRoleZh: '编辑团队',
-    date: '2025-09-05',
+    date: '2026-01-28',
     readMinutes: 6,
     tags: ['Buying', 'Due Diligence', 'Zoning', 'Planning', 'Investment'],
     tagsZh: ['购房', '尽职调查', '分区', '规划', '投资'],
@@ -475,7 +495,7 @@ export const ARTICLES: Article[] = [
     author: 'Sarah & Tom Wu',
     authorRole: 'KDR Homeowners',
     authorRoleZh: '推倒重建业主',
-    date: '2025-08-20',
+    date: '2026-01-15',
     readMinutes: 12,
     tags: ['Real Story', 'Sydney', 'NSW', 'Strathfield', 'Case Study'],
     tagsZh: ['真实案例', '悉尼', 'NSW', 'Strathfield', '案例研究'],
@@ -570,7 +590,7 @@ export const ARTICLES: Article[] = [
     author: 'KDR Guide Editorial',
     authorRole: 'Editorial Team',
     authorRoleZh: '编辑团队',
-    date: '2025-08-01',
+    date: '2025-12-30',
     readMinutes: 7,
     tags: ['Materials', 'Windows', 'Tiles', 'Flooring', 'Import'],
     tagsZh: ['建材', '门窗', '瓷砖', '地板', '进口'],

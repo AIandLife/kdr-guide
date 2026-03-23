@@ -6,7 +6,6 @@ import { Search, CheckCircle, ChevronRight, Building2, DollarSign, Clock, Users,
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
-import { SuburbAutocomplete } from '@/components/SuburbAutocomplete'
 
 const PAIN_ICONS = [Building2, DollarSign, Clock, Users]
 const STEP_ICONS = [MapPin, Search, CheckCircle, Users]
@@ -164,12 +163,17 @@ export default function HomePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
                   <div className="sm:col-span-2">
                     <label className="block text-xs text-gray-500 mb-1.5 font-medium">{h.formSuburb}</label>
-                    <SuburbAutocomplete
-                      value={suburb}
-                      onChange={setSuburb}
-                      onStateDetected={setState}
-                      placeholder={h.formSuburbPlaceholder}
-                    />
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                      <input
+                        type="text"
+                        value={suburb}
+                        onChange={e => setSuburb(e.target.value)}
+                        placeholder={h.formSuburbPlaceholder}
+                        autoComplete="off"
+                        className="w-full pl-10 pr-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none bg-gray-50 border border-gray-200 focus:border-orange-400 transition-colors"
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1.5 font-medium">{h.formState}</label>
