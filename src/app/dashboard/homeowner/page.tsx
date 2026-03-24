@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { MessageSquare, Clock, Building2, ChevronRight } from 'lucide-react'
+import { MessageSquare, Clock, Building2, ChevronRight, HardHat } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/auth-context'
 import { SiteNav } from '@/components/SiteNav'
@@ -69,7 +69,7 @@ export default function HomeownerDashboard() {
             {isZh ? '我的联系记录' : 'My Contacts'}
           </h1>
           <p className="text-gray-500 text-sm">
-            {isZh ? '你联系过的 KDR 专业人士' : 'Professionals you\'ve reached out to'}
+            {isZh ? '你联系过的建房专业人士' : 'Professionals you\'ve reached out to'}
           </p>
         </div>
 
@@ -135,6 +135,19 @@ export default function HomeownerDashboard() {
           <p className="text-sm text-gray-600">{isZh ? '还没查过你的地块可行性？' : 'Haven\'t checked your block yet?'}</p>
           <a href="/feasibility" className="shrink-0 flex items-center gap-1.5 text-orange-500 hover:text-orange-600 font-semibold text-sm">
             {isZh ? '免费查询 →' : 'Free check →'} <ChevronRight className="w-4 h-4" />
+          </a>
+        </div>
+
+        {/* Professional CTA */}
+        <div className="mt-4 p-5 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <HardHat className="w-5 h-5 text-gray-400 shrink-0" />
+            <p className="text-sm text-gray-500">
+              {isZh ? '你是建房专业人士？免费将你的业务收录进目录。' : 'Are you a build professional? Get your business listed for free.'}
+            </p>
+          </div>
+          <a href="/dashboard/pro" className="shrink-0 flex items-center gap-1 text-gray-600 hover:text-gray-900 font-semibold text-sm whitespace-nowrap">
+            {isZh ? '申请入驻 →' : 'Get listed →'}
           </a>
         </div>
       </div>
