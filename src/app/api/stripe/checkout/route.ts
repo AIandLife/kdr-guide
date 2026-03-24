@@ -19,8 +19,9 @@ export async function POST(req: Request) {
     })
 
     return Response.json({ url: session.url })
-  } catch (err) {
-    console.error('Stripe checkout error:', err)
-    return Response.json({ error: 'Failed to create checkout session' }, { status: 500 })
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('Stripe checkout error:', msg)
+    return Response.json({ error: msg }, { status: 500 })
   }
 }
