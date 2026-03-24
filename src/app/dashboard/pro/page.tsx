@@ -44,6 +44,7 @@ export default function ProDashboard() {
   const [enquiries, setEnquiries] = useState<Enquiry[]>([])
   const [fetching, setFetching] = useState(true)
   const [activeTab, setActiveTab] = useState<'enquiries' | 'profile' | 'verify'>('enquiries')
+  const [checkingOut, setCheckingOut] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -69,6 +70,18 @@ export default function ProDashboard() {
         </div>
       </div>
     )
+  }
+
+  const handleCheckout = async (plan: 'annual' | 'monthly') => {
+    setCheckingOut(true)
+    const res = await fetch('/api/stripe/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan, email: user?.email, businessName: profile?.business_name }),
+    })
+    const data = await res.json()
+    if (data.url) window.location.href = data.url
+    else setCheckingOut(false)
   }
 
   const formatDate = (iso: string) => new Date(iso).toLocaleDateString(isZh ? 'zh-CN' : 'en-AU', { day: 'numeric', month: 'short' })
@@ -277,12 +290,23 @@ export default function ProDashboard() {
                             <p className="text-xs text-gray-400 mt-0.5">{isZh ? '随时取消' : 'Cancel anytime'}</p>
                           </div>
                         </div>
-                        <a href="/join#verify"
-                          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white font-semibold text-sm transition-all"
-                          style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}>
-                          <Shield className="w-4 h-4" />
-                          {isZh ? '立即申请认证 →' : 'Apply for verification →'}
-                        </a>
+                        <div className="grid grid-cols-2 gap-3">
+                          <button
+                            onClick={() => handleCheckout('annual')}
+                            disabled={checkingOut}
+                            className="flex flex-col items-center justify-center py-3 rounded-xl text-white font-semibold text-sm transition-all disabled:opacity-60"
+                            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}>
+                            <span>{isZh ? '年付 $99' : '$99 / year'}</span>
+                            <span className="text-xs font-normal opacity-80">{isZh ? '最优惠' : 'Best value'}</span>
+                          </button>
+                          <button
+                            onClick={() => handleCheckout('monthly')}
+                            disabled={checkingOut}
+                            className="flex flex-col items-center justify-center py-3 rounded-xl border-2 border-orange-400 text-orange-500 font-semibold text-sm transition-all hover:bg-orange-50 disabled:opacity-60">
+                            <span>{isZh ? '月付 $12' : '$12 / month'}</span>
+                            <span className="text-xs font-normal opacity-70">{isZh ? '随时取消' : 'Cancel anytime'}</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </>
