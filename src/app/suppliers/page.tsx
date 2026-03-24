@@ -72,7 +72,12 @@ const CATEGORY_COLORS: Record<string, string> = {
   cyan:   'bg-cyan-100 text-cyan-600',
   red:    'bg-red-100 text-red-600',
   green:  'bg-green-100 text-green-600',
+  pink:   'bg-pink-100 text-pink-600',
+  stone:  'bg-stone-100 text-stone-600',
 }
+
+const HARD_CATEGORIES = ['windows-doors','flooring','paint','tiles','kitchen','plumbing','electrical','roofing','insulation']
+const SOFT_CATEGORIES = ['curtains-blinds','custom-wardrobes','landscaping','outdoor-paving']
 
 function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
   const full = Math.floor(rating)
@@ -199,10 +204,7 @@ export default function SuppliersPage() {
         <div className="rounded-2xl p-5 mb-8 bg-white border border-gray-200 shadow-sm">
           {/* Category filter */}
           <div className="mb-4">
-            <p className="text-xs text-gray-400 uppercase font-medium mb-3 tracking-wide">
-              {isZh ? '类别' : 'Category'}
-            </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mb-3">
               <button
                 onClick={() => setActiveCategory('all')}
                 className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
@@ -210,14 +212,29 @@ export default function SuppliersPage() {
               >
                 {isZh ? '全部' : 'All'}
               </button>
-              {categories.map(([key, cat]) => (
+            </div>
+            <p className="text-xs text-gray-400 uppercase font-medium mb-2 tracking-wide">{isZh ? '硬装建材' : 'Construction & Finishes'}</p>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {categories.filter(([key]) => HARD_CATEGORIES.includes(key)).map(([key, cat]) => (
                 <button
                   key={key}
                   onClick={() => setActiveCategory(key)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-                  style={activeCategory === key
-                    ? { background: '#f97316', color: 'white' }
-                    : { background: '#f3f4f6', color: '#374151' }}
+                  style={activeCategory === key ? { background: '#f97316', color: 'white' } : { background: '#f3f4f6', color: '#374151' }}
+                >
+                  <span>{cat.icon}</span>
+                  {isZh ? cat.zh : cat.en}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400 uppercase font-medium mb-2 tracking-wide">{isZh ? '软装 & 户外' : 'Soft Furnishings & Outdoor'}</p>
+            <div className="flex flex-wrap gap-2">
+              {categories.filter(([key]) => SOFT_CATEGORIES.includes(key)).map(([key, cat]) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveCategory(key)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                  style={activeCategory === key ? { background: '#f97316', color: 'white' } : { background: '#f3f4f6', color: '#374151' }}
                 >
                   <span>{cat.icon}</span>
                   {isZh ? cat.zh : cat.en}
