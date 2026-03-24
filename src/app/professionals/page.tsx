@@ -11,7 +11,7 @@ import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
 import { LoginGateModal } from '@/components/LoginGateModal'
 import { useAuth } from '@/lib/auth-context'
-import { SUBURB_POOL, PROJECT_LABELS, formatTimeAgo, getInitialSignals, getWeeklyStats, getNewSignalAge, getRotationInterval, type DemandSignal } from '@/lib/demand-signals'
+import { PROJECT_LABELS, formatTimeAgo, getRotationInterval, type DemandSignal } from '@/lib/demand-signals'
 import { PROFESSIONALS, CATEGORIES, type Professional } from '@/lib/professionals-data'
 
 // ── Demand Signal Feed ────────────────────────────────────────────────────────
@@ -22,36 +22,58 @@ const COLOR_PILL: Record<string, string> = {
   green:  'bg-green-100 text-green-700',
 }
 
-function DemandFeed({ isZh }: { isZh: boolean }) {
-  const [signals, setSignals] = useState<DemandSignal[]>(() => getInitialSignals(new Date(), 8))
-  const [flashIdx, setFlashIdx] = useState<number>(-1)
-  const poolRef = useRef(0)
+interface ApiSignal extends DemandSignal { isReal?: boolean }
 
+function DemandFeed({ isZh }: { isZh: boolean }) {
+  const [signals, setSignals] = useState<ApiSignal[]>([])
+  const [weeklyCount, setWeeklyCount] = useState(0)
+  const [stateBreakdown, setStateBreakdown] = useState<Record<string, number>>({})
+  const [kdrPct, setKdrPct] = useState(52)
+  const [flashIdx, setFlashIdx] = useState<number>(-1)
+
+  // Fetch from API on mount — all generation happens server-side
   useEffect(() => {
+    fetch('/api/demand-signals')
+      .then(r => r.json())
+      .then(data => {
+        setSignals(data.signals ?? [])
+        setWeeklyCount(data.weeklyCount ?? 0)
+        setStateBreakdown(data.stateBreakdown ?? {})
+        setKdrPct(data.kdrPct ?? 52)
+      })
+      .catch(() => {})
+  }, [])
+
+  // Rotation: re-fetch from API every few minutes to pick up new real searches
+  useEffect(() => {
+    if (signals.length === 0) return
     function scheduleNext() {
       const interval = getRotationInterval()
       return setTimeout(() => {
-        poolRef.current = (poolRef.current + 1) % SUBURB_POOL.length
-        const { suburb, state } = SUBURB_POOL[poolRef.current]
-        const pt = Math.random()
-        const projectType = pt < 0.50 ? 'kdr' : pt < 0.70 ? 'renovation' : pt < 0.88 ? 'extension' : 'granny-flat'
-        const next: DemandSignal = {
-          suburb, state,
-          projectType: projectType as DemandSignal['projectType'],
-          lotSize: projectType === 'kdr' ? Math.round((380 + Math.random() * 720) / 10) * 10 : undefined,
-          hoursAgo: getNewSignalAge(),
-        }
-        setSignals(prev => [next, ...prev.slice(0, 7)])
-        setFlashIdx(0)
-        setTimeout(() => setFlashIdx(-1), 1200)
+        fetch('/api/demand-signals')
+          .then(r => r.json())
+          .then(data => {
+            const fresh = data.signals ?? []
+            // If a new real signal appeared at the top, flash it
+            const prevTop = signals[0]
+            const newTop = fresh[0]
+            if (newTop && (!prevTop || newTop.suburb !== prevTop.suburb || newTop.isReal !== prevTop.isReal)) {
+              setFlashIdx(0)
+              setTimeout(() => setFlashIdx(-1), 1200)
+            }
+            setSignals(fresh)
+            setWeeklyCount(data.weeklyCount ?? weeklyCount)
+            setStateBreakdown(data.stateBreakdown ?? stateBreakdown)
+            setKdrPct(data.kdrPct ?? kdrPct)
+          })
+          .catch(() => {})
         timerRef.current = scheduleNext()
       }, interval)
     }
     const timerRef = { current: scheduleNext() }
     return () => clearTimeout(timerRef.current)
-  }, [])
+  }, [signals.length])
 
-  const { weeklyCount, stateBreakdown, kdrPct } = getWeeklyStats()
   const topStates = Object.entries(stateBreakdown).sort((a, b) => b[1] - a[1]).slice(0, 3)
 
   return (
@@ -85,10 +107,19 @@ function DemandFeed({ isZh }: { isZh: boolean }) {
       <div className="divide-y divide-gray-50">
         {signals.map((s, i) => {
           const proj = PROJECT_LABELS[s.projectType]
+          const isRealAndRecent = s.isReal && s.hoursAgo < 2
           return (
-            <div key={`${s.suburb}-${i}`}
-              className={cn('flex items-center gap-2 px-4 py-2.5 transition-colors duration-700', i === flashIdx && 'bg-green-50')}>
-              <div className={cn('w-1.5 h-1.5 rounded-full shrink-0', i === 0 ? 'bg-green-500 animate-pulse' : 'bg-gray-200')} />
+            <div key={`${s.suburb}-${i}-${s.hoursAgo}`}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2.5 transition-colors duration-700',
+                i === flashIdx && 'bg-green-50',
+                isRealAndRecent && 'bg-green-50/50'
+              )}>
+              <div className={cn(
+                'w-1.5 h-1.5 rounded-full shrink-0',
+                isRealAndRecent ? 'bg-green-500 animate-pulse' :
+                i === 0 ? 'bg-green-400 animate-pulse' : 'bg-gray-200'
+              )} />
               <div className="flex-1 min-w-0">
                 <span className="text-sm font-medium text-gray-900 truncate block">{s.suburb}</span>
                 <div className="flex items-center gap-1.5">
@@ -105,6 +136,11 @@ function DemandFeed({ isZh }: { isZh: boolean }) {
             </div>
           )
         })}
+        {signals.length === 0 && (
+          <div className="px-4 py-6 text-center text-xs text-gray-300">
+            {isZh ? '加载中…' : 'Loading…'}
+          </div>
+        )}
       </div>
 
       {/* Footer */}
