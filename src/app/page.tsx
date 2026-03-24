@@ -180,7 +180,7 @@ export default function HomePage() {
                     <select
                       value={state}
                       onChange={e => setState(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl text-gray-900 focus:outline-none bg-gray-50 border border-gray-200 focus:border-orange-400 transition-colors"
+                      className="w-full h-[46px] px-4 py-3 rounded-xl text-gray-900 focus:outline-none bg-gray-50 border border-gray-200 focus:border-orange-400 transition-colors"
                     >
                       <option value="">{h.formStateAll}</option>
                       {STATES.map(s => <option key={s} value={s}>{s}</option>)}
