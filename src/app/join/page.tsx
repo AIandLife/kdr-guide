@@ -104,11 +104,17 @@ export default function JoinPage() {
     setSubmitting(true)
     setError('')
     try {
+      // Auto-prepend https:// if user typed a domain without protocol
+      let website = form.website.trim()
+      if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
+        website = 'https://' + website
+      }
       const res = await fetch('/api/join', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
+          website: website || undefined,
           regions: form.regions.split(',').map(r => r.trim()).filter(Boolean),
           wechat: form.wechat || undefined,
         }),
@@ -208,11 +214,16 @@ export default function JoinPage() {
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '网站' : 'Website'}</label>
-                  <input
-                    type="text" value={form.website} onChange={e => set('website', e.target.value)}
-                    placeholder="yourcompany.com.au"
-                    className={inputClass}
-                  />
+                  <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl focus-within:border-orange-400 overflow-hidden">
+                    <span className="px-3 text-sm text-gray-400 shrink-0 border-r border-gray-200 bg-gray-100 py-2.5">https://</span>
+                    <input
+                      type="text"
+                      value={form.website.replace(/^https?:\/\//, '')}
+                      onChange={e => set('website', e.target.value)}
+                      placeholder="yourcompany.com.au"
+                      className="flex-1 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none bg-transparent"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
