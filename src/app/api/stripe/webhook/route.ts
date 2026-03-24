@@ -24,8 +24,17 @@ export async function POST(req: Request) {
     const email = session.customer_email
     const businessName = session.metadata?.businessName
 
-    // Update professional application status to pending
     if (email) {
+      // Update professionals table (used by dashboard)
+      await supabase
+        .from('professionals')
+        .update({
+          verification_status: 'pending',
+          verified: false,
+        })
+        .eq('email', email)
+
+      // Also update kdr_professional_applications if exists
       await supabase
         .from('kdr_professional_applications')
         .update({
@@ -43,6 +52,11 @@ export async function POST(req: Request) {
   if (event.type === 'customer.subscription.deleted') {
     const sub = event.data.object as Stripe.Subscription
     // Downgrade back to free when subscription cancelled
+    await supabase
+      .from('professionals')
+      .update({ verification_status: 'free', verified: false })
+      .eq('email', sub.metadata?.email ?? '')
+
     await supabase
       .from('kdr_professional_applications')
       .update({ status: 'free', stripe_subscription_id: null })

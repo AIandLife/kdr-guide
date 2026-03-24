@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import {
   CheckCircle, Clock, MessageSquare, Shield, Edit3,
-  AlertCircle, ChevronRight, Building2, Phone, Globe
+  AlertCircle, ChevronRight, Building2, Phone, Globe, PartyPopper
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/auth-context'
@@ -36,14 +37,16 @@ interface Enquiry {
   created_at: string
 }
 
-export default function ProDashboard() {
+function ProDashboard() {
   const { user, loading } = useAuth()
   const { lang } = useLang()
   const isZh = lang === 'zh'
+  const searchParams = useSearchParams()
+  const justPaid = searchParams.get('verified') === '1'
   const [profile, setProfile] = useState<ProProfile | null>(null)
   const [enquiries, setEnquiries] = useState<Enquiry[]>([])
   const [fetching, setFetching] = useState(true)
-  const [activeTab, setActiveTab] = useState<'enquiries' | 'profile' | 'verify'>('enquiries')
+  const [activeTab, setActiveTab] = useState<'enquiries' | 'profile' | 'verify'>(justPaid ? 'verify' : 'enquiries')
   const [checkingOut, setCheckingOut] = useState(false)
 
   useEffect(() => {
@@ -117,6 +120,21 @@ export default function ProDashboard() {
             </a>
           )}
         </div>
+
+        {/* Payment success banner */}
+        {justPaid && (
+          <div className="mb-6 rounded-2xl bg-green-50 border border-green-200 px-5 py-4 flex items-center gap-3">
+            <PartyPopper className="w-5 h-5 text-green-600 shrink-0" />
+            <div>
+              <p className="font-semibold text-green-800 text-sm">
+                {isZh ? '🎉 支付成功！认证申请已提交。' : '🎉 Payment received! Verification application submitted.'}
+              </p>
+              <p className="text-xs text-green-600 mt-0.5">
+                {isZh ? '我们将在 1–2 个工作日内完成审核，审核通过后你的主页会显示认证徽章。' : 'We\'ll review and verify your listing within 1–2 business days.'}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* No profile yet */}
         {!fetching && !profile && (
@@ -326,5 +344,13 @@ function InfoRow({ label, value, icon }: { label: string; value: string; icon?: 
       <p className="text-xs text-gray-400 w-24 shrink-0 pt-0.5">{label}</p>
       <p className="text-sm text-gray-900 flex items-center gap-1.5">{icon}{value}</p>
     </div>
+  )
+}
+
+export default function ProDashboardPage() {
+  return (
+    <Suspense>
+      <ProDashboard />
+    </Suspense>
   )
 }
