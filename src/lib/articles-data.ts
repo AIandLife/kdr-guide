@@ -1768,4 +1768,518 @@ export const ARTICLES: Article[] = [
 <p>"我们从一栋含地皮价值 140 万的旧房开始。最终得到两套价值 210 万、无债务的新联排别墅。这就是良好规划的力量。" —— 陈炜</p>
     `,
   },
+
+  {
+    slug: 'geotech-report-kdr-guide',
+    title: 'Soil Testing Before Your KDR: Why a Geotech Report Could Save You $50,000',
+    titleZh: '推倒重建前必做的土壤检测：一份地质报告如何帮你省下 $50,000',
+    excerpt: 'Skipping a geotechnical report before signing your building contract is one of the most common — and costly — mistakes in Australian KDR projects. Here\'s exactly what it tests, what it costs, and how to use it.',
+    excerptZh: '在签订建房合同前跳过土壤检测，是澳洲推倒重建项目中最常见也最昂贵的错误之一。本文详解检测内容、费用及如何用好报告。',
+    category: 'construction',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-10',
+    readMinutes: 7,
+    tags: ['Geotech', 'Soil Testing', 'Foundations', 'Cost Control', 'Pre-Contract'],
+    tagsZh: ['土壤检测', '地质报告', '地基', '成本控制', '签约前准备'],
+    content: `
+<p>Of all the pre-construction steps in an Australian knockdown rebuild, a geotechnical (geotech) soil report is the one most commonly skipped — and the one whose absence causes the most expensive surprises. We've seen homeowners receive post-contract "variations" for foundation upgrades ranging from $15,000 to $80,000, all of which a $1,200 soil test would have flagged in advance.</p>
+
+<h2>What Is a Geotech Report?</h2>
+<p>A geotechnical report (also called a soil classification report or site investigation) involves drilling or excavating test holes — typically 3 to 6 metres deep — across your block to analyse the soil profile. The report classifies your site into one of five engineering categories under AS 2870 (the Australian Standard for residential slabs and footings):</p>
+<ul>
+<li><strong>Class A</strong> — Stable, non-reactive soils (sand, rock). Simplest and cheapest footings.</li>
+<li><strong>Class S</strong> — Slightly reactive clay. Standard slab design usually applies.</li>
+<li><strong>Class M</strong> — Moderately reactive clay or silt. Requires stiffer slab design.</li>
+<li><strong>Class H1/H2</strong> — Highly reactive clay. Significant extra footing cost.</li>
+<li><strong>Class E</strong> — Extremely reactive or problem sites (mine subsidence, fill, etc.). Can require piers or pilon foundations costing $30,000–$80,000+.</li>
+</ul>
+
+<h2>Why Builders Quote Without One</h2>
+<p>Most volume builders in Australia will quote your build without a geotech report — they use an "allowance" in their contract for standard Class M footings. If your soil comes back Class H or E, they issue a variation (extra charge) after you've already signed. At that point, your only options are to pay up or walk away and lose your deposit.</p>
+<p>This is legal under Australian consumer law. It is also extremely common. HIA and MBA contracts both permit variations for changed site conditions. The standard "soil allowance" in most volume builder contracts covers Class M — anything above that is your cost.</p>
+
+<h2>What a Geotech Report Costs</h2>
+<p>A standard residential geotech report for a single dwelling in metropolitan Australia costs $800–$1,800 depending on the number of test holes, depth required, and lab analysis. In regional areas or on larger blocks, costs can reach $2,500.</p>
+<p>For that price, you get a report that tells you exactly what foundation class your home will need — and therefore what your builder must quote for, not assume.</p>
+
+<h2>When to Get It Done</h2>
+<p>The ideal sequence is: demolish the old house first, then commission the geotech report before finalising your building contract. Once the old structure is gone, the engineer can drill properly across the full block without obstruction.</p>
+<p>If you want the report before demolition (to make a go/no-go decision), a preliminary report is possible, but may need follow-up testing after demolition.</p>
+
+<h2>Red Flags That Suggest You Need One Urgently</h2>
+<ul>
+<li>Your suburb is on or near a river, creek, or flood plain (fill soil is common)</li>
+<li>The block was previously used for agriculture, industry, or had tanks buried</li>
+<li>You can see cracking in the existing house's slab or walls</li>
+<li>Neighbouring houses have visible foundation issues</li>
+<li>The block is sloped or has been cut and filled</li>
+<li>You're in a known reactive clay area (large parts of western Sydney, Melbourne's outer ring, Brisbane's clay belt)</li>
+</ul>
+
+<h2>How to Use the Report in Contract Negotiations</h2>
+<p>Once you have the geotech report, give it to your builder before signing. Ask them to quote specifically for the actual soil classification, not a standard allowance. This locks in your foundation cost and removes the most common variation trigger in Australian building contracts.</p>
+<p>If a builder refuses to quote off an actual geotech report and insists on using "standard allowances," treat that as a red flag about how they'll handle other variations during the build.</p>
+
+<h2>The Bottom Line</h2>
+<p>A $1,200 geotech report before signing your building contract is the single highest-ROI step in KDR preparation. It cannot tell you everything — structural engineers and building surveyors will still need to sign off on the final design — but it eliminates the most predictable and expensive surprise in the entire process.</p>
+    `,
+    contentZh: `
+<p>在澳洲推倒重建的所有前期步骤中，土壤检测（地质报告）是最容易被跳过的一步，也是缺失后带来最昂贵意外的一步。我们见过业主在签约后收到地基升级"变更单"，金额从 $15,000 到 $80,000 不等——而一份 $1,200 的土壤检测本可以提前发现这些问题。</p>
+
+<h2>什么是地质报告？</h2>
+<p>地质报告（也叫土壤分类报告或地基调查）涉及在你的地块上钻孔或挖槽——通常深 3 到 6 米——以分析土壤剖面。报告依据澳洲标准 AS 2870（住宅板基和基脚标准）将地块分为五个工程类别：</p>
+<ul>
+<li><strong>A 类</strong>——稳定、非膨胀性土壤（沙土、岩石）。地基最简单、费用最低。</li>
+<li><strong>S 类</strong>——微膨胀黏土。通常适用标准板基设计。</li>
+<li><strong>M 类</strong>——中度膨胀黏土或粉土。需要更硬挺的板基设计。</li>
+<li><strong>H1/H2 类</strong>——高度膨胀黏土。需要额外的地基费用。</li>
+<li><strong>E 类</strong>——极度膨胀或问题地块（矿区沉降、回填土等）。可能需要桩基，费用 $30,000–$80,000+。</li>
+</ul>
+
+<h2>为什么建筑商不提前报价？</h2>
+<p>澳洲大多数量产建筑商会在没有地质报告的情况下报价——他们在合同中使用标准 M 类地基的"预留金额"。如果你的土壤结果是 H 类或 E 类，他们会在你签约后发出变更单（额外收费）。到那时，你的选择只有付钱或放弃并损失定金。</p>
+<p>这在澳洲消费者法下是合法的，也非常普遍。HIA 和 MBA 合同都允许因地块条件变化而变更费用。大多数量产建筑商合同中的标准"土壤预留"涵盖 M 类——超出部分由你承担。</p>
+
+<h2>土壤检测费用</h2>
+<p>澳洲大城市单套住宅的标准地质报告费用为 $800–$1,800，具体取决于钻孔数量、深度要求和实验室分析。偏远地区或较大地块可能达到 $2,500。</p>
+<p>花这笔钱，你得到一份明确告知你的房子需要什么地基等级的报告——也就是建筑商必须报价而非假设的内容。</p>
+
+<h2>什么时候做</h2>
+<p>理想的顺序是：先拆除旧房，然后在敲定建房合同前委托地质报告。旧房拆除后，工程师可以在整个地块上无障碍钻孔。</p>
+<p>如果你想在拆除前获得报告（以做决策），可以做初步报告，但拆除后可能需要补充测试。</p>
+
+<h2>提示你急需做检测的危险信号</h2>
+<ul>
+<li>地块位于或邻近河流、溪流或洪泛区（常见回填土）</li>
+<li>地块曾用于农业、工业或有埋地罐</li>
+<li>现有房子的地板或墙壁有明显裂缝</li>
+<li>邻居房屋有明显地基问题</li>
+<li>地块有坡度或经过切填处理</li>
+<li>你在已知的膨胀黏土地区（悉尼西部大片区域、墨尔本外环、布里斯班黏土带）</li>
+</ul>
+
+<h2>如何在合同谈判中使用报告</h2>
+<p>拿到地质报告后，在签约前将其提供给建筑商。要求他们根据实际土壤等级报价，而不是标准预留金。这锁定了你的地基成本，消除了澳洲建房合同中最常见的变更触发点。</p>
+<p>如果建筑商拒绝根据实际地质报告报价，坚持使用"标准预留"，这应被视为他们在整个建造过程中如何处理其他变更的危险信号。</p>
+
+<h2>结论</h2>
+<p>签订建房合同前花 $1,200 做土壤检测，是推倒重建准备阶段投资回报最高的单一步骤。它无法告诉你一切——结构工程师和建筑测量师仍需签字确认最终设计——但它消除了整个过程中最可预见、最昂贵的意外。</p>
+    `,
+  },
+
+  {
+    slug: 'independent-building-inspector-kdr',
+    title: 'Do You Need an Independent Building Inspector During Construction?',
+    titleZh: '施工期间需要聘请独立建筑检查员吗？',
+    excerpt: 'Your builder has a certifier. But that certifier works for the system, not for you. Here\'s what independent inspections cost, what they find, and when you need them.',
+    excerptZh: '你的建筑商有认证员。但那个认证员是为制度服务的，不是为你服务的。以下是独立检查的费用、他们会发现什么，以及你何时需要他们。',
+    category: 'construction',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-14',
+    readMinutes: 6,
+    tags: ['Building Inspector', 'Quality Control', 'Construction', 'Certifier', 'Defects'],
+    tagsZh: ['建筑检查员', '质量控制', '施工', '认证员', '缺陷'],
+    content: `
+<p>When you build in Australia, your builder appoints a Principal Certifier (PC) — either a private certifier or a council inspector — who conducts mandatory inspections at set stages: footings, slab, frame, and final. This person signs off that the work meets the Building Code of Australia (BCA).</p>
+<p>But here's the critical distinction: the certifier is checking for code compliance, not for quality. They're looking at whether the frame was built to the approved drawings, not whether the plasterboard joints will show cracking in two years, or whether the waterproofing in your wet areas was applied correctly. That's where an independent building inspector comes in.</p>
+
+<h2>What Does an Independent Inspector Check?</h2>
+<p>An independent inspector works for you, not the builder or the certifier. They typically conduct four inspections at the key milestones:</p>
+<ol>
+<li><strong>Pre-slab / post-excavation</strong> — Checking formwork, steel placement, and DPC (damp-proof course) before concrete is poured. This is the most valuable stage — once concrete is poured, you can't un-pour it.</li>
+<li><strong>Frame stage</strong> — Checking stud spacing, bracing, and that the frame matches the structural drawings before it's covered up.</li>
+<li><strong>Lock-up / pre-plaster</strong> — Checking insulation installation, wall wrapping, window flashing, and rough-in electrical and plumbing before walls close.</li>
+<li><strong>Practical completion / handover</strong> — Full defects list before you sign off and take possession.</li>
+</ol>
+
+<h2>What Do They Typically Find?</h2>
+<p>Based on industry data, independent inspectors find reportable defects on approximately 85% of new builds. Common findings include:</p>
+<ul>
+<li>Incorrect steel placement in footings or slab (wrong cover, wrong size)</li>
+<li>Missing or incorrect bracing in frames</li>
+<li>Insulation gaps or wrong R-value installed</li>
+<li>Window flashings not installed or installed incorrectly (major waterproofing risk)</li>
+<li>Wet area waterproofing defects (showers are the #1 warranty claim in Australia)</li>
+<li>Incomplete or incorrect fire separation in multi-storey or attached dwellings</li>
+</ul>
+<p>Most of these defects are cheap to fix during construction — and very expensive to fix after the walls are closed and finishes applied.</p>
+
+<h2>Cost of Independent Inspections</h2>
+<p>A full four-stage inspection package typically costs $1,200–$2,500 in metropolitan areas, depending on the size of the home and the inspector's qualifications. Individual inspections run $350–$700 each.</p>
+<p>If you're budget-constrained, the pre-slab and lock-up inspections are the highest priority — these are the stages where defects are easiest to fix and hardest to detect later.</p>
+
+<h2>How to Choose an Inspector</h2>
+<p>Look for inspectors who hold a current builder's licence (not just an inspector's certificate) — this means they understand construction, not just compliance paperwork. Ask for their insurance certificates (Professional Indemnity and Public Liability). Check Google reviews and, if possible, ask your mortgage broker or town planner for a referral.</p>
+<p>Do not use an inspector recommended by your builder. Independence is the entire point.</p>
+
+<h2>What Happens If They Find Something?</h2>
+<p>The inspector provides a written report. You give the report to your builder and request rectification before the next stage of construction proceeds or before you make the next progress payment. Under HIA and MBA contracts, you have the right to withhold progress payments until defects are rectified.</p>
+<p>In most cases, builders will fix the issues without dispute — the last thing a legitimate builder wants is a written defects report they ignored. The few who push back are giving you an early warning sign about how the rest of the build will go.</p>
+    `,
+    contentZh: `
+<p>在澳洲建房时，你的建筑商会指定一名主要认证员（PC）——私人认证员或市政检查员——在规定阶段进行强制检查：地基、地板、框架和竣工。此人签字确认工程符合澳洲建筑规范（BCA）。</p>
+<p>但有一个关键区别：认证员检查的是规范合规性，而非质量。他们检查框架是否按批准图纸建造，而不是两年后石膏板接缝是否会开裂，或湿区防水是否正确施工。这就是独立建筑检查员的用武之地。</p>
+
+<h2>独立检查员检查什么？</h2>
+<p>独立检查员为你工作，而非为建筑商或认证员。他们通常在四个关键里程碑进行检查：</p>
+<ol>
+<li><strong>浇筑前/开挖后</strong>——在浇混凝土前检查模板、钢筋位置和防潮层。这是最有价值的阶段——混凝土一旦浇筑就无法撤销。</li>
+<li><strong>框架阶段</strong>——在被封闭前检查立柱间距、支撑，以及框架是否符合结构图纸。</li>
+<li><strong>封锁/石膏板前</strong>——在墙壁关闭前检查隔热材料安装、墙体包覆、窗户防水片，以及水电粗装。</li>
+<li><strong>实际竣工/交接</strong>——在签字收房前列出完整缺陷清单。</li>
+</ol>
+
+<h2>通常会发现什么？</h2>
+<p>根据行业数据，独立检查员在约 85% 的新建筑中发现可报告的缺陷。常见发现包括：</p>
+<ul>
+<li>地基或地板中钢筋位置不正确（保护层厚度错误、尺寸错误）</li>
+<li>框架中缺少或错误的支撑</li>
+<li>隔热层缺口或安装了错误的 R 值</li>
+<li>窗户防水片未安装或安装不正确（重大防水风险）</li>
+<li>湿区防水缺陷（淋浴间是澳洲第一大保修索赔）</li>
+<li>多层或联排住宅中防火分隔不完整或不正确</li>
+</ul>
+<p>这些缺陷大多数在施工期间修复成本低廉——而在墙壁封闭和装修完成后修复则非常昂贵。</p>
+
+<h2>独立检查的费用</h2>
+<p>完整四阶段检查套餐在大城市通常费用为 $1,200–$2,500，取决于住宅大小和检查员资质。单次检查为 $350–$700。</p>
+<p>如果预算有限，浇筑前和封锁阶段检查是优先级最高的——这些阶段的缺陷最容易修复，之后也最难发现。</p>
+
+<h2>如何选择检查员</h2>
+<p>寻找持有当前建筑商执照（不仅仅是检查员证书）的检查员——这意味着他们了解施工，而不仅仅是合规文件。索要他们的保险证书（职业责任险和公众责任险）。查看 Google 评价，如果可能，请贷款经纪人或城镇规划师推荐。</p>
+<p>不要使用你的建筑商推荐的检查员。独立性是关键所在。</p>
+
+<h2>如果发现问题怎么办？</h2>
+<p>检查员提供书面报告。你将报告交给建筑商，要求在下一阶段施工继续或下一笔进度款支付前整改。根据 HIA 和 MBA 合同，你有权在缺陷整改前扣留进度款。</p>
+<p>大多数情况下，建筑商会无争议地修复问题——任何正规建筑商最不想要的就是一份他们无视的书面缺陷报告。那些推脱的人，是在给你关于这次建造其余部分会如何进行的早期警告。</p>
+    `,
+  },
+
+  {
+    slug: 'fixed-price-vs-cost-plus-contracts',
+    title: 'Fixed Price vs Cost-Plus Building Contracts: What Australian Homeowners Need to Know',
+    titleZh: '固定价格 vs 成本加成合同：澳洲业主必须了解的区别',
+    excerpt: 'Not all building contracts protect you equally. Understanding the difference between fixed price, cost-plus, and design-and-construct contracts could save you tens of thousands.',
+    excerptZh: '并非所有建房合同都能同等保护你。了解固定价格、成本加成和设计建造合同之间的区别，可以帮你省下数万元。',
+    category: 'construction',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-18',
+    readMinutes: 8,
+    tags: ['Building Contract', 'Fixed Price', 'Cost Plus', 'HIA Contract', 'Variations'],
+    tagsZh: ['建房合同', '固定价格', '成本加成', 'HIA 合同', '变更单'],
+    content: `
+<p>When your builder hands you a contract, the first question isn't "what does it say?" — it's "what type of contract is this?" The contract type determines how much price certainty you have, who bears the risk of cost blowouts, and how your builder is incentivised to work.</p>
+
+<h2>Fixed Price Contract</h2>
+<p>A fixed price contract sets a lump-sum amount for the completed home. This is the most common contract type for residential KDR in Australia and is used by most volume and project builders.</p>
+<p><strong>What it means in practice:</strong> The builder takes on the risk of their labour and material costs. If steel goes up 15% mid-build, that's (theoretically) their problem, not yours.</p>
+<p><strong>The catch:</strong> "Fixed price" contracts in Australia almost always contain variation clauses that allow the builder to charge extra for:</p>
+<ul>
+<li>Changed site conditions (soil, slope, drainage)</li>
+<li>Client-requested changes to design or materials</li>
+<li>Prime Cost (PC) and Provisional Sum (PS) items that come in above the allowance</li>
+<li>Delays caused by the client, council, or utilities</li>
+</ul>
+<p>The contract price is fixed only within the scope defined in the contract. Get your soil report done, pin down all PC items, and minimise provisional sums before signing.</p>
+
+<h2>Cost-Plus Contract</h2>
+<p>Under a cost-plus (or "time and materials") contract, you pay the builder's actual costs plus a fixed fee or percentage margin (typically 15–25%).</p>
+<p><strong>When it makes sense:</strong> Complex custom homes, heritage renovations, or situations where the scope genuinely cannot be defined upfront. A good custom builder will often prefer cost-plus because it's honest about the unknowns.</p>
+<p><strong>The risk:</strong> You bear all cost risk. If the builder is slow, inefficient, or materials cost more than expected, you pay. Without rigorous oversight and an independent quantity surveyor reviewing invoices, costs can balloon unpredictably.</p>
+<p><strong>For standard KDR:</strong> Avoid cost-plus unless you have a trusted relationship with the builder, a strong QS overseeing every invoice, and a detailed scope of works.</p>
+
+<h2>Understanding Prime Cost and Provisional Sum Items</h2>
+<p>These are the two biggest sources of variations in fixed-price contracts:</p>
+<p><strong>Prime Cost (PC) Items</strong> are specific products where the final price isn't known at signing — typically fixtures like tapware, tiles, appliances, or lighting. The contract includes an "allowance" (e.g., $3,000 for kitchen taps). If you choose taps that cost $5,500, you pay the $2,500 difference.</p>
+<p><strong>Provisional Sums (PS)</strong> are estimates for work where the scope isn't fully defined — often things like rock excavation, retaining walls, or stormwater connections. These are guesses, not fixed prices. A contract with many high-value provisional sums is essentially a cost-plus contract in disguise.</p>
+<p><strong>What to do:</strong> Before signing, ask your builder to minimise provisional sums wherever possible. Lock in actual quotes from subcontractors for things like earthworks. Set maximum allowances for PC items and insist that any selections above allowance require your written approval before ordering.</p>
+
+<h2>The HIA and MBA Contracts</h2>
+<p>Most residential builders in Australia use the Housing Industry Association (HIA) or Master Builders Association (MBA) standard contract. These are industry-standard documents that are broadly balanced but lean slightly toward builders on variation rights.</p>
+<p>Key clauses to understand in an HIA contract:</p>
+<ul>
+<li><strong>Clause 14 (Variations)</strong> — Your builder must give you a written variation notice. You have the right to refuse client-requested variations but not site condition variations.</li>
+<li><strong>Clause 17 (Delays)</strong> — Defines what counts as an extension of time. COVID-era supply chain delays established precedent that builders can claim extension of time for materials shortages.</li>
+<li><strong>Clause 23 (Dispute Resolution)</strong> — Requires mediation before litigation. Know your state's building dispute body (NSW: Fair Trading, VIC: DBDRV, QLD: QBCC).</li>
+</ul>
+
+<h2>What to Do Before You Sign</h2>
+<ol>
+<li>Have a solicitor or building contract specialist review the contract before signing — typically $500–$1,500 but worth it.</li>
+<li>Get your geotech report done first, then insist the builder quote to the actual soil classification.</li>
+<li>Ask for a schedule of all PC and PS items with their allowances. If the total of PS items exceeds 5% of the contract value, push back.</li>
+<li>Negotiate a sunset clause — if the builder hasn't started within a specified timeframe, you can exit the contract and recover your deposit.</li>
+</ol>
+    `,
+    contentZh: `
+<p>当建筑商递给你合同时，第一个问题不是"上面写了什么？"——而是"这是什么类型的合同？"合同类型决定了你的价格确定性有多强，谁承担超支风险，以及建筑商的工作动力如何。</p>
+
+<h2>固定价格合同</h2>
+<p>固定价格合同为竣工房屋设定一个总额。这是澳洲住宅推倒重建中最常见的合同类型，大多数量产和项目建筑商都使用这种方式。</p>
+<p><strong>实际意味着什么：</strong>建筑商承担其人工和材料成本的风险。如果钢材在建设中期上涨 15%，理论上是他们的问题，而不是你的。</p>
+<p><strong>陷阱：</strong>澳洲的"固定价格"合同几乎总是包含允许建筑商额外收费的变更条款，适用于：</p>
+<ul>
+<li>地块条件变化（土壤、坡度、排水）</li>
+<li>客户要求的设计或材料变更</li>
+<li>超出预留金额的主要费用（PC）和暂定金额（PS）项目</li>
+<li>由客户、Council 或公共设施造成的延误</li>
+</ul>
+<p>合同价格仅在合同定义的范围内固定。在签约前完成土壤报告、确定所有 PC 项目，并尽量减少暂定金额。</p>
+
+<h2>成本加成合同</h2>
+<p>在成本加成（或"时间和材料"）合同下，你支付建筑商的实际成本加上固定费用或利润率（通常为 15–25%）。</p>
+<p><strong>何时合适：</strong>复杂的定制住宅、遗产翻新，或确实无法提前定义范围的情况。好的定制建筑商通常更喜欢成本加成，因为这对未知因素诚实。</p>
+<p><strong>风险：</strong>你承担所有成本风险。如果建筑商速度慢、效率低，或材料成本超出预期，你来付。没有严格的监督和独立工料测量师审查发票，成本可能难以预测地膨胀。</p>
+<p><strong>标准推倒重建：</strong>除非你与建筑商有信任关系、有强大的工料测量师监督每张发票，以及详细的工作范围，否则避免成本加成合同。</p>
+
+<h2>理解主要费用和暂定金额项目</h2>
+<p>这是固定价格合同中两个最大的变更来源：</p>
+<p><strong>主要费用（PC）项目</strong>是签约时最终价格未知的特定产品——通常是龙头、瓷砖、家电或灯具等固装配件。合同包含一个"预留金额"（例如厨房龙头 $3,000）。如果你选择了 $5,500 的龙头，你支付 $2,500 的差额。</p>
+<p><strong>暂定金额（PS）</strong>是范围未完全定义的工程估算——通常是岩石开挖、挡土墙或雨水连接等。这些是估计，不是固定价格。包含许多高价值暂定金额的合同本质上是变相的成本加成合同。</p>
+<p><strong>怎么做：</strong>签约前，要求建筑商尽量减少暂定金额。锁定诸如土方工程等事项的实际分包商报价。为 PC 项目设定最高预留金额，并坚持要求超出预留的任何选择在订购前需经你书面批准。</p>
+
+<h2>HIA 和 MBA 合同</h2>
+<p>澳洲大多数住宅建筑商使用住房行业协会（HIA）或主建筑商协会（MBA）标准合同。这些是大致平衡但在变更权利上略倾向于建筑商的行业标准文件。</p>
+<p>HIA 合同中需要了解的关键条款：</p>
+<ul>
+<li><strong>第 14 条（变更）</strong>——建筑商必须给你书面变更通知。你有权拒绝客户要求的变更，但不能拒绝地块条件变更。</li>
+<li><strong>第 17 条（延误）</strong>——定义什么构成工期延长。新冠供应链延误确立了建筑商可以就材料短缺申请工期延长的先例。</li>
+<li><strong>第 23 条（争议解决）</strong>——要求在诉讼前进行调解。了解你所在州的建筑争议机构（NSW: Fair Trading, VIC: DBDRV, QLD: QBCC）。</li>
+</ul>
+
+<h2>签约前该做什么</h2>
+<ol>
+<li>让律师或建房合同专家在签约前审查合同——通常费用 $500–$1,500，但值得。</li>
+<li>先完成地质报告，然后坚持要求建筑商根据实际土壤分类报价。</li>
+<li>要求提供所有 PC 和 PS 项目及其预留金额的清单。如果 PS 项目总额超过合同价值的 5%，提出异议。</li>
+<li>谈判日落条款——如果建筑商在规定时间内未开工，你可以退出合同并取回定金。</li>
+</ol>
+    `,
+  },
+
+  {
+    slug: 'hbcf-builder-insolvency-protection',
+    title: 'If Your Builder Goes Bust: How HBCF Insurance Actually Works in Australia',
+    titleZh: '如果建筑商倒闭了：澳洲 HBCF 保险的实际运作方式',
+    excerpt: 'Builder insolvencies in Australia hit a 10-year high in 2023–24. If your builder goes under mid-build, what are you actually protected for — and what are you not?',
+    excerptZh: '2023–24 年澳洲建筑商倒闭数量创 10 年新高。如果你的建筑商在建设中途倒闭，你实际上受到哪些保护——又有哪些不受保护？',
+    category: 'finance',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-20',
+    readMinutes: 7,
+    tags: ['HBCF', 'Builder Insolvency', 'Insurance', 'Consumer Protection', 'Risk'],
+    tagsZh: ['HBCF', '建筑商倒闭', '保险', '消费者保护', '风险'],
+    content: `
+<p>Between July 2023 and June 2024, more than 1,900 Australian construction companies entered insolvency — a 10-year high. For homeowners mid-build, a builder insolvency is one of the most stressful events imaginable. Understanding your protections before you sign a contract is essential.</p>
+
+<h2>What Is HBCF?</h2>
+<p>The Home Building Compensation Fund (HBCF) — known as Home Warranty Insurance in Victoria — is a mandatory last-resort insurance scheme for residential construction in Australia. It is required for any residential building work over $20,000 in NSW (thresholds vary by state).</p>
+<p>Your builder must purchase this insurance in your name before taking your deposit. You should receive a Certificate of Insurance with the contract. If your builder cannot get HBCF coverage — because they failed the insurer's financial assessment — they legally cannot take your deposit. A builder who pressures you to pay before providing the certificate is breaking the law.</p>
+
+<h2>What HBCF Covers</h2>
+<p>HBCF is a "last resort" scheme, which means it only pays out if your builder dies, disappears, or becomes insolvent — not just because they do poor work. The coverage includes:</p>
+<ul>
+<li><strong>Incomplete work</strong> — If the builder goes insolvent and the home is unfinished, HBCF will pay to complete it (up to the insured amount, typically the contract value).</li>
+<li><strong>Structural defects</strong> — For 6 years after completion (in NSW; varies by state).</li>
+<li><strong>Non-structural defects</strong> — For 2 years after completion.</li>
+</ul>
+
+<h2>What HBCF Does NOT Cover</h2>
+<p>This is where many homeowners are caught out:</p>
+<ul>
+<li><strong>Poor workmanship while the builder is still trading</strong> — If your builder does shoddy work but is still in business, HBCF doesn't apply. Use Fair Trading (NSW), DBDRV (VIC), or QBCC (QLD) instead.</li>
+<li><strong>Progress payments made in excess of work done</strong> — HBCF does not reimburse overpayments. If you paid 40% when only 20% of work was done, you lose that money. This is why paying strictly to the contractual stage milestones is critical.</li>
+<li><strong>The cost of delays, accommodation, or emotional distress</strong> — HBCF covers construction costs only.</li>
+<li><strong>Defects outside the warranty period</strong> — After 6 years (structural) or 2 years (non-structural), you're on your own.</li>
+</ul>
+
+<h2>How to Make a Claim</h2>
+<p>If your builder becomes insolvent:</p>
+<ol>
+<li>Obtain evidence of insolvency (liquidator appointment, ASIC records).</li>
+<li>Contact HBCF (or your state equivalent) and lodge a claim — in NSW, this is through icare.nsw.gov.au.</li>
+<li>Get an independent quantity surveyor to assess the cost of completing the work.</li>
+<li>HBCF will appoint an assessor who will review the claim, determine what's covered, and either arrange completion or pay you out.</li>
+</ol>
+<p>Claims can take 3–12 months to resolve. During this time, you will typically need to fund temporary accommodation from your own resources.</p>
+
+<h2>How to Reduce Your Risk Before It Happens</h2>
+<ul>
+<li><strong>Check your builder's HBCF certificate before paying any deposit.</strong></li>
+<li><strong>Never pay ahead of the contractual stage milestones.</strong> If the builder asks for the frame payment before the frame is complete, that's a cash flow warning sign.</li>
+<li><strong>Research your builder's financial health</strong> — check ASIC for any wind-up applications, search Google for "builder name + complaints," and ask your mortgage broker if they've heard anything about the builder.</li>
+<li><strong>Prefer builders who have been trading for 5+ years</strong> and can provide references from completed projects in the last 2 years.</li>
+<li><strong>Ask about the builder's subcontractor relationships.</strong> Builders who own their trade teams (rather than relying entirely on subcontractors) are generally more resilient.</li>
+</ul>
+    `,
+    contentZh: `
+<p>2023 年 7 月至 2024 年 6 月，超过 1,900 家澳洲建筑公司进入破产程序——创 10 年新高。对于处于建设中的业主来说，建筑商破产是最令人痛苦的事件之一。在签合同前了解你的保护措施至关重要。</p>
+
+<h2>什么是 HBCF？</h2>
+<p>家庭建筑补偿基金（HBCF）——在维州称为房屋担保保险——是澳洲住宅建筑的强制最后手段保险计划。在 NSW，任何超过 $20,000 的住宅建筑工程都需要此保险（各州门槛不同）。</p>
+<p>你的建筑商必须以你的名义在收取定金前购买此保险。你应该随合同一起收到一份保险证书。如果你的建筑商无法获得 HBCF 保险——因为他们未能通过保险公司的财务评估——他们在法律上不能收取你的定金。在提供证书之前就施压要你付款的建筑商是在违法。</p>
+
+<h2>HBCF 涵盖什么</h2>
+<p>HBCF 是一个"最后手段"计划，这意味着它只在你的建筑商死亡、失踪或破产时才会赔付——而不仅仅因为他们工作质量差。保险包括：</p>
+<ul>
+<li><strong>未完成工程</strong>——如果建筑商破产而房屋未完工，HBCF 将支付完成费用（最高至投保金额，通常为合同价值）。</li>
+<li><strong>结构缺陷</strong>——竣工后 6 年内（NSW 规定；各州不同）。</li>
+<li><strong>非结构缺陷</strong>——竣工后 2 年内。</li>
+</ul>
+
+<h2>HBCF 不涵盖什么</h2>
+<p>这是许多业主措手不及的地方：</p>
+<ul>
+<li><strong>建筑商仍在经营时的劣质工艺</strong>——如果你的建筑商工作质量差但仍在营业，HBCF 不适用。请改用 Fair Trading（NSW）、DBDRV（VIC）或 QBCC（QLD）。</li>
+<li><strong>超出已完成工程量的进度款</strong>——HBCF 不报销超额付款。如果你支付了 40% 但只完成了 20% 的工程，那笔钱就损失了。这就是为什么严格按照合同阶段里程碑付款至关重要。</li>
+<li><strong>延误、住宿或精神损害费用</strong>——HBCF 仅涵盖建设成本。</li>
+<li><strong>质保期外的缺陷</strong>——6 年（结构）或 2 年（非结构）后，你只能自己承担。</li>
+</ul>
+
+<h2>如何提出索赔</h2>
+<p>如果你的建筑商破产：</p>
+<ol>
+<li>获取破产证明（清算人任命文件、ASIC 记录）。</li>
+<li>联系 HBCF（或你所在州的对应机构）并提交索赔——在 NSW，通过 icare.nsw.gov.au 办理。</li>
+<li>请独立工料测量师评估完成工程的费用。</li>
+<li>HBCF 将指派评估员审查索赔，确定涵盖范围，然后安排完工或向你赔付。</li>
+</ol>
+<p>索赔可能需要 3–12 个月才能解决。在此期间，你通常需要自行承担临时住所的费用。</p>
+
+<h2>如何在事前降低风险</h2>
+<ul>
+<li><strong>在支付任何定金前查看建筑商的 HBCF 证书。</strong></li>
+<li><strong>绝不在合同阶段里程碑之前提前付款。</strong>如果建筑商在框架完成前就要求支付框架阶段款项，这是现金流危险信号。</li>
+<li><strong>调查建筑商的财务状况</strong>——在 ASIC 上查询是否有注销申请，搜索"建筑商名称 + 投诉"，向贷款经纪人询问是否听说过该建筑商的任何问题。</li>
+<li><strong>优先选择已经营业 5 年以上的建筑商</strong>，并能提供最近 2 年内已完工项目的参考案例。</li>
+<li><strong>询问建筑商的分包商关系。</strong>拥有自己工种团队（而不是完全依赖分包商）的建筑商通常更具抗风险能力。</li>
+</ul>
+    `,
+  },
+
+  {
+    slug: 'asbestos-removal-kdr-australia',
+    title: 'Asbestos in Your Old Home: What KDR Owners Must Know Before Demolition',
+    titleZh: '旧房里的石棉：推倒重建业主在拆除前必须了解的事',
+    excerpt: 'About one in three Australian homes built before 1987 contains asbestos. Here\'s how to identify it, what removal costs, and how to avoid paying twice.',
+    excerptZh: '澳洲约三分之一的 1987 年前建造的住宅含有石棉。以下是如何识别石棉、清除费用，以及如何避免双重付款。',
+    category: 'construction',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-22',
+    readMinutes: 6,
+    tags: ['Asbestos', 'Demolition', 'Safety', 'Cost', 'Pre-1987 Homes'],
+    tagsZh: ['石棉', '拆除', '安全', '费用', '1987年前住宅'],
+    content: `
+<p>If your home was built before 1987, there is a significant chance it contains asbestos. Australia was one of the world's largest per-capita users of asbestos in building materials until it was phased out in the 1980s and ultimately banned in 2003. Before any KDR demolition proceeds, understanding the asbestos situation in your home is not optional — it's a legal and safety requirement.</p>
+
+<h2>Where Asbestos Is Commonly Found</h2>
+<p>In pre-1987 Australian homes, asbestos was used in a wide range of products:</p>
+<ul>
+<li><strong>Fibro (fibro cement) sheeting</strong> — External wall cladding, internal wall sheeting, eaves, soffits</li>
+<li><strong>Roofing</strong> — Corrugated super-six roofing, ridge capping</li>
+<li><strong>Wet areas</strong> — Bathroom walls, shower recesses, laundry surrounds (often hidden behind tiles)</li>
+<li><strong>Floor coverings</strong> — Vinyl floor tiles and the backing of sheet vinyl can contain asbestos</li>
+<li><strong>Insulation</strong> — Loose-fill asbestos insulation in ceiling spaces (particularly in ACT)</li>
+<li><strong>Textured paint (stipple ceilings)</strong> — Some textured ceiling finishes from this era contained chrysotile asbestos</li>
+<li><strong>Gutters and downpipes</strong> — Some fibro cement drainage products</li>
+</ul>
+
+<h2>Types of Asbestos: Bonded vs Friable</h2>
+<p><strong>Bonded (non-friable) asbestos</strong> — Asbestos fibres are mixed into a cement matrix. It is only dangerous when disturbed, cut, or drilled. Fibro sheet is the most common type. Intact bonded asbestos is lower risk but still requires licensed removal.</p>
+<p><strong>Friable asbestos</strong> — Asbestos that can be crumbled by hand, releasing fibres. This includes pipe insulation, some ceiling tiles, and loose-fill insulation. Friable asbestos is extremely high risk and requires specialist Class A licensed removalists.</p>
+
+<h2>Legal Requirements for Removal</h2>
+<p>In Australia, the Work Health and Safety (WHS) Regulations require:</p>
+<ul>
+<li>Any removal of more than 10m² of bonded asbestos, or any amount of friable asbestos, must be carried out by a licensed asbestos removalist.</li>
+<li>A licensed asbestos assessor must inspect and certify the clearance after removal.</li>
+<li>An Asbestos Register and Asbestos Management Plan is required for workplaces (which includes a house being demolished by a tradesperson).</li>
+<li>Asbestos waste must be disposed of at a licensed facility, double-bagged and labelled.</li>
+</ul>
+
+<h2>What Does Asbestos Removal Cost?</h2>
+<p>Costs vary significantly based on the amount and type of asbestos:</p>
+<ul>
+<li><strong>Full house fibro removal before demolition</strong> — $8,000–$25,000 for a standard 3–4 bedroom fibro home</li>
+<li><strong>Partial removal</strong> (wet areas only, or eaves only) — $2,000–$8,000</li>
+<li><strong>Friable asbestos removal</strong> — $50–$200 per square metre; a small area of pipe lagging can cost $3,000–$10,000</li>
+<li><strong>Loose-fill asbestos (ceiling)</strong> — $15,000–$40,000+ for a whole-house clearance (government programs exist in some states)</li>
+<li><strong>Air monitoring and clearance certification</strong> — $800–$2,500</li>
+</ul>
+
+<h2>Is Asbestos Removal Included in Demolition Quotes?</h2>
+<p>This is the most important practical question. Most demolition quotes do NOT include asbestos removal unless explicitly stated. The standard process is:</p>
+<ol>
+<li>An asbestos surveyor inspects the property and provides a report identifying all asbestos-containing materials.</li>
+<li>A licensed asbestos removalist removes the identified materials.</li>
+<li>A clearance inspector certifies the site is clear.</li>
+<li>Only then does the demolition contractor proceed with the structural demolition.</li>
+</ol>
+<p>When getting demolition quotes, always ask specifically: "Is asbestos removal included? If not, how is it handled and who organises it?" Many demolition companies have relationships with asbestos removalists and can coordinate this for you, but it will be a separate cost.</p>
+
+<h2>Getting an Asbestos Survey First</h2>
+<p>Before accepting demolition quotes, commission an asbestos survey from a licensed asbestos assessor ($300–$800). This gives you a report that documents what's in the building, where it is, and its condition. You can then use this to get accurate removal quotes and avoid surprises after demolition has started.</p>
+    `,
+    contentZh: `
+<p>如果你的房子建于 1987 年前，很可能含有石棉。澳洲曾是世界上建筑材料中人均石棉使用量最大的国家之一，直到 1980 年代逐步淘汰，并于 2003 年最终禁止。在任何推倒重建拆除工程进行前，了解你家的石棉情况不是可选的——这是法律和安全要求。</p>
+
+<h2>石棉常见于哪些地方</h2>
+<p>在 1987 年前建造的澳洲住宅中，石棉被用于多种产品：</p>
+<ul>
+<li><strong>纤维水泥（fibro）板</strong>——外墙饰面、内墙板、屋檐、软底</li>
+<li><strong>屋顶</strong>——波浪形六超屋顶、屋脊盖</li>
+<li><strong>湿区</strong>——浴室墙壁、淋浴间、洗衣房周边（通常隐藏在瓷砖后面）</li>
+<li><strong>地板</strong>——乙烯基地板砖及片状乙烯基地板的背衬可能含有石棉</li>
+<li><strong>隔热材料</strong>——天花板空间中的散装石棉隔热材料（尤其在 ACT）</li>
+<li><strong>纹理涂料（点状天花板）</strong>——这一时期的一些纹理天花板饰面含有温石棉</li>
+<li><strong>水槽和落水管</strong>——一些纤维水泥排水产品</li>
+</ul>
+
+<h2>石棉类型：粘合型与易碎型</h2>
+<p><strong>粘合型（非易碎）石棉</strong>——石棉纤维混合在水泥基质中。只有在被扰动、切割或钻孔时才有危险。纤维板是最常见的类型。完好的粘合型石棉风险较低，但仍需持证人员清除。</p>
+<p><strong>易碎型石棉</strong>——可用手碾碎并释放纤维的石棉。包括管道隔热材料、一些天花板砖和散装填充隔热材料。易碎型石棉风险极高，需要专业的 A 类持证清除人员。</p>
+
+<h2>清除的法律要求</h2>
+<p>在澳洲，职业健康安全（WHS）法规要求：</p>
+<ul>
+<li>任何超过 10 平方米的粘合型石棉清除，或任何数量的易碎型石棉清除，必须由持证石棉清除人员进行。</li>
+<li>持证石棉评估员必须在清除后检查并认证场地。</li>
+<li>工作场所（包括由工匠拆除的房屋）需要石棉登记册和石棉管理计划。</li>
+<li>石棉废物必须在持证设施处置，双层袋装并贴标签。</li>
+</ul>
+
+<h2>石棉清除费用</h2>
+<p>费用因石棉数量和类型而差异很大：</p>
+<ul>
+<li><strong>拆除前全屋纤维板清除</strong>——标准 3–4 卧室纤维板住宅 $8,000–$25,000</li>
+<li><strong>局部清除</strong>（仅湿区或仅屋檐）——$2,000–$8,000</li>
+<li><strong>易碎型石棉清除</strong>——每平方米 $50–$200；一小块管道保温层可能需要 $3,000–$10,000</li>
+<li><strong>散装石棉（天花板）</strong>——全屋清除 $15,000–$40,000+（某些州有政府计划）</li>
+<li><strong>空气监测和清场认证</strong>——$800–$2,500</li>
+</ul>
+
+<h2>拆除报价里包含石棉清除吗？</h2>
+<p>这是最重要的实际问题。除非明确说明，大多数拆除报价不包括石棉清除。标准流程是：</p>
+<ol>
+<li>石棉测量员检查房屋并提供识别所有含石棉材料的报告。</li>
+<li>持证石棉清除人员清除已识别的材料。</li>
+<li>清场检查员认证场地已清洁。</li>
+<li>只有这样，拆除承包商才能继续结构拆除工作。</li>
+</ol>
+<p>获取拆除报价时，务必明确询问："石棉清除包含在内吗？如果不包含，如何处理以及由谁安排？"许多拆除公司与石棉清除人员有合作关系，可以为你协调，但这将是单独的费用。</p>
+
+<h2>先进行石棉调查</h2>
+<p>在接受拆除报价之前，请持证石棉评估员进行石棉调查（$300–$800）。这将给你一份记录建筑物内石棉位置、数量及状况的报告。然后你可以用它来获取准确的清除报价，避免拆除开始后出现意外。</p>
+    `,
+  },
 ]
