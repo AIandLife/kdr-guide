@@ -25,6 +25,7 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
   const links = [
     { href: '/guide',         label: t.nav.guide },
     { href: '/professionals', label: t.nav.professionals },
+    { href: '/forum',         label: t.nav.forum },
     { href: '/articles',      label: t.nav.articles },
     { href: '/suppliers',     label: t.nav.suppliers },
   ]
