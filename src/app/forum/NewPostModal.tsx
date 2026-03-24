@@ -31,6 +31,7 @@ export default function NewPostModal({ lang, user, onClose, onSuccess }: Props) 
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
   const [category, setCategory] = useState('kdr')
+  const [city, setCity] = useState('')
   const [suburb, setSuburb] = useState('')
   const [authorName, setAuthorName] = useState(
     user?.user_metadata?.full_name || user?.email?.split('@')[0] || ''
@@ -48,6 +49,7 @@ export default function NewPostModal({ lang, user, onClose, onSuccess }: Props) 
       title: title.trim(),
       body: body.trim(),
       category,
+      city: city || null,
       suburb: suburb.trim() || null,
       author_name: authorName.trim() || (isZh ? '匿名用户' : 'Anonymous'),
       user_id: user?.id ?? null,
@@ -107,23 +109,40 @@ export default function NewPostModal({ lang, user, onClose, onSuccess }: Props) 
             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400 resize-none"
           />
 
-          {/* Suburb + Name */}
+          {/* City + Suburb */}
           <div className="grid grid-cols-2 gap-3">
+            <select
+              value={city}
+              onChange={e => setCity(e.target.value)}
+              className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-orange-400"
+            >
+              <option value="">{isZh ? '📍 城市（可选）' : '📍 City (optional)'}</option>
+              <option value="sydney">{isZh ? '悉尼' : 'Sydney'}</option>
+              <option value="melbourne">{isZh ? '墨尔本' : 'Melbourne'}</option>
+              <option value="brisbane">{isZh ? '布里斯班' : 'Brisbane'}</option>
+              <option value="perth">{isZh ? '珀斯' : 'Perth'}</option>
+              <option value="adelaide">{isZh ? '阿德莱德' : 'Adelaide'}</option>
+              <option value="gold-coast">{isZh ? '黄金海岸' : 'Gold Coast'}</option>
+              <option value="canberra">{isZh ? '堪培拉' : 'Canberra'}</option>
+              <option value="other">{isZh ? '其他城市' : 'Other'}</option>
+            </select>
             <input
               type="text"
               value={suburb}
               onChange={e => setSuburb(e.target.value)}
-              placeholder={isZh ? '所在区域（可选）' : 'Suburb (optional)'}
-              className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400"
-            />
-            <input
-              type="text"
-              value={authorName}
-              onChange={e => setAuthorName(e.target.value)}
-              placeholder={isZh ? '昵称（留空为匿名）' : 'Name (leave blank for anonymous)'}
+              placeholder={isZh ? '具体区域（可选）' : 'Suburb (optional)'}
               className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400"
             />
           </div>
+
+          {/* Name */}
+          <input
+            type="text"
+            value={authorName}
+            onChange={e => setAuthorName(e.target.value)}
+            placeholder={isZh ? '昵称（留空为匿名）' : 'Name (leave blank for anonymous)'}
+            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400"
+          />
 
           {error && <p className="text-red-500 text-xs">{error}</p>}
 

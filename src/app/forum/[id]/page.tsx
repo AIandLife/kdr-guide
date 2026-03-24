@@ -29,6 +29,7 @@ interface Post {
   title_en: string | null
   body_en: string | null
   category: string
+  city: string | null
   suburb: string | null
   author_name: string
   author_badge: string | null
@@ -189,6 +190,19 @@ function PostDetail() {
             <span className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">
               {catLabel ? (isZh ? catLabel.zh : catLabel.en) : post.category}
             </span>
+            {post.city && (
+              <span className="text-xs text-blue-500 bg-blue-50 rounded-full px-2 py-0.5 flex items-center gap-0.5">
+                <MapPin className="w-3 h-3" />
+                {post.city === 'sydney' ? (isZh ? '悉尼' : 'Sydney')
+                  : post.city === 'melbourne' ? (isZh ? '墨尔本' : 'Melbourne')
+                  : post.city === 'brisbane' ? (isZh ? '布里斯班' : 'Brisbane')
+                  : post.city === 'perth' ? (isZh ? '珀斯' : 'Perth')
+                  : post.city === 'adelaide' ? (isZh ? '阿德莱德' : 'Adelaide')
+                  : post.city === 'gold-coast' ? (isZh ? '黄金海岸' : 'Gold Coast')
+                  : post.city === 'canberra' ? (isZh ? '堪培拉' : 'Canberra')
+                  : (isZh ? '其他' : 'Other')}
+              </span>
+            )}
             {post.suburb && (
               <span className="text-xs text-gray-400 flex items-center gap-0.5">
                 <MapPin className="w-3 h-3" />{post.suburb}

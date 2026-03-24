@@ -30,6 +30,7 @@ interface Post {
   title_en: string | null
   body_en: string | null
   category: string
+  city: string | null
   suburb: string | null
   author_name: string
   author_badge: string | null
@@ -70,12 +71,36 @@ function AuthorBadge({ badge, business, lang }: { badge: string | null; business
   return null
 }
 
+const CITIES = [
+  { id: 'all', zh: '全部城市', en: 'All Cities' },
+  { id: 'sydney', zh: '悉尼', en: 'Sydney' },
+  { id: 'melbourne', zh: '墨尔本', en: 'Melbourne' },
+  { id: 'brisbane', zh: '布里斯班', en: 'Brisbane' },
+  { id: 'perth', zh: '珀斯', en: 'Perth' },
+  { id: 'adelaide', zh: '阿德莱德', en: 'Adelaide' },
+  { id: 'gold-coast', zh: '黄金海岸', en: 'Gold Coast' },
+  { id: 'canberra', zh: '堪培拉', en: 'Canberra' },
+  { id: 'other', zh: '其他', en: 'Other' },
+]
+
+const CITY_LABELS: Record<string, { zh: string; en: string }> = {
+  sydney: { zh: '悉尼', en: 'Sydney' },
+  melbourne: { zh: '墨尔本', en: 'Melbourne' },
+  brisbane: { zh: '布里斯班', en: 'Brisbane' },
+  perth: { zh: '珀斯', en: 'Perth' },
+  adelaide: { zh: '阿德莱德', en: 'Adelaide' },
+  'gold-coast': { zh: '黄金海岸', en: 'Gold Coast' },
+  canberra: { zh: '堪培拉', en: 'Canberra' },
+  other: { zh: '其他', en: 'Other' },
+}
+
 export default function ForumPage() {
   const { lang } = useLang()
   const { user } = useAuth()
   const isZh = lang === 'zh'
   const [posts, setPosts] = useState<Post[]>([])
   const [activeCategory, setActiveCategory] = useState('all')
+  const [activeCity, setActiveCity] = useState('all')
   const [loading, setLoading] = useState(true)
   const [showNew, setShowNew] = useState(false)
 
@@ -88,6 +113,7 @@ export default function ForumPage() {
       .order('created_at', { ascending: false })
       .limit(50)
     if (activeCategory !== 'all') q = q.eq('category', activeCategory)
+    if (activeCity !== 'all') q = q.eq('city', activeCity)
     const { data } = await q
     const loaded = data ?? []
     setPosts(loaded)
@@ -105,7 +131,7 @@ export default function ForumPage() {
     }
   }
 
-  useEffect(() => { fetchPosts() }, [activeCategory, lang])
+  useEffect(() => { fetchPosts() }, [activeCategory, activeCity, lang])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -132,7 +158,7 @@ export default function ForumPage() {
         </div>
 
         {/* Category tabs */}
-        <div className="flex gap-2 flex-wrap mb-6">
+        <div className="flex gap-2 flex-wrap mb-3">
           {CATEGORIES.map(cat => (
             <button
               key={cat.id}
@@ -144,6 +170,24 @@ export default function ForumPage() {
               }`}
             >
               {isZh ? cat.zh : cat.en}
+            </button>
+          ))}
+        </div>
+
+        {/* City filter */}
+        <div className="flex gap-2 flex-wrap mb-6">
+          {CITIES.map(c => (
+            <button
+              key={c.id}
+              onClick={() => setActiveCity(c.id)}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-all flex items-center gap-1 ${
+                activeCity === c.id
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-white text-gray-500 border border-gray-200 hover:border-blue-300 hover:text-blue-600'
+              }`}
+            >
+              {c.id !== 'all' && <MapPin className="w-3 h-3" />}
+              {isZh ? c.zh : c.en}
             </button>
           ))}
         </div>
@@ -182,9 +226,15 @@ export default function ForumPage() {
                       <span className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">
                         {CATEGORIES.find(c => c.id === post.category)?.[isZh ? 'zh' : 'en'] ?? post.category}
                       </span>
+                      {post.city && (
+                        <span className="text-xs text-blue-500 bg-blue-50 rounded-full px-2 py-0.5 flex items-center gap-0.5">
+                          <MapPin className="w-3 h-3" />
+                          {CITY_LABELS[post.city]?.[isZh ? 'zh' : 'en'] ?? post.city}
+                        </span>
+                      )}
                       {post.suburb && (
                         <span className="text-xs text-gray-400 flex items-center gap-0.5">
-                          <MapPin className="w-3 h-3" />{post.suburb}
+                          {post.suburb}
                         </span>
                       )}
                     </div>
