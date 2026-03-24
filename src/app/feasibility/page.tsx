@@ -131,23 +131,81 @@ function FeasibilityContent() {
     }
   }, [searchParams, lang])
 
+  const [loadingStep, setLoadingStep] = useState(0)
+
   const fetchFeasibility = async (sub: string, addr: string, lot: string, st: string, l: string, pt = 'kdr') => {
     if (!sub) return
     setLoading(true)
+    setLoadingStep(0)
     setError('')
     setResult(null)
+
+    // Animated step progression (purely cosmetic, gives feedback during the ~8-15s wait)
+    const stepTimer1 = setTimeout(() => setLoadingStep(1), 1800)
+    const stepTimer2 = setTimeout(() => setLoadingStep(2), 5000)
+    const stepTimer3 = setTimeout(() => setLoadingStep(3), 9000)
+
     try {
       const res = await fetch('/api/feasibility', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ suburb: sub, address: addr || null, lotSize: lot ? Number(lot) : null, state: st, lang: l, projectType: pt }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed')
-      setResult(data)
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed')
+      }
+
+      // Read streaming response
+      const reader = res.body!.getReader()
+      const decoder = new TextDecoder()
+      let accumulated = '{'
+      let metaStr = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        const chunk = decoder.decode(value, { stream: true })
+
+        // Check for trailing __META__ or __ERROR__ markers
+        if (chunk.includes('\n__META__')) {
+          const [textPart, metaPart] = chunk.split('\n__META__')
+          accumulated += textPart
+          metaStr = metaPart
+        } else if (chunk.includes('\n__ERROR__')) {
+          const [, errPart] = chunk.split('\n__ERROR__')
+          throw new Error(errPart)
+        } else {
+          accumulated += chunk
+        }
+      }
+
+      // Parse accumulated JSON
+      const end = accumulated.lastIndexOf('}')
+      if (end === -1) throw new Error('No JSON found in response')
+      let jsonStr = accumulated.slice(0, end + 1)
+      let result: Record<string, unknown>
+      try {
+        result = JSON.parse(jsonStr)
+      } catch {
+        const safeEnd = jsonStr.lastIndexOf('",\n')
+        if (safeEnd === -1) throw new Error('Response was truncated. Please try again.')
+        jsonStr = jsonStr.slice(0, safeEnd + 1) + '}'
+        result = JSON.parse(jsonStr)
+      }
+
+      if (metaStr) {
+        try { result._liveZone = JSON.parse(metaStr) } catch { /* ignore */ }
+      }
+
+      setResult(result as unknown as FeasibilityResult)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong')
     } finally {
+      clearTimeout(stepTimer1)
+      clearTimeout(stepTimer2)
+      clearTimeout(stepTimer3)
       setLoading(false)
     }
   }
@@ -244,10 +302,26 @@ function FeasibilityContent() {
         </form>
 
         {loading && (
-          <div className="text-center py-20">
-            <Loader2 className="w-12 h-12 animate-spin text-orange-400 mx-auto mb-4" />
-            <p className="text-gray-600 text-lg">{tf.loadingTitle}</p>
-            <p className="text-gray-400 text-sm mt-2">{tf.loadingSubtitle}</p>
+          <div className="bg-white border border-gray-200 rounded-2xl p-10 text-center shadow-sm">
+            <Loader2 className="w-12 h-12 animate-spin text-orange-400 mx-auto mb-6" />
+            <p className="text-gray-700 text-lg font-semibold mb-6">{tf.loadingTitle}</p>
+            <div className="max-w-xs mx-auto space-y-3 text-left">
+              {(lang === 'zh'
+                ? ['正在查询规划分区数据...', '正在分析地块条件与风险...', '正在估算建设费用与时间线...', '正在生成可行性报告...']
+                : ['Looking up planning zone data...', 'Analysing site conditions & risks...', 'Estimating costs & timeline...', 'Generating feasibility report...']
+              ).map((step, i) => (
+                <div key={i} className={`flex items-center gap-3 transition-all duration-500 ${loadingStep >= i ? 'opacity-100' : 'opacity-25'}`}>
+                  {loadingStep > i
+                    ? <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
+                    : loadingStep === i
+                      ? <Loader2 className="w-5 h-5 animate-spin text-orange-400 shrink-0" />
+                      : <div className="w-5 h-5 rounded-full border-2 border-gray-200 shrink-0" />
+                  }
+                  <span className={`text-sm ${loadingStep >= i ? 'text-gray-700' : 'text-gray-400'}`}>{step}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-gray-400 text-xs mt-6">{tf.loadingSubtitle}</p>
           </div>
         )}
 

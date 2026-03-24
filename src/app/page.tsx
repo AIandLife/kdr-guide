@@ -98,13 +98,15 @@ export default function HomePage() {
   const [lotSize, setLotSize] = useState('')
   const [state, setState] = useState('')
   const [projectType, setProjectType] = useState('kdr')
+  const [formError, setFormError] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!suburb.trim()) return
-    const params = new URLSearchParams({ suburb: suburb.trim(), lang, projectType })
+    if (!suburb.trim()) { setFormError(lang === 'zh' ? '请输入你的区域（Suburb）' : 'Please enter your suburb'); return }
+    if (!state) { setFormError(lang === 'zh' ? '请选择所在州' : 'Please select a state'); return }
+    setFormError('')
+    const params = new URLSearchParams({ suburb: suburb.trim(), lang, projectType, state })
     if (lotSize) params.set('lotSize', lotSize)
-    if (state) params.set('state', state)
     router.push(`/feasibility?${params.toString()}`)
   }
 
@@ -197,6 +199,9 @@ export default function HomePage() {
                     className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none bg-gray-50 border border-gray-200 focus:border-orange-400 transition-colors"
                   />
                 </div>
+                {formError && (
+                  <p className="text-red-500 text-sm text-center -mt-1">{formError}</p>
+                )}
                 <button
                   type="submit"
                   className="w-full text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-base"

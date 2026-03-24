@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { findCouncilBySuburb, findCouncil, STATE_COST_RANGES } from '@/lib/council-data'
 import { getLiveZoning, type LiveZoneData } from '@/lib/spatial-api'
 
-export const maxDuration = 30   // seconds — needs Vercel Pro; Hobby hard-caps at 10s
+export const runtime = 'edge'  // Edge Runtime: 30s limit on Hobby (vs 10s for serverless)
 
 const client = new Anthropic()
 
@@ -245,9 +245,21 @@ Generate a comprehensive, honest feasibility report tailored to the project type
 
 Be specific, honest, and practical. If risks are high, say so clearly. Use real Australian industry knowledge.`
 
-    const response = await client.messages.create({
+    // Attach live zone metadata for the frontend badge
+    const liveMeta = liveZone ? {
+      source: liveZone.source,
+      zoneCode: liveZone.zoneCode,
+      zoneName: liveZone.zoneName,
+      fsr: liveZone.fsr,
+      maxHeight: liveZone.maxHeight,
+      minLotSize: liveZone.minLotSize,
+    } : null
+
+    // Stream Claude's response — returns tokens as they arrive
+    const stream = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 3000,
+      stream: true,
       messages: [
         {
           role: 'user',
@@ -260,43 +272,42 @@ Be specific, honest, and practical. If risks are high, say so clearly. Use real 
       ],
     })
 
-    const content = response.content[0]
-    if (content.type !== 'text') throw new Error('Unexpected response type')
+    const encoder = new TextEncoder()
+    let accumulated = '{'
 
-    // The assistant prefill starts with '{', so prepend it back
-    const rawText = '{' + content.text
-    // Find the last complete top-level closing brace
-    const end = rawText.lastIndexOf('}')
-    if (end === -1) throw new Error('No JSON found in response')
-    let jsonStr = rawText.slice(0, end + 1)
-    let result: Record<string, unknown>
-    try {
-      result = JSON.parse(jsonStr)
-    } catch {
-      // Response was truncated — strip to the last complete top-level field
-      // by walking back from the last complete field separator
-      const safeEnd = jsonStr.lastIndexOf('",\n')
-      if (safeEnd === -1) throw new Error('JSON truncated and unrecoverable')
-      jsonStr = jsonStr.slice(0, safeEnd + 1) + '}'
-      result = JSON.parse(jsonStr)
-    }
-    // Attach live zone metadata so the frontend can show a "live data" badge
-    if (liveZone) {
-      result._liveZone = {
-        source: liveZone.source,
-        zoneCode: liveZone.zoneCode,
-        zoneName: liveZone.zoneName,
-        fsr: liveZone.fsr,
-        maxHeight: liveZone.maxHeight,
-        minLotSize: liveZone.minLotSize,
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const event of stream) {
+            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+              accumulated += event.delta.text
+              controller.enqueue(encoder.encode(event.delta.text))
+            }
+          }
+          // Append live zone metadata as a trailing JSON line so client can pick it up
+          if (liveMeta) {
+            controller.enqueue(encoder.encode('\n__META__' + JSON.stringify(liveMeta)))
+          }
+          controller.close()
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e)
+          controller.enqueue(encoder.encode('\n__ERROR__' + msg))
+          controller.close()
+        }
       }
-    }
-    return Response.json(result)
+    })
+
+    return new Response(readable, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'X-Accel-Buffering': 'no',
+        'Cache-Control': 'no-cache',
+      },
+    })
 
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error)
-    const stack = error instanceof Error ? error.stack?.split('\n').slice(0,4).join(' | ') : ''
-    console.error('Feasibility API error:', msg, stack)
+    console.error('Feasibility API error:', msg)
     return Response.json(
       { error: `Failed: ${msg}` },
       { status: 500 }
