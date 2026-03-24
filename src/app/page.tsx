@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, CheckCircle, ChevronRight, Building2, DollarSign, Clock, Users, MapPin } from 'lucide-react'
+import { Search, CheckCircle, ChevronRight, Building2, DollarSign, Clock, Users, MapPin, ExternalLink } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
@@ -392,23 +392,95 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Ecosystem Banner */}
+      <section style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 text-center">
+          <p className="text-xs font-semibold tracking-widest text-orange-400 uppercase mb-3">
+            {isZh ? '澳洲商业联盟生态' : 'AusBiz Alliance Ecosystem'}
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+            {isZh ? '我们是生态大家庭的一员' : 'Part of a Bigger Ecosystem'}
+          </h2>
+          <p className="text-slate-400 text-sm mb-8 max-w-lg mx-auto">
+            {isZh
+              ? '澳洲建房圈是澳洲商业联盟旗下的垂直平台之一，共同为华人在澳的生活、创业、置业提供专业支持。'
+              : 'AusBuildCircle is part of the AusBiz Alliance — a network of platforms supporting the Chinese-Australian community.'}
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <a href="https://australia-startup-hub.vercel.app" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
+              {isZh ? '澳洲创业圈' : 'AusCircle'}
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+            <a href="https://auspropertycircle.com" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 border border-slate-600 hover:border-slate-400 text-slate-300 hover:text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
+              {isZh ? '澳洲房产圈' : 'Aus Property Circle'}
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+            <a href="https://ndis-hub-ten.vercel.app" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 border border-slate-600 hover:border-slate-400 text-slate-300 hover:text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
+              {isZh ? '澳洲NDIS圈' : 'NDIS Hub AU'}
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="border-t border-gray-100 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center">
-                <Building2 className="w-4 h-4 text-white" />
+      <footer className="bg-slate-900 border-t border-slate-800">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+            {/* Brand */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center">
+                  <Building2 className="w-4 h-4 text-white" />
+                </div>
+                <span className="font-bold text-white">{t.nav.brand}</span>
               </div>
-              <span className="font-bold text-gray-900">{t.nav.brand}</span>
+              <p className="text-slate-400 text-xs leading-relaxed max-w-xs">{h.footerDisclaimer}</p>
             </div>
-            <div className="flex items-center gap-6 text-sm text-gray-500">
-              <a href="/guide" className="hover:text-gray-900 transition-colors">{t.nav.guide}</a>
-              <a href="/professionals" className="hover:text-gray-900 transition-colors">{t.nav.professionals}</a>
-              <a href="/articles" className="hover:text-gray-900 transition-colors">{t.nav.articles}</a>
-              <a href="/suppliers" className="hover:text-gray-900 transition-colors">{t.nav.suppliers}</a>
+            {/* Platform links */}
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                {isZh ? '平台功能' : 'Platform'}
+              </p>
+              <div className="space-y-2">
+                {[
+                  { href: '/guide',         label: t.nav.guide },
+                  { href: '/professionals', label: t.nav.professionals },
+                  { href: '/forum',         label: t.nav.forum },
+                  { href: '/articles',      label: t.nav.articles },
+                  { href: '/suppliers',     label: t.nav.suppliers },
+                ].map(l => (
+                  <a key={l.href} href={l.href} className="block text-sm text-slate-400 hover:text-white transition-colors">{l.label}</a>
+                ))}
+              </div>
             </div>
-            <p className="text-xs text-gray-400 text-center">{h.footerDisclaimer}</p>
+            {/* Ecosystem */}
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                {isZh ? '生态伙伴' : 'Ecosystem'}
+              </p>
+              <div className="space-y-2">
+                {[
+                  { href: 'https://australia-startup-hub.vercel.app', label: isZh ? '澳洲创业圈' : 'AusCircle' },
+                  { href: 'https://auspropertycircle.com',             label: isZh ? '澳洲房产圈' : 'Aus Property Circle' },
+                  { href: 'https://ndis-hub-ten.vercel.app',          label: isZh ? '澳洲NDIS圈' : 'NDIS Hub AU' },
+                ].map(l => (
+                  <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors">
+                    {l.label}
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-slate-800 pt-6 text-center">
+            <p className="text-xs text-slate-600">
+              {isZh ? 'Built with ♥ 澳洲商业联盟生态' : 'Built with ♥ AusBiz Alliance'}
+            </p>
           </div>
         </div>
       </footer>
