@@ -314,12 +314,11 @@ export default function HomePage() {
                 ? '关注公众号「澳洲建房圈」，并加入房产讨论群，和业主、建筑商、设计师直接交流。'
                 : 'Follow our official account and join the property discussion group — homeowners, builders, and designers in one place.'}
             </p>
-            <div className="w-32 h-32 rounded-xl flex items-center justify-center mb-3 bg-gray-50 border-2 border-dashed border-gray-200">
-              <div className="text-center">
-                <div className="text-3xl mb-1">📱</div>
-                <p className="text-xs text-gray-400">{lang === 'zh' ? '二维码即将上线' : 'QR coming soon'}</p>
-              </div>
-            </div>
+            <img
+              src="/wechat-official.jpg"
+              alt="澳洲建房圈公众号二维码"
+              className="w-32 h-32 rounded-xl object-cover mb-3"
+            />
             <p className="text-xs text-gray-400">
               {lang === 'zh' ? '搜索公众号：澳洲建房圈' : 'Search WeChat: AusBuildCircle'}
             </p>
