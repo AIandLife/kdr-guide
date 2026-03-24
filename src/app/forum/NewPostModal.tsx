@@ -6,11 +6,15 @@ import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 
 const CATEGORIES = [
+  { id: 'help', zh: '求助', en: 'Help Needed' },
+  { id: 'progress', zh: '晒进度', en: 'Build Journal' },
+  { id: 'recommendation', zh: '推荐 & 避坑', en: 'Reviews & Tips' },
   { id: 'kdr', zh: '推倒重建', en: 'Knockdown Rebuild' },
   { id: 'renovation', zh: '翻新改造', en: 'Renovation' },
   { id: 'granny-flat', zh: 'Granny Flat', en: 'Granny Flat' },
   { id: 'council', zh: 'Council 审批', en: 'Council Approval' },
   { id: 'builder', zh: '找建筑商', en: 'Finding a Builder' },
+  { id: 'materials', zh: '建材选购', en: 'Materials & Products' },
   { id: 'cost', zh: '成本预算', en: 'Costs & Budget' },
   { id: 'experience', zh: '经验分享', en: 'Experiences' },
 ]

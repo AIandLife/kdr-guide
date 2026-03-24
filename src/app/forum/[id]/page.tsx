@@ -9,11 +9,15 @@ import { useLang } from '@/lib/language-context'
 import { useAuth } from '@/lib/auth-context'
 
 const CATEGORY_LABELS: Record<string, { zh: string; en: string }> = {
+  help: { zh: '求助', en: 'Help Needed' },
+  progress: { zh: '晒进度', en: 'Build Journal' },
+  recommendation: { zh: '推荐 & 避坑', en: 'Reviews & Tips' },
   kdr: { zh: '推倒重建', en: 'Knockdown Rebuild' },
   renovation: { zh: '翻新改造', en: 'Renovation' },
   'granny-flat': { zh: 'Granny Flat', en: 'Granny Flat' },
   council: { zh: 'Council 审批', en: 'Council Approval' },
   builder: { zh: '找建筑商', en: 'Finding a Builder' },
+  materials: { zh: '建材选购', en: 'Materials & Products' },
   cost: { zh: '成本预算', en: 'Costs & Budget' },
   experience: { zh: '经验分享', en: 'Experiences' },
 }
