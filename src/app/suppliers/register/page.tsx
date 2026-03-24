@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle, ChevronRight, HelpCircle, Upload } from 'lucide-react'
+import { CheckCircle, ChevronRight, Upload, BadgeCheck, X } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
@@ -46,6 +46,8 @@ export default function SupplierRegisterPage() {
     verificationNote: '',
     wantsVerification: false,
   })
+  const [verifyExpanded, setVerifyExpanded] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly'>('annual')
 
   const set = (k: keyof typeof form, v: unknown) => setForm(f => ({ ...f, [k]: v }))
 
@@ -70,14 +72,15 @@ export default function SupplierRegisterPage() {
           website: form.website || undefined,
           wechat: form.wechat || undefined,
           abn: form.abn || undefined,
+          asicNumber: form.asicNumber || undefined,
+          businessLicenseNote: form.businessLicenseNote || undefined,
+          verificationNote: form.verificationNote || undefined,
           category: form.category,
           origin: form.origin,
           description: form.description || undefined,
           states: form.states,
           specialties: form.specialties.split(',').map(s => s.trim()).filter(Boolean),
-          asicNumber: form.asicNumber || undefined,
-          businessLicenseNote: form.businessLicenseNote || undefined,
-          verificationNote: form.verificationNote || undefined,
+          wantsVerification: form.wantsVerification,
         }),
       })
       const data = await res.json()
@@ -224,15 +227,14 @@ export default function SupplierRegisterPage() {
           </div>
         )}
 
-        {/* STEP 2 — Contact (hidden until verified) */}
+        {/* STEP 2 — Contact */}
         {step === 2 && (
           <div className="space-y-5">
-            <div className="rounded-xl p-4 flex items-start gap-3 bg-blue-50 border border-blue-200">
-              <HelpCircle className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
-              <p className="text-sm text-blue-700 leading-relaxed">
+            <div className="rounded-xl p-4 bg-green-50 border border-green-200">
+              <p className="text-sm text-green-800 leading-relaxed font-medium">
                 {isZh
-                  ? '以下联系方式已安全保存，但在通过认证前不会对外显示。认证后，访问目录的用户才能看到这些信息。'
-                  : 'These details are saved securely but not shown publicly until your listing is verified. After verification, visitors to the directory can see them.'}
+                  ? '📋 填写联系方式后，你的公司信息将出现在建材目录中，潜在买家和业主可以直接看到并联系你。'
+                  : '📋 Once you fill in your contact details, your business will appear in the directory — homeowners and buyers can find and reach you directly.'}
               </p>
             </div>
 
@@ -266,19 +268,11 @@ export default function SupplierRegisterPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">{isZh ? '公司网站' : 'Website'}</label>
-                <input value={form.website} onChange={e => set('website', e.target.value)}
-                  placeholder="yourcompany.com.au"
-                  className={inputClass} />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">ABN</label>
-                <input value={form.abn} onChange={e => set('abn', e.target.value)}
-                  placeholder="XX XXX XXX XXX"
-                  className={inputClass} />
-              </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-2">{isZh ? '公司网站' : 'Website'}</label>
+              <input value={form.website} onChange={e => set('website', e.target.value)}
+                placeholder="yourcompany.com.au"
+                className={inputClass} />
             </div>
 
             <div className="flex gap-3">
@@ -292,110 +286,186 @@ export default function SupplierRegisterPage() {
                 className="flex-1 py-3 rounded-xl text-white font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-40"
                 style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
               >
-                {isZh ? '下一步：认证资料' : 'Next: Verification'}
+                {isZh ? '下一步' : 'Next'}
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         )}
 
-        {/* STEP 3 — Verification (optional) */}
+        {/* STEP 3 — Verification choice */}
         {step === 3 && (
-          <div className="space-y-5">
-            {/* Verification explain */}
-            <div className="rounded-2xl p-5 bg-orange-50 border border-orange-200">
-              <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-orange-500" />
-                {isZh ? '为什么要认证？' : 'Why get verified?'}
-              </h3>
-              <ul className="text-sm text-gray-600 space-y-1.5 leading-relaxed">
-                <li>✓ {isZh ? '在目录中展示联系方式、网站和微信' : 'Show contact details, website, and WeChat in the directory'}</li>
-                <li>✓ {isZh ? '获得"已认证"徽章，提升信任度' : 'Verified badge — increases trust with homeowners'}</li>
-                <li>✓ {isZh ? '优先排名，出现在未认证商家前面' : 'Priority ranking — appear above unverified listings'}</li>
-                <li>✓ {isZh ? '后续推荐算法中获得更高权重' : 'Higher weight in our recommendation algorithm'}</li>
-              </ul>
-              <p className="text-xs text-gray-400 mt-3">
-                {isZh ? '认证审核通过后，我们会联系你完成后续步骤。' : 'After approval we\'ll reach out to complete the next steps.'}
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-xl font-bold text-gray-900 mb-1">
+                {isZh ? '是否申请认证？' : 'Apply for Verification?'}
+              </h2>
+              <p className="text-sm text-gray-500">
+                {isZh ? '选择适合你的方式，你可以随时回来升级。' : 'Choose what works for you — you can always upgrade later.'}
               </p>
             </div>
 
-            <div>
-              <label className="flex items-center gap-2 cursor-pointer mb-5">
-                <div
-                  onClick={() => set('wantsVerification', !form.wantsVerification)}
-                  className="w-10 h-5 rounded-full relative transition-all cursor-pointer shrink-0"
-                  style={{ background: form.wantsVerification ? '#f97316' : '#e5e7eb' }}
-                >
-                  <div className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all"
-                    style={{ left: form.wantsVerification ? '22px' : '2px' }} />
+            {/* Comparison cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Free */}
+              <div className="rounded-2xl p-5 bg-white border-2 border-gray-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm">📋</div>
+                  <div>
+                    <p className="font-bold text-gray-900 text-sm">{isZh ? '免费收录' : 'Free Listing'}</p>
+                    <p className="text-xs text-gray-400">{isZh ? '永久免费' : 'Always free'}</p>
+                  </div>
                 </div>
-                <span className="text-sm text-gray-700">
-                  {isZh ? '我现在想申请认证' : 'I want to apply for verification now'}
-                </span>
-              </label>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2 text-gray-600"><CheckCircle className="w-4 h-4 text-gray-400 shrink-0" />{isZh ? '公司名称出现在目录' : 'Business name listed'}</li>
+                  <li className="flex items-center gap-2 text-gray-600"><CheckCircle className="w-4 h-4 text-gray-400 shrink-0" />{isZh ? '分类和简介展示' : 'Category & description shown'}</li>
+                  <li className="flex items-center gap-2 text-gray-400"><X className="w-4 h-4 shrink-0" />{isZh ? '联系方式不对外显示' : 'Contact details hidden'}</li>
+                  <li className="flex items-center gap-2 text-gray-400"><X className="w-4 h-4 shrink-0" />{isZh ? '无认证徽章' : 'No verified badge'}</li>
+                  <li className="flex items-center gap-2 text-gray-400"><X className="w-4 h-4 shrink-0" />{isZh ? '排名靠后' : 'Lower ranking'}</li>
+                </ul>
+              </div>
+
+              {/* Verified */}
+              <div className="rounded-2xl p-5 bg-orange-50 border-2 border-orange-300 relative">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+                  {isZh ? '推荐' : 'Recommended'}
+                </div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                    <BadgeCheck className="w-4 h-4 text-orange-500" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-gray-900 text-sm">{isZh ? '认证商家' : 'Verified Business'}</p>
+                    <p className="text-xs text-orange-600">{isZh ? '$99/年 或 $12/月' : '$99/yr or $12/mo'}</p>
+                  </div>
+                </div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2 text-gray-700"><CheckCircle className="w-4 h-4 text-orange-500 shrink-0" />{isZh ? '全部免费功能' : 'Everything in free'}</li>
+                  <li className="flex items-center gap-2 text-gray-700"><CheckCircle className="w-4 h-4 text-orange-500 shrink-0" />{isZh ? '电话、网站、微信对业主可见' : 'Phone, website & WeChat visible'}</li>
+                  <li className="flex items-center gap-2 text-gray-700"><CheckCircle className="w-4 h-4 text-orange-500 shrink-0" />{isZh ? '认证徽章，提升信任度' : 'Verified badge — builds trust'}</li>
+                  <li className="flex items-center gap-2 text-gray-700"><CheckCircle className="w-4 h-4 text-orange-500 shrink-0" />{isZh ? '搜索结果优先排名' : 'Priority ranking in search'}</li>
+                  <li className="flex items-center gap-2 text-gray-700"><CheckCircle className="w-4 h-4 text-orange-500 shrink-0" />{isZh ? 'AI 推荐算法优先加权' : 'Higher AI recommendation weight'}</li>
+                </ul>
+              </div>
             </div>
 
-            {form.wantsVerification && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm text-gray-600 mb-2">
-                    {isZh ? 'ABN / ASIC 公司注册号（澳洲企业）' : 'ABN / ASIC Company Number (Australian businesses)'}
-                  </label>
-                  <input value={form.asicNumber} onChange={e => set('asicNumber', e.target.value)}
-                    placeholder={isZh ? '如：ACN 123 456 789' : 'e.g. ACN 123 456 789'}
-                    className={inputClass} />
-                </div>
-
-                <div>
-                  <label className="block text-sm text-gray-600 mb-2">
-                    {isZh ? '营业执照信息（中国企业）' : 'Business registration details (China-based businesses)'}
-                  </label>
-                  <input value={form.businessLicenseNote} onChange={e => set('businessLicenseNote', e.target.value)}
-                    placeholder={isZh ? '营业执照统一社会信用代码' : 'Unified Social Credit Code'}
-                    className={inputClass} />
-                </div>
-
-                <div>
-                  <label className="block text-sm text-gray-600 mb-2 flex items-center gap-2">
-                    <Upload className="w-4 h-4" />
-                    {isZh ? '补充说明（文件链接或备注）' : 'Additional notes or document links'}
-                  </label>
-                  <textarea value={form.verificationNote} onChange={e => set('verificationNote', e.target.value)}
-                    placeholder={isZh
-                      ? '可粘贴 Google Drive / Dropbox 链接，或填写任何补充信息…'
-                      : 'You can paste a Google Drive / Dropbox link to your documents, or add any notes…'}
-                    rows={3}
-                    className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none resize-none bg-gray-50 border border-gray-200 focus:border-orange-400" />
-                </div>
+            {/* Action buttons */}
+            {!verifyExpanded && (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={submit}
+                  disabled={submitting}
+                  className="flex-1 py-3.5 rounded-xl text-gray-600 font-medium bg-gray-100 hover:bg-gray-200 border border-gray-200 transition-colors disabled:opacity-50"
+                >
+                  {submitting ? (isZh ? '提交中…' : 'Submitting…') : (isZh ? '跳过，先免费收录' : 'Skip — free listing only')}
+                </button>
+                <button
+                  onClick={() => { set('wantsVerification', true); setVerifyExpanded(true) }}
+                  className="flex-1 py-3.5 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition-all"
+                  style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
+                >
+                  <BadgeCheck className="w-4 h-4" />
+                  {isZh ? '立即申请认证 →' : 'Apply for Verification →'}
+                </button>
               </div>
             )}
 
-            {error && (
-              <p className="text-red-500 text-sm px-1">{error}</p>
+            {/* Verification form — shown after clicking "立即认证" */}
+            {verifyExpanded && (
+              <div className="space-y-5 rounded-2xl border-2 border-orange-200 p-5 bg-orange-50">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                    <BadgeCheck className="w-5 h-5 text-orange-500" />
+                    {isZh ? '认证申请材料' : 'Verification Documents'}
+                  </h3>
+                  <button onClick={() => { setVerifyExpanded(false); set('wantsVerification', false) }}
+                    className="text-gray-400 hover:text-gray-600 text-xs">
+                    {isZh ? '取消' : 'Cancel'}
+                  </button>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-gray-600 mb-2">
+                    {isZh ? 'ABN（澳洲企业）' : 'ABN (Australian businesses)'}
+                  </label>
+                  <input value={form.abn} onChange={e => set('abn', e.target.value)}
+                    placeholder="XX XXX XXX XXX"
+                    className={inputClass} />
+                </div>
+
+                <div>
+                  <label className="block text-sm text-gray-600 mb-2">
+                    {isZh ? 'ASIC 公司注册号 / 营业执照（可选）' : 'ASIC number / Business licence (optional)'}
+                  </label>
+                  <input value={form.asicNumber} onChange={e => set('asicNumber', e.target.value)}
+                    placeholder={isZh ? '如：ACN 123 456 789 或统一社会信用代码' : 'e.g. ACN 123 456 789'}
+                    className={inputClass} />
+                </div>
+
+                <div>
+                  <label className="block text-sm text-gray-600 mb-2 flex items-center gap-1.5">
+                    <Upload className="w-4 h-4" />
+                    {isZh ? '补充说明或文件链接（可选）' : 'Additional notes or document links (optional)'}
+                  </label>
+                  <textarea value={form.verificationNote} onChange={e => set('verificationNote', e.target.value)}
+                    placeholder={isZh
+                      ? '可粘贴 Google Drive / Dropbox 文件链接，或填写补充信息…'
+                      : 'Paste a Google Drive / Dropbox link, or add any notes…'}
+                    rows={2}
+                    className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none resize-none bg-white border border-gray-200 focus:border-orange-400" />
+                </div>
+
+                {/* Plan selector */}
+                <div>
+                  <p className="text-sm text-gray-600 mb-3">{isZh ? '选择套餐' : 'Choose a plan'}</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button type="button" onClick={() => setSelectedPlan('annual')}
+                      className={`relative p-4 rounded-xl border-2 text-center transition-all ${selectedPlan === 'annual' ? 'border-orange-400 bg-white' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
+                      {selectedPlan === 'annual' && (
+                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                          {isZh ? '最划算' : 'Best Value'}
+                        </span>
+                      )}
+                      <p className="text-xl font-bold text-gray-900">$99</p>
+                      <p className="text-xs text-gray-500">{isZh ? '/ 年（AUD）' : '/ year (AUD)'}</p>
+                      <p className="text-xs text-orange-500 font-medium mt-1">{isZh ? '仅 $8.25/月' : 'Only $8.25/mo'}</p>
+                    </button>
+                    <button type="button" onClick={() => setSelectedPlan('monthly')}
+                      className={`p-4 rounded-xl border-2 text-center transition-all ${selectedPlan === 'monthly' ? 'border-orange-400 bg-white' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
+                      <p className="text-xl font-bold text-gray-900">$12</p>
+                      <p className="text-xs text-gray-500">{isZh ? '/ 月（AUD）' : '/ month (AUD)'}</p>
+                      <p className="text-xs text-gray-400 mt-1">{isZh ? '随时取消' : 'Cancel anytime'}</p>
+                    </button>
+                  </div>
+                </div>
+
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+
+                <button
+                  onClick={submit}
+                  disabled={submitting}
+                  className="w-full py-3.5 rounded-xl text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
+                  style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
+                >
+                  <BadgeCheck className="w-4 h-4" />
+                  {submitting
+                    ? (isZh ? '提交中…' : 'Submitting…')
+                    : (isZh
+                        ? `提交认证申请 · ${selectedPlan === 'annual' ? 'AUD $99/年' : 'AUD $12/月'}`
+                        : `Submit & Verify · ${selectedPlan === 'annual' ? 'AUD $99/yr' : 'AUD $12/mo'}`)}
+                </button>
+                <p className="text-xs text-gray-400 text-center">
+                  {isZh ? '提交后我们将联系你完成支付和审核，通常 1–2 个工作日。' : 'We\'ll contact you to complete payment and review — usually within 1–2 business days.'}
+                </p>
+              </div>
             )}
 
-            <div className="flex gap-3">
-              <button onClick={() => setStep(2)}
-                className="flex-1 py-3 rounded-xl text-gray-600 font-medium transition-colors hover:bg-gray-200 bg-gray-100 border border-gray-200">
-                {isZh ? '上一步' : 'Back'}
-              </button>
-              <button
-                onClick={submit}
-                disabled={submitting}
-                className="flex-1 py-3 rounded-xl text-white font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-60"
-                style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
-              >
-                {submitting
-                  ? (isZh ? '提交中…' : 'Submitting…')
-                  : (isZh ? '提交信息' : 'Submit Listing')}
-              </button>
-            </div>
+            {error && !verifyExpanded && <p className="text-red-500 text-sm px-1">{error}</p>}
 
-            <p className="text-xs text-gray-400 text-center">
-              {isZh
-                ? '点击提交即表示你同意我们展示你的公司名称及描述（不含联系方式，直至通过认证）。'
-                : 'By submitting you agree to your business name and description being shown in the directory. Contact details remain hidden until verified.'}
-            </p>
+            <button onClick={() => setStep(2)}
+              className="text-gray-400 hover:text-gray-600 text-sm w-full text-center transition-colors">
+              ← {isZh ? '上一步' : 'Back'}
+            </button>
           </div>
         )}
 
