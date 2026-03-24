@@ -52,14 +52,22 @@ function ProDashboard() {
   useEffect(() => {
     if (!user) return
     const supabase = createClient()
-    Promise.all([
-      supabase.from('professionals').select('*').eq('user_id', user.id).single(),
-      supabase.from('contact_requests').select('*').order('created_at', { ascending: false }),
-    ]).then(([{ data: prof }, { data: enqs }]) => {
-      setProfile(prof ?? null)
-      setEnquiries(enqs ?? [])
-      setFetching(false)
-    })
+    supabase.from('professionals').select('*').eq('user_id', user.id).single()
+      .then(({ data: prof }) => {
+        setProfile(prof ?? null)
+        if (!prof?.business_name) {
+          setFetching(false)
+          return
+        }
+        // Only fetch enquiries addressed to this professional
+        supabase.from('contact_requests').select('*')
+          .eq('professional_name', prof.business_name)
+          .order('created_at', { ascending: false })
+          .then(({ data: enqs }) => {
+            setEnquiries(enqs ?? [])
+            setFetching(false)
+          })
+      })
   }, [user])
 
   if (loading) return null
@@ -187,7 +195,12 @@ function ProDashboard() {
                   <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center shadow-sm">
                     <MessageSquare className="w-10 h-10 mx-auto text-gray-200 mb-3" />
                     <p className="text-gray-400 text-sm">{isZh ? '还没有收到询盘' : 'No enquiries yet'}</p>
-                    <p className="text-xs text-gray-400 mt-1">{isZh ? '认证后你的主页会优先展示，吸引更多业主联系你。' : 'Get verified to rank higher and attract more homeowners.'}</p>
+                    <p className="text-xs text-gray-400 mt-1 mb-4">{isZh ? '认证后你的主页会优先展示，吸引更多业主联系你。' : 'Get verified to rank higher and attract more homeowners.'}</p>
+                    {profile?.verification_status !== 'verified' && (
+                      <button onClick={() => setActiveTab('verify')} className="text-sm text-orange-500 hover:text-orange-600 font-medium border border-orange-200 rounded-xl px-4 py-2 hover:bg-orange-50 transition-colors">
+                        {isZh ? '立即申请认证 →' : 'Get Verified →'}
+                      </button>
+                    )}
                   </div>
                 ) : (
                   enquiries.map(e => (

@@ -442,7 +442,7 @@ export default function ProfessionalsPage() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <div>
                 <p className="text-xs text-orange-500 font-medium mb-0.5">
-                  {modal.step < 3 ? (isZh ? `发送询价 · 第 ${modal.step}/2 步` : `Get a Quote · Step ${modal.step} of 2`) : ''}
+                  {modal.step < 3 ? (isZh ? `发送询价 · 第 ${modal.step}/3 步` : `Get a Quote · Step ${modal.step} of 3`) : ''}
                 </p>
                 <h3 className="font-bold text-gray-900">{modal.pro.name}</h3>
               </div>

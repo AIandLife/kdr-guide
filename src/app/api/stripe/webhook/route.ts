@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
+import { Resend } from 'resend'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -44,6 +45,30 @@ export async function POST(req: Request) {
           paid_at: new Date().toISOString(),
         })
         .eq('email', email)
+    }
+
+    // Send confirmation email to professional
+    if (email) {
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@ausbuildcircle.com'
+      await resend.emails.send({
+        from: FROM_EMAIL,
+        to: email,
+        subject: '付款成功 — 认证申请已提交 | Payment Received',
+        html: `
+          <div style="font-family:sans-serif;max-width:520px;margin:0 auto">
+            <div style="background:#f97316;padding:24px;border-radius:12px 12px 0 0;text-align:center">
+              <h1 style="color:white;margin:0;font-size:20px">✅ 付款成功</h1>
+            </div>
+            <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
+              <p>您好${businessName ? `，<strong>${businessName}</strong>` : ''}，</p>
+              <p>我们已收到您的付款，认证申请已提交。我们的团队将在 <strong>1–2 个工作日内</strong>完成审核并通过邮件通知您。</p>
+              <p>如有疑问，请直接回复此邮件。</p>
+              <p>澳洲建房圈 团队</p>
+            </div>
+          </div>
+        `,
+      }).catch(err => console.error('Webhook email error:', err))
     }
 
     console.log(`Payment received: ${businessName || email} — subscription ${session.subscription}`)
