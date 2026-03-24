@@ -384,9 +384,9 @@ export default function HomePage() {
               : 'AusBuildCircle is part of the AusBiz Alliance — a network of platforms supporting the Chinese-Australian community.'}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <a href="https://australia-startup-hub.vercel.app" target="_blank" rel="noopener noreferrer"
+            <a href="https://www.australiabusinessalliance.com" target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
-              {lang === 'zh' ? '澳洲创业圈' : 'AusCircle'}
+              {lang === 'zh' ? '澳洲商业联盟' : 'Australia Business Alliance'}
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
             <a href="https://auspropertycircle.com" target="_blank" rel="noopener noreferrer"
@@ -424,7 +424,7 @@ export default function HomePage() {
               </p>
               <div className="space-y-2">
                 {[
-                  { href: 'https://australia-startup-hub.vercel.app', label: lang === 'zh' ? '澳洲创业圈' : 'AusCircle' },
+                  { href: 'https://www.australiabusinessalliance.com', label: lang === 'zh' ? '澳洲商业联盟' : 'Australia Business Alliance' },
                   { href: 'https://auspropertycircle.com',             label: lang === 'zh' ? '澳洲房产圈' : 'Aus Property Circle' },
                   { href: 'https://ndis-hub-ten.vercel.app',          label: lang === 'zh' ? '澳洲NDIS圈' : 'NDIS Hub AU' },
                 ].map(l => (
