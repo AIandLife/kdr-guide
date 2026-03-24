@@ -410,8 +410,11 @@ export default function SuppliersPage() {
                     )}
                   </div>
                 ) : (
-                  <div className="pt-3 text-xs text-gray-400 italic border-t border-gray-100">
-                    {isZh ? '联系方式未经核实，请自行尽职调查。' : 'Contact details unverified. Please do your own due diligence.'}
+                  <div className="pt-3 text-xs text-gray-400 border-t border-gray-100 flex items-center justify-between gap-2">
+                    <span className="italic">{isZh ? '联系方式未经核实，请自行尽职调查。' : 'Contact details unverified. Please do your own due diligence.'}</span>
+                    <a href="/suppliers/register" className="shrink-0 text-orange-500 hover:text-orange-600 font-medium not-italic">
+                      {isZh ? '申请认证 →' : 'Get Verified →'}
+                    </a>
                   </div>
                 )}
               </div>
