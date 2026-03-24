@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const cookieStore = await cookies()
+    const response = NextResponse.redirect(new URL(next, request.url))
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -17,13 +18,14 @@ export async function GET(request: NextRequest) {
           getAll() { return cookieStore.getAll() },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              response.cookies.set(name, value, options)
             )
           },
         },
       }
     )
     await supabase.auth.exchangeCodeForSession(code)
+    return response
   }
 
   return NextResponse.redirect(new URL(next, request.url))
