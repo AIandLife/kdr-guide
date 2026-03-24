@@ -394,7 +394,9 @@ export default function HomePage() {
               {lang === 'zh' ? '澳洲房产圈' : 'Aus Property Circle'}
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
-            {/* NDIS Hub — hidden until ready */}
+            <span className="inline-flex items-center gap-1.5 border border-slate-700 text-slate-600 font-semibold px-5 py-2.5 rounded-xl text-sm cursor-default">
+              {lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon'}
+            </span>
           </div>
         </div>
       </section>
@@ -422,7 +424,7 @@ export default function HomePage() {
                 {[
                   { href: 'https://www.australiabusinessalliance.com', label: lang === 'zh' ? '澳洲商业联盟' : 'Australia Business Alliance' },
                   { href: 'https://auspropertycircle.com',             label: lang === 'zh' ? '澳洲房产圈' : 'Aus Property Circle' },
-                  // NDIS Hub — hidden until ready
+                  { href: '#', label: lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon' },
                 ].map(l => (
                   <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors">
