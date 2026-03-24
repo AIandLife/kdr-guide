@@ -199,7 +199,8 @@ function PostDetail() {
                   : post.city === 'perth' ? (isZh ? '珀斯' : 'Perth')
                   : post.city === 'adelaide' ? (isZh ? '阿德莱德' : 'Adelaide')
                   : post.city === 'gold-coast' ? (isZh ? '黄金海岸' : 'Gold Coast')
-                  : post.city === 'canberra' ? (isZh ? '堪培拉' : 'Canberra')
+                  : post.city === 'newcastle' ? (isZh ? '纽卡斯尔' : 'Newcastle')
+                  : post.city === 'darwin' ? (isZh ? '达尔文' : 'Darwin')
                   : (isZh ? '其他' : 'Other')}
               </span>
             )}
