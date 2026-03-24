@@ -429,7 +429,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="bg-slate-900 border-t border-slate-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
             {/* Brand */}
             <div>
               <div className="flex items-center gap-2 mb-3">
@@ -439,23 +439,6 @@ export default function HomePage() {
                 <span className="font-bold text-white">{t.nav.brand}</span>
               </div>
               <p className="text-slate-400 text-xs leading-relaxed max-w-xs">{h.footerDisclaimer}</p>
-            </div>
-            {/* Platform links */}
-            <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                {isZh ? '平台功能' : 'Platform'}
-              </p>
-              <div className="space-y-2">
-                {[
-                  { href: '/guide',         label: t.nav.guide },
-                  { href: '/professionals', label: t.nav.professionals },
-                  { href: '/forum',         label: t.nav.forum },
-                  { href: '/articles',      label: t.nav.articles },
-                  { href: '/suppliers',     label: t.nav.suppliers },
-                ].map(l => (
-                  <a key={l.href} href={l.href} className="block text-sm text-slate-400 hover:text-white transition-colors">{l.label}</a>
-                ))}
-              </div>
             </div>
             {/* Ecosystem */}
             <div>
