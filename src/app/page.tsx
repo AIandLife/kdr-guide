@@ -300,41 +300,19 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {/* WeChat Group */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* WeChat Official Account + Group */}
           <div className="rounded-2xl p-6 text-center flex flex-col items-center bg-white border border-gray-100 shadow-sm">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-2xl bg-green-50">
               💬
             </div>
             <h3 className="font-bold text-gray-900 text-lg mb-2">
-              {lang === 'zh' ? '澳洲建房交流群' : 'WeChat Community Group'}
+              {lang === 'zh' ? '关注公众号，加入微信群' : 'WeChat — Official Account & Group'}
             </h3>
             <p className="text-sm text-gray-500 mb-5 leading-relaxed">
               {lang === 'zh'
-                ? '扫码加入微信群，和业主、建筑商、设计师直接交流。'
-                : 'Scan to join our WeChat group — homeowners, builders, and designers in one place.'}
-            </p>
-            <div className="w-32 h-32 rounded-xl flex items-center justify-center mb-3 bg-gray-50 border-2 border-dashed border-gray-200">
-              <div className="text-center">
-                <div className="text-3xl mb-1">📱</div>
-                <p className="text-xs text-gray-400">{lang === 'zh' ? '二维码即将上线' : 'QR coming soon'}</p>
-              </div>
-            </div>
-            <p className="text-xs text-gray-400">{lang === 'zh' ? '微信扫码加群' : 'Scan with WeChat'}</p>
-          </div>
-
-          {/* WeChat Official Account */}
-          <div className="rounded-2xl p-6 text-center flex flex-col items-center bg-white border border-gray-100 shadow-sm">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-2xl bg-green-50">
-              📰
-            </div>
-            <h3 className="font-bold text-gray-900 text-lg mb-2">
-              {lang === 'zh' ? '微信公众号' : 'WeChat Official Account'}
-            </h3>
-            <p className="text-sm text-gray-500 mb-5 leading-relaxed">
-              {lang === 'zh'
-                ? '关注公众号，获取最新建房资讯、政策解读和优质案例分享。'
-                : 'Follow our official account for the latest KDR news, policy updates, and case studies.'}
+                ? '关注公众号「澳洲建房圈」，并加入房产讨论群，和业主、建筑商、设计师直接交流。'
+                : 'Follow our official account and join the property discussion group — homeowners, builders, and designers in one place.'}
             </p>
             <div className="w-32 h-32 rounded-xl flex items-center justify-center mb-3 bg-gray-50 border-2 border-dashed border-gray-200">
               <div className="text-center">
@@ -343,7 +321,7 @@ export default function HomePage() {
               </div>
             </div>
             <p className="text-xs text-gray-400">
-              {lang === 'zh' ? '搜索公众号：澳洲建房圈' : 'Search: AusBuildCircle'}
+              {lang === 'zh' ? '搜索公众号：澳洲建房圈' : 'Search WeChat: AusBuildCircle'}
             </p>
           </div>
 
