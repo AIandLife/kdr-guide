@@ -201,6 +201,7 @@ function PostDetail() {
                   : post.city === 'gold-coast' ? (isZh ? '黄金海岸' : 'Gold Coast')
                   : post.city === 'newcastle' ? (isZh ? '纽卡斯尔' : 'Newcastle')
                   : post.city === 'darwin' ? (isZh ? '达尔文' : 'Darwin')
+                  : post.city === 'canberra' ? (isZh ? '堪培拉' : 'Canberra')
                   : (isZh ? '其他' : 'Other')}
               </span>
             )}

@@ -125,6 +125,7 @@ export default function NewPostModal({ lang, user, onClose, onSuccess }: Props) 
               <option value="gold-coast">{isZh ? '黄金海岸' : 'Gold Coast'}</option>
               <option value="newcastle">{isZh ? '纽卡斯尔' : 'Newcastle'}</option>
               <option value="darwin">{isZh ? '达尔文' : 'Darwin'}</option>
+              <option value="canberra">{isZh ? '堪培拉' : 'Canberra'}</option>
               <option value="other">{isZh ? '其他城市' : 'Other'}</option>
             </select>
             <input

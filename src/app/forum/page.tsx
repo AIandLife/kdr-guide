@@ -81,6 +81,7 @@ const CITIES = [
   { id: 'gold-coast', zh: '黄金海岸', en: 'Gold Coast' },
   { id: 'newcastle', zh: '纽卡斯尔', en: 'Newcastle' },
   { id: 'darwin', zh: '达尔文', en: 'Darwin' },
+  { id: 'canberra', zh: '堪培拉', en: 'Canberra' },
   { id: 'other', zh: '其他', en: 'Other' },
 ]
 
@@ -93,6 +94,7 @@ const CITY_LABELS: Record<string, { zh: string; en: string }> = {
   'gold-coast': { zh: '黄金海岸', en: 'Gold Coast' },
   newcastle: { zh: '纽卡斯尔', en: 'Newcastle' },
   darwin: { zh: '达尔文', en: 'Darwin' },
+  canberra: { zh: '堪培拉', en: 'Canberra' },
   other: { zh: '其他', en: 'Other' },
 }
 
