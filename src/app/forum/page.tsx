@@ -27,6 +27,8 @@ interface Post {
   id: string
   title: string
   body: string
+  title_en: string | null
+  body_en: string | null
   category: string
   suburb: string | null
   author_name: string
@@ -87,11 +89,23 @@ export default function ForumPage() {
       .limit(50)
     if (activeCategory !== 'all') q = q.eq('category', activeCategory)
     const { data } = await q
-    setPosts(data ?? [])
+    const loaded = data ?? []
+    setPosts(loaded)
     setLoading(false)
+
+    // Trigger background translation for untranslated posts when in English
+    if (lang === 'en') {
+      loaded
+        .filter(p => !p.title_en)
+        .forEach(p => fetch('/api/forum/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ postId: p.id }),
+        }))
+    }
   }
 
-  useEffect(() => { fetchPosts() }, [activeCategory])
+  useEffect(() => { fetchPosts() }, [activeCategory, lang])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -174,8 +188,12 @@ export default function ForumPage() {
                         </span>
                       )}
                     </div>
-                    <h3 className="font-semibold text-gray-900 text-sm leading-snug mb-2 line-clamp-2">{post.title}</h3>
-                    <p className="text-xs text-gray-400 line-clamp-1">{post.body}</p>
+                    <h3 className="font-semibold text-gray-900 text-sm leading-snug mb-2 line-clamp-2">
+                      {!isZh && post.title_en ? post.title_en : post.title}
+                    </h3>
+                    <p className="text-xs text-gray-400 line-clamp-1">
+                      {!isZh && post.body_en ? post.body_en : post.body}
+                    </p>
                     <div className="flex items-center gap-3 mt-2.5">
                       <span className="text-xs text-gray-500 font-medium">{post.author_name}</span>
                       <AuthorBadge badge={post.author_badge} business={post.author_business} lang={lang} />

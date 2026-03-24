@@ -26,6 +26,8 @@ interface Post {
   id: string
   title: string
   body: string
+  title_en: string | null
+  body_en: string | null
   category: string
   suburb: string | null
   author_name: string
@@ -40,6 +42,7 @@ interface Post {
 interface Reply {
   id: string
   body: string
+  body_en: string | null
   author_name: string
   author_badge: string | null
   author_business: string | null
@@ -117,8 +120,26 @@ function PostDetail() {
       setPost(p)
       setReplies(r ?? [])
       setLoading(false)
+
+      // Trigger background translation if English and not yet translated
+      if (lang === 'en') {
+        if (p && !p.title_en) {
+          fetch('/api/forum/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId: p.id }),
+          })
+        }
+        ;(r ?? []).filter((reply: Reply) => !reply.body_en).forEach((reply: Reply) => {
+          fetch('/api/forum/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ replyId: reply.id }),
+          })
+        })
+      }
     })
-  }, [id])
+  }, [id, lang])
 
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -174,8 +195,12 @@ function PostDetail() {
               </span>
             )}
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-4">{post.title}</h1>
-          <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap mb-5">{post.body}</p>
+          <h1 className="text-xl font-bold text-gray-900 mb-4">
+            {!isZh && post.title_en ? post.title_en : post.title}
+          </h1>
+          <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap mb-5">
+            {!isZh && post.body_en ? post.body_en : post.body}
+          </p>
           <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
             <AuthorBlock name={post.author_name} badge={post.author_badge} business={post.author_business} lang={lang} />
             <span className="text-xs text-gray-400 flex items-center gap-1 ml-auto">
@@ -195,7 +220,9 @@ function PostDetail() {
                 ? 'bg-blue-50 border-blue-200'
                 : 'bg-white border-gray-200'
             }`}>
-              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap mb-3">{reply.body}</p>
+              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap mb-3">
+                {!isZh && reply.body_en ? reply.body_en : reply.body}
+              </p>
               <div className="flex items-center gap-3">
                 <AuthorBlock name={reply.author_name} badge={reply.author_badge} business={reply.author_business} lang={lang} compact />
                 <span className="text-xs text-gray-400 flex items-center gap-1 ml-auto">
