@@ -153,13 +153,16 @@ export default function SuppliersPage() {
             { icon: '🏭', en: '60+ suppliers listed', zh: '60+ 家供应商已收录' },
             { icon: '✅', en: 'Verified suppliers prioritised', zh: '认证商家优先展示' },
             { icon: '🌏', en: 'Local & China imports covered', zh: '澳洲本地 + 中国进口全覆盖' },
-            { icon: '🆓', en: 'Free to list your business', zh: '免费收录你的业务' },
           ].map((item, i) => (
             <div key={i} className="flex items-center gap-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg px-3 py-2">
               <span>{item.icon}</span>
               <span>{isZh ? item.zh : item.en}</span>
             </div>
           ))}
+          <a href="/suppliers/register" className="flex items-center gap-1.5 text-sm font-semibold text-white bg-orange-500 hover:bg-orange-400 transition-colors rounded-lg px-3 py-2">
+            <span className="text-lg leading-none">+</span>
+            <span>{isZh ? '新商家申请入驻' : 'List your business'}</span>
+          </a>
         </div>
 
         {/* Verification explainer */}
@@ -406,15 +409,12 @@ export default function SuppliersPage() {
           </div>
         )}
 
-        {/* Subtle B2B entry point */}
+        {/* B2B entry point */}
         <div className="border-t border-gray-200 pt-8 text-center">
-          <p className="text-sm text-gray-400">
-            {isZh ? '你是建材供应商？' : 'Are you a building materials supplier?'}
-            {' '}
-            <a href="/suppliers/register" className="text-orange-500 hover:text-orange-600 font-medium transition-colors">
-              {isZh ? '免费收录你的业务 →' : 'List your business for free →'}
-            </a>
-          </p>
+          <a href="/suppliers/register" className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+            <span className="text-xl leading-none">+</span>
+            {isZh ? '新商家申请入驻' : 'List your business'}
+          </a>
         </div>
       </div>
     </div>
