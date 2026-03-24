@@ -128,8 +128,7 @@ function PostDetail() {
       user_id: user?.id ?? null,
     })
     if (!error) {
-      // update reply_count
-      await supabase.rpc('increment_reply_count' as never, { post_id: id }).catch(() => {})
+      // reply_count updated via DB trigger or manually — skip RPC
       const { data: r } = await supabase.from('forum_replies').select('*').eq('post_id', id).order('created_at', { ascending: true })
       setReplies(r ?? [])
       setReplyBody('')

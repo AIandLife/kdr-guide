@@ -396,30 +396,30 @@ export default function HomePage() {
       <section style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 text-center">
           <p className="text-xs font-semibold tracking-widest text-orange-400 uppercase mb-3">
-            {isZh ? '澳洲商业联盟生态' : 'AusBiz Alliance Ecosystem'}
+            {lang === 'zh' ? '澳洲商业联盟生态' : 'AusBiz Alliance Ecosystem'}
           </p>
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            {isZh ? '我们是生态大家庭的一员' : 'Part of a Bigger Ecosystem'}
+            {lang === 'zh' ? '我们是生态大家庭的一员' : 'Part of a Bigger Ecosystem'}
           </h2>
           <p className="text-slate-400 text-sm mb-8 max-w-lg mx-auto">
-            {isZh
+            {lang === 'zh'
               ? '澳洲建房圈是澳洲商业联盟旗下的垂直平台之一，共同为华人在澳的生活、创业、置业提供专业支持。'
               : 'AusBuildCircle is part of the AusBiz Alliance — a network of platforms supporting the Chinese-Australian community.'}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <a href="https://australia-startup-hub.vercel.app" target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
-              {isZh ? '澳洲创业圈' : 'AusCircle'}
+              {lang === 'zh' ? '澳洲创业圈' : 'AusCircle'}
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
             <a href="https://auspropertycircle.com" target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 border border-slate-600 hover:border-slate-400 text-slate-300 hover:text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
-              {isZh ? '澳洲房产圈' : 'Aus Property Circle'}
+              {lang === 'zh' ? '澳洲房产圈' : 'Aus Property Circle'}
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
             <a href="https://ndis-hub-ten.vercel.app" target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 border border-slate-600 hover:border-slate-400 text-slate-300 hover:text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
-              {isZh ? '澳洲NDIS圈' : 'NDIS Hub AU'}
+              {lang === 'zh' ? '澳洲NDIS圈' : 'NDIS Hub AU'}
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
@@ -443,13 +443,13 @@ export default function HomePage() {
             {/* Ecosystem */}
             <div>
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                {isZh ? '生态伙伴' : 'Ecosystem'}
+                {lang === 'zh' ? '生态伙伴' : 'Ecosystem'}
               </p>
               <div className="space-y-2">
                 {[
-                  { href: 'https://australia-startup-hub.vercel.app', label: isZh ? '澳洲创业圈' : 'AusCircle' },
-                  { href: 'https://auspropertycircle.com',             label: isZh ? '澳洲房产圈' : 'Aus Property Circle' },
-                  { href: 'https://ndis-hub-ten.vercel.app',          label: isZh ? '澳洲NDIS圈' : 'NDIS Hub AU' },
+                  { href: 'https://australia-startup-hub.vercel.app', label: lang === 'zh' ? '澳洲创业圈' : 'AusCircle' },
+                  { href: 'https://auspropertycircle.com',             label: lang === 'zh' ? '澳洲房产圈' : 'Aus Property Circle' },
+                  { href: 'https://ndis-hub-ten.vercel.app',          label: lang === 'zh' ? '澳洲NDIS圈' : 'NDIS Hub AU' },
                 ].map(l => (
                   <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors">
@@ -462,7 +462,7 @@ export default function HomePage() {
           </div>
           <div className="border-t border-slate-800 pt-6 text-center">
             <p className="text-xs text-slate-600">
-              {isZh ? 'Built with ♥ 澳洲商业联盟生态' : 'Built with ♥ AusBiz Alliance'}
+              {lang === 'zh' ? 'Built with ♥ 澳洲商业联盟生态' : 'Built with ♥ AusBiz Alliance'}
             </p>
           </div>
         </div>
