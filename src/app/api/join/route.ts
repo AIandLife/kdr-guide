@@ -42,9 +42,25 @@ export async function POST(req: Request) {
       })
 
     if (dbError) {
-      console.error('DB error:', dbError)
-      // Don't fail — still send emails
+      console.error('DB error (applications):', dbError)
     }
+
+    // Also create/update in professionals table so dashboard works
+    await supabase
+      .from('professionals')
+      .upsert({
+        business_name: businessName,
+        contact_name: contactName,
+        email,
+        phone: phone || null,
+        state,
+        category,
+        regions: regions || [],
+        website: website || null,
+        description: description || null,
+        verified: false,
+        verification_status: 'free',
+      }, { onConflict: 'email' })
 
     // Email to admin
     await resend.emails.send({

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { LangProvider } from '@/lib/language-context'
 import { AuthProvider } from '@/lib/auth-context'
+import FeedbackWidget from '@/components/FeedbackWidget'
 
 export const metadata: Metadata = {
   title: 'AusBuildCircle 澳洲建房圈 – Australia\'s Knockdown Rebuild Expert',
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <LangProvider>
           <AuthProvider>
             {children}
+            <FeedbackWidget />
           </AuthProvider>
         </LangProvider>
       </body>

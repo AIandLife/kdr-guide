@@ -217,17 +217,51 @@ export default function ProfessionalsPage() {
     })
   }
 
-  // Read ?category= from URL on mount (client-side only)
+  const [dbPros, setDbPros] = useState<Professional[]>([])
+
+  // Read ?category= from URL on mount + fetch DB professionals
   useEffect(() => {
     const cat = new URLSearchParams(window.location.search).get('category')
     if (cat) setActiveCategory(cat)
+
+    // Fetch from Supabase and merge with hardcoded
+    fetch('/api/professionals-list')
+      .then(r => r.json())
+      .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,verified:boolean,website:string|null,wechat:string|null}>) => {
+        const CAT_MAP: Record<string, string> = {
+          'Builder': 'builder', 'Town Planner': 'planner', 'Building Designer': 'designer',
+          'Demolition Contractor': 'demolition', 'Structural Engineer': 'engineer',
+          'Geotechnical Engineer': 'engineer', 'Finance Broker': 'finance',
+          'Finance': 'finance', 'Surveyor': 'other', 'Arborist': 'other', 'Other': 'other',
+        }
+        const pros: Professional[] = rows.map(r => ({
+          slug: r.business_name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          name: r.business_name,
+          category: CAT_MAP[r.category] || 'other',
+          state: r.state,
+          regions: r.regions || [],
+          specialties: [],
+          verified: r.verified,
+          featured: r.verified,
+          description: r.description || '',
+          website: r.website || null,
+          wechat: r.wechat || null,
+        }))
+        // Merge: DB pros first, then hardcoded (deduplicate by slug)
+        const dbSlugs = new Set(pros.map(p => p.slug))
+        const hardcodedFiltered = PROFESSIONALS.filter(p => !dbSlugs.has(p.slug))
+        setDbPros([...pros, ...hardcodedFiltered])
+      })
+      .catch(() => {/* use hardcoded only */})
   }, [])
+
+  const allPros = dbPros.length > 0 ? dbPros : PROFESSIONALS
   const [sentPros, setSentPros] = useState<Set<string>>(new Set())
 
   const [modal, setModal] = useState<ModalState>({ pro: null, step: 1, submitting: false, error: '' })
   const [form, setForm] = useState<LeadForm>({ userName: '', userEmail: '', userPhone: '', suburb: '', projectType: '', timeline: '', message: '' })
 
-  const filtered = PROFESSIONALS.filter(p => {
+  const filtered = allPros.filter(p => {
     if (activeCategory !== 'all' && p.category !== activeCategory) return false
     if (activeState !== 'all' && p.state !== activeState && !p.regions.includes('All Australia')) return false
     return true
@@ -259,6 +293,9 @@ export default function ProfessionalsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           homeowner_id: user?.id ?? null,
+          homeowner_name: form.userName,
+          homeowner_email: form.userEmail,
+          homeowner_phone: form.userPhone || null,
           professional_name: modal.pro.name,
           professional_category: modal.pro.category,
           message: form.message,

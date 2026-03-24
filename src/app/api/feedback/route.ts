@@ -1,0 +1,41 @@
+import { createClient } from '@supabase/supabase-js'
+import { Resend } from 'resend'
+
+export async function POST(req: Request) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'terry@kdrguide.com.au'
+  const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@ausbuildcircle.com'
+
+  try {
+    const { type, message, page, email } = await req.json()
+    if (!message?.trim()) return Response.json({ error: 'Message required' }, { status: 400 })
+
+    await supabase.from('site_feedback').insert({
+      type: type || 'feedback',
+      message: message.trim(),
+      page: page || null,
+      email: email || null,
+    })
+
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: ADMIN_EMAIL,
+      subject: `[澳洲建房圈 反馈] ${type === 'bug' ? '🐛 Bug报告' : '💬 用户意见'}`,
+      html: `
+        <h3>${type === 'bug' ? '🐛 Bug 报告' : '💬 用户反馈'}</h3>
+        <p><strong>页面：</strong>${page || '未知'}</p>
+        ${email ? `<p><strong>联系：</strong><a href="mailto:${email}">${email}</a></p>` : ''}
+        <p><strong>内容：</strong></p>
+        <blockquote style="border-left:4px solid #f97316;padding-left:12px;color:#444">${message}</blockquote>
+      `,
+    }).catch(() => {})
+
+    return Response.json({ success: true })
+  } catch (err) {
+    return Response.json({ error: String(err) }, { status: 500 })
+  }
+}

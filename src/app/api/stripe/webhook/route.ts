@@ -26,12 +26,12 @@ export async function POST(req: Request) {
     const businessName = session.metadata?.businessName
 
     if (email) {
-      // Update professionals table (used by dashboard)
+      // Auto-approve on payment — set verified immediately
       await supabase
         .from('professionals')
         .update({
-          verification_status: 'pending',
-          verified: false,
+          verification_status: 'verified',
+          verified: true,
         })
         .eq('email', email)
 
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       await supabase
         .from('kdr_professional_applications')
         .update({
-          status: 'pending',
+          status: 'verified',
           stripe_customer_id: session.customer as string,
           stripe_subscription_id: session.subscription as string,
           paid_at: new Date().toISOString(),
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
             </div>
             <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
               <p>您好${businessName ? `，<strong>${businessName}</strong>` : ''}，</p>
-              <p>我们已收到您的付款，认证申请已提交。我们的团队将在 <strong>1–2 个工作日内</strong>完成审核并通过邮件通知您。</p>
+              <p>我们已收到您的付款，您的认证状态已即时生效。您的主页现在已显示认证徽章，并获得优先排名。</p>
               <p>如有疑问，请直接回复此邮件。</p>
               <p>澳洲建房圈 团队</p>
             </div>

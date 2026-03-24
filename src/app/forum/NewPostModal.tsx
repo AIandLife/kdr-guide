@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { X, Loader2 } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { X, Loader2, ImagePlus, XCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 
@@ -36,8 +36,35 @@ export default function NewPostModal({ lang, user, onClose, onSuccess }: Props) 
   const [authorName, setAuthorName] = useState(
     user?.user_metadata?.full_name || user?.email?.split('@')[0] || ''
   )
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { setError(isZh ? '图片不能超过 5MB' : 'Image must be under 5MB'); return }
+
+    setUploading(true)
+    setError('')
+    // Show local preview immediately
+    setImagePreview(URL.createObjectURL(file))
+
+    const fd = new FormData()
+    fd.append('file', file)
+    const res = await fetch('/api/forum/upload-image', { method: 'POST', body: fd })
+    const data = await res.json()
+    if (data.url) {
+      setImageUrl(data.url)
+    } else {
+      setError(data.error || 'Upload failed')
+      setImagePreview(null)
+    }
+    setUploading(false)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,6 +80,7 @@ export default function NewPostModal({ lang, user, onClose, onSuccess }: Props) 
       suburb: suburb.trim() || null,
       author_name: authorName.trim() || (isZh ? '匿名用户' : 'Anonymous'),
       user_id: user?.id ?? null,
+      image_url: imageUrl || null,
     })
     if (err) { setError(err.message); setSubmitting(false); return }
     onSuccess()
@@ -60,8 +88,8 @@ export default function NewPostModal({ lang, user, onClose, onSuccess }: Props) 
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
-        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
           <h2 className="font-bold text-gray-900 text-lg">
             {isZh ? '发一个新帖' : 'New Post'}
           </h2>
@@ -109,6 +137,37 @@ export default function NewPostModal({ lang, user, onClose, onSuccess }: Props) 
             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400 resize-none"
           />
 
+          {/* Image upload */}
+          <div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onChange={handleImageSelect}
+              className="hidden"
+            />
+            {imagePreview ? (
+              <div className="relative inline-block">
+                <img src={imagePreview} alt="preview" className="rounded-xl max-h-48 object-cover border border-gray-200" />
+                {uploading && (
+                  <div className="absolute inset-0 bg-white/70 flex items-center justify-center rounded-xl">
+                    <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
+                  </div>
+                )}
+                <button type="button" onClick={() => { setImageUrl(null); setImagePreview(null) }}
+                  className="absolute -top-2 -right-2 bg-white rounded-full shadow-md text-gray-400 hover:text-red-500">
+                  <XCircle className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <button type="button" onClick={() => fileRef.current?.click()}
+                className="flex items-center gap-2 text-sm text-gray-500 hover:text-orange-500 border border-dashed border-gray-300 hover:border-orange-300 rounded-xl px-4 py-2.5 transition-colors">
+                <ImagePlus className="w-4 h-4" />
+                {isZh ? '添加图片（可选，最大 5MB）' : 'Add image (optional, max 5MB)'}
+              </button>
+            )}
+          </div>
+
           {/* City + Suburb */}
           <div className="grid grid-cols-2 gap-3">
             <select
@@ -150,7 +209,7 @@ export default function NewPostModal({ lang, user, onClose, onSuccess }: Props) 
 
           <button
             type="submit"
-            disabled={submitting || !title.trim() || !body.trim()}
+            disabled={submitting || !title.trim() || !body.trim() || uploading}
             className="w-full bg-orange-500 hover:bg-orange-400 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}

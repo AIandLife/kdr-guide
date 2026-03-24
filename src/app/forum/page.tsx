@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { MessageSquare, Plus, ChevronRight, MapPin, BadgeCheck, Flame, Clock } from 'lucide-react'
+import { MessageSquare, Plus, ChevronRight, MapPin, BadgeCheck, Flame, Clock, Flag } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { SiteNav } from '@/components/SiteNav'
 import { useLang } from '@/lib/language-context'
@@ -39,6 +39,7 @@ interface Post {
   upvotes: number
   pinned: boolean
   created_at: string
+  image_url: string | null
 }
 
 function timeAgo(iso: string, zh: boolean) {
@@ -107,6 +108,19 @@ export default function ForumPage() {
   const [activeCity, setActiveCity] = useState('all')
   const [loading, setLoading] = useState(true)
   const [showNew, setShowNew] = useState(false)
+  const [reportedPosts, setReportedPosts] = useState<Set<string>>(new Set())
+
+  const reportPost = async (e: React.MouseEvent, postId: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (reportedPosts.has(postId)) return
+    await fetch('/api/forum/report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ post_id: postId, reporter_id: user?.id ?? null, reason: 'user_report' }),
+    })
+    setReportedPosts(prev => new Set([...prev, postId]))
+  }
 
   const fetchPosts = async () => {
     const supabase = createClient()
@@ -214,60 +228,75 @@ export default function ForumPage() {
         ) : (
           <div className="space-y-3">
             {posts.map(post => (
-              <a
-                key={post.id}
-                href={`/forum/${post.id}`}
-                className="block bg-white rounded-2xl p-5 border border-gray-200 hover:border-orange-300 hover:shadow-sm transition-all"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      {post.pinned && (
-                        <span className="text-xs bg-red-50 text-red-500 border border-red-200 rounded-full px-2 py-0.5 font-medium">
-                          {isZh ? '置顶' : 'Pinned'}
+              <div key={post.id} className="relative group">
+                <a
+                  href={`/forum/${post.id}`}
+                  className="block bg-white rounded-2xl p-5 border border-gray-200 hover:border-orange-300 hover:shadow-sm transition-all"
+                >
+                  <div className="flex items-start gap-3">
+                    {post.image_url && (
+                      <img src={post.image_url} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                        {post.pinned && (
+                          <span className="text-xs bg-red-50 text-red-500 border border-red-200 rounded-full px-2 py-0.5 font-medium">
+                            {isZh ? '置顶' : 'Pinned'}
+                          </span>
+                        )}
+                        <span className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">
+                          {CATEGORIES.find(c => c.id === post.category)?.[isZh ? 'zh' : 'en'] ?? post.category}
                         </span>
-                      )}
-                      <span className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">
-                        {CATEGORIES.find(c => c.id === post.category)?.[isZh ? 'zh' : 'en'] ?? post.category}
-                      </span>
-                      {post.city && (
-                        <span className="text-xs text-blue-500 bg-blue-50 rounded-full px-2 py-0.5 flex items-center gap-0.5">
-                          <MapPin className="w-3 h-3" />
-                          {CITY_LABELS[post.city]?.[isZh ? 'zh' : 'en'] ?? post.city}
+                        {post.city && (
+                          <span className="text-xs text-blue-500 bg-blue-50 rounded-full px-2 py-0.5 flex items-center gap-0.5">
+                            <MapPin className="w-3 h-3" />
+                            {CITY_LABELS[post.city]?.[isZh ? 'zh' : 'en'] ?? post.city}
+                          </span>
+                        )}
+                        {post.suburb && (
+                          <span className="text-xs text-gray-400 flex items-center gap-0.5">
+                            {post.suburb}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="font-semibold text-gray-900 text-sm leading-snug mb-2 line-clamp-2">
+                        {!isZh && post.title_en ? post.title_en : post.title}
+                      </h3>
+                      <p className="text-xs text-gray-400 line-clamp-1">
+                        {!isZh && post.body_en ? post.body_en : post.body}
+                      </p>
+                      <div className="flex items-center gap-3 mt-2.5">
+                        <span className="text-xs text-gray-500 font-medium">{post.author_name}</span>
+                        <AuthorBadge badge={post.author_badge} business={post.author_business} lang={lang} />
+                        <span className="text-xs text-gray-400 flex items-center gap-0.5 ml-auto">
+                          <Clock className="w-3 h-3" />{timeAgo(post.created_at, isZh)}
                         </span>
-                      )}
-                      {post.suburb && (
-                        <span className="text-xs text-gray-400 flex items-center gap-0.5">
-                          {post.suburb}
-                        </span>
-                      )}
+                      </div>
                     </div>
-                    <h3 className="font-semibold text-gray-900 text-sm leading-snug mb-2 line-clamp-2">
-                      {!isZh && post.title_en ? post.title_en : post.title}
-                    </h3>
-                    <p className="text-xs text-gray-400 line-clamp-1">
-                      {!isZh && post.body_en ? post.body_en : post.body}
-                    </p>
-                    <div className="flex items-center gap-3 mt-2.5">
-                      <span className="text-xs text-gray-500 font-medium">{post.author_name}</span>
-                      <AuthorBadge badge={post.author_badge} business={post.author_business} lang={lang} />
-                      <span className="text-xs text-gray-400 flex items-center gap-0.5 ml-auto">
-                        <Clock className="w-3 h-3" />{timeAgo(post.created_at, isZh)}
-                      </span>
+                    <div className="flex flex-col items-center gap-1 shrink-0 ml-2">
+                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span>{post.reply_count}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                        <Flame className="w-3.5 h-3.5" />
+                        <span>{post.upvotes}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-center gap-1 shrink-0 ml-2">
-                    <div className="flex items-center gap-1 text-xs text-gray-400">
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      <span>{post.reply_count}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-gray-400">
-                      <Flame className="w-3.5 h-3.5" />
-                      <span>{post.upvotes}</span>
-                    </div>
-                  </div>
-                </div>
-              </a>
+                </a>
+                <button
+                  onClick={(e) => reportPost(e, post.id)}
+                  title={isZh ? '举报' : 'Report'}
+                  className={`absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg ${
+                    reportedPosts.has(post.id)
+                      ? 'text-red-400 bg-red-50'
+                      : 'text-gray-300 hover:text-red-400 hover:bg-red-50'
+                  }`}
+                >
+                  <Flag className="w-3.5 h-3.5" />
+                </button>
+              </div>
             ))}
           </div>
         )}
