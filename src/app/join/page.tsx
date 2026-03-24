@@ -209,8 +209,8 @@ export default function JoinPage() {
                 <div>
                   <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '网站' : 'Website'}</label>
                   <input
-                    type="url" value={form.website} onChange={e => set('website', e.target.value)}
-                    placeholder="https://yourcompany.com.au"
+                    type="text" value={form.website} onChange={e => set('website', e.target.value)}
+                    placeholder="yourcompany.com.au"
                     className={inputClass}
                   />
                 </div>
