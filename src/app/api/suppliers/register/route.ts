@@ -85,7 +85,7 @@ export async function POST(req: Request) {
           ${isVerificationRequest ? `<tr><td style="padding:8px;font-weight:bold;background:#fff3cd">Verification</td><td style="padding:8px">ABN/ASIC: ${asicNumber || '—'}<br>${verificationNote || ''}</td></tr>` : ''}
         </table>
         <p style="margin-top:16px">
-          <a href="https://kdr-guide.vercel.app/admin/suppliers" style="background:#f97316;color:white;padding:8px 16px;border-radius:6px;text-decoration:none">Review in Admin</a>
+          <a href="https://ausbuildcircle.com/admin/suppliers" style="background:#f97316;color:white;padding:8px 16px;border-radius:6px;text-decoration:none">Review in Admin</a>
         </p>
       `,
     }).catch(() => {/* non-fatal */})
@@ -107,7 +107,7 @@ export async function POST(req: Request) {
               ? `<div style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:16px 0">
                   <p style="margin:0 0 8px;font-weight:bold">Current status: Unverified</p>
                   <p style="margin:0;color:#6b7280;font-size:14px">Your business name has been added to our directory. Contact details and website are not publicly shown until verified.</p>
-                  <p style="margin:12px 0 0;font-size:14px">To get verified and have your full profile displayed, reply to this email or visit <a href="https://kdr-guide.vercel.app/suppliers/register">kdr-guide.vercel.app/suppliers/register</a> to complete your verification application.</p>
+                  <p style="margin:12px 0 0;font-size:14px">To get verified and have your full profile displayed, reply to this email or visit <a href="https://ausbuildcircle.com/suppliers/register">ausbuildcircle.com/suppliers/register</a> to complete your verification application.</p>
                 </div>`
               : `<div style="background:white;border:2px solid #f97316;border-radius:8px;padding:16px;margin:16px 0">
                   <p style="margin:0 0 8px;font-weight:bold;color:#f97316">Verification application received</p>

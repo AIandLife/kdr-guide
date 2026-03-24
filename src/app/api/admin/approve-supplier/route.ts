@@ -66,7 +66,7 @@ export async function POST(req: Request) {
                 <p style="margin:8px 0 0;color:#6b7280;font-size:14px">Your listing now appears with priority ranking and the Verified badge. Homeowners can see your contact details and reach you directly.</p>
               </div>
               ${adminNotes ? `<p style="color:#6b7280;font-size:14px">Note from our team: ${adminNotes}</p>` : ''}
-              <p>View your listing: <a href="https://kdr-guide.vercel.app/suppliers">kdr-guide.vercel.app/suppliers</a></p>
+              <p>View your listing: <a href="https://ausbuildcircle.com/suppliers">ausbuildcircle.com/suppliers</a></p>
               <p>The 澳洲建房圈 Team</p>
             </div>
           </div>

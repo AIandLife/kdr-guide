@@ -576,7 +576,20 @@ function FeasibilityContent() {
                 {tf.ctaSubtitle} {result.suburb}。{tf.ctaFree}
               </p>
               {!leadSubmitted ? (
-                <form onSubmit={e => { e.preventDefault(); setLeadSubmitted(true) }} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                <form onSubmit={async e => {
+                  e.preventDefault()
+                  await fetch('/api/feasibility/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      email: leadEmail,
+                      suburb: result?.suburb,
+                      state: result?.state,
+                      projectType: result?.projectType,
+                    }),
+                  }).catch(() => {})
+                  setLeadSubmitted(true)
+                }} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                   <input
                     type="email"
                     value={leadEmail}
