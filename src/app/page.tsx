@@ -300,9 +300,9 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="flex justify-center">
           {/* WeChat Official Account + Group */}
-          <div className="rounded-2xl p-6 text-center flex flex-col items-center bg-white border border-gray-100 shadow-sm">
+          <div className="rounded-2xl p-8 text-center flex flex-col items-center bg-white border border-gray-100 shadow-sm max-w-sm w-full">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-2xl bg-green-50">
               💬
             </div>
@@ -311,40 +311,17 @@ export default function HomePage() {
             </h3>
             <p className="text-sm text-gray-500 mb-5 leading-relaxed">
               {lang === 'zh'
-                ? '关注公众号「澳洲建房圈」，并加入房产讨论群，和业主、建筑商、设计师直接交流。'
-                : 'Follow our official account and join the property discussion group — homeowners, builders, and designers in one place.'}
+                ? '关注公众号「澳洲建房圈」，并加入建房讨论群，和业主、建筑商、设计师直接交流。'
+                : 'Follow our official account and join the build discussion group — homeowners, builders, and designers in one place.'}
             </p>
             <img
               src="/wechat-official.jpg"
               alt="澳洲建房圈公众号二维码"
-              className="w-32 h-32 rounded-xl object-cover mb-3"
+              className="w-36 h-36 rounded-xl object-cover mb-3"
             />
             <p className="text-xs text-gray-400">
               {lang === 'zh' ? '搜索公众号：澳洲建房圈' : 'Search WeChat: AusBuildCircle'}
             </p>
-          </div>
-
-          {/* Direct contact */}
-          <div className="rounded-2xl p-6 text-center flex flex-col items-center bg-orange-50 border border-orange-100">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-2xl bg-orange-100">
-              ✉️
-            </div>
-            <h3 className="font-bold text-gray-900 text-lg mb-2">
-              {lang === 'zh' ? '私信我们' : 'Message Us Directly'}
-            </h3>
-            <p className="text-sm text-gray-500 mb-5 leading-relaxed">
-              {lang === 'zh'
-                ? '有建房问题、合作意向或想入驻我们平台？直接联系我们的团队。'
-                : 'Questions about KDR, partnership opportunities, or want to list your business? Reach our team directly.'}
-            </p>
-            <a
-              href="mailto:terry@kdrguide.com.au"
-              className="w-full py-3 rounded-xl text-sm font-semibold transition-colors text-white flex items-center justify-center gap-2"
-              style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.25)' }}
-            >
-              {lang === 'zh' ? '发送邮件' : 'Send Email'}
-            </a>
-            <p className="text-xs text-gray-400 mt-3">terry@kdrguide.com.au</p>
           </div>
         </div>
       </section>
