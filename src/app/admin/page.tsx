@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Trash2, RefreshCw, ExternalLink } from 'lucide-react'
+import { Trash2, RefreshCw, ExternalLink, BadgeCheck, BadgeX } from 'lucide-react'
 
 interface ForumPost {
   id: string
@@ -21,6 +21,7 @@ interface Professional {
   email: string
   category: string
   state: string
+  verified: boolean
   verification_status: string
   is_demo: boolean
   created_at: string
@@ -77,6 +78,24 @@ export default function AdminPage() {
     const data = await res.json()
     if (data.success) { setMessage(`✅ Deleted ${ids.length} item(s).`); await reload() }
     else setMessage(`Error: ${data.error}`)
+  }
+
+  async function toggleVerify(id: string, currentlyVerified: boolean) {
+    const res = await fetch('/api/admin/professionals-list', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
+      body: JSON.stringify({ id, verified: !currentlyVerified }),
+    })
+    const data = await res.json()
+    if (data.success) {
+      setProfessionals(prev => prev.map(p => p.id === id
+        ? { ...p, verified: !currentlyVerified, verification_status: !currentlyVerified ? 'verified' : 'free' }
+        : p
+      ))
+      setMessage(`✅ ${!currentlyVerified ? 'Verified' : 'Unverified'} successfully.`)
+    } else {
+      setMessage(`Error: ${data.error}`)
+    }
   }
 
   async function deleteAllDemo() {
@@ -280,14 +299,25 @@ export default function AdminPage() {
                     <span className="text-xs text-slate-500 bg-white/5 rounded px-1.5 py-0.5">{pro.category}</span>
                     <span className="text-xs text-slate-500">{pro.state}</span>
                     <span className={`text-xs rounded px-1.5 py-0.5 ${
-                      pro.verification_status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                      pro.verified ? 'bg-green-500/20 text-green-400' :
                       pro.verification_status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
                       'bg-slate-500/20 text-slate-400'
-                    }`}>{pro.verification_status}</span>
+                    }`}>{pro.verified ? '✅ verified' : pro.verification_status}</span>
                   </div>
                   <p className="text-sm text-white font-medium">{pro.business_name}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{pro.contact_name} · {pro.email} · {new Date(pro.created_at).toLocaleDateString()}</p>
                 </div>
+                <button
+                  onClick={e => { e.stopPropagation(); toggleVerify(pro.id, pro.verified) }}
+                  title={pro.verified ? '取消认证' : '手动认证'}
+                  className={`shrink-0 p-1.5 rounded-lg transition-colors ${
+                    pro.verified
+                      ? 'text-green-400 hover:bg-red-500/20 hover:text-red-400'
+                      : 'text-slate-500 hover:bg-green-500/20 hover:text-green-400'
+                  }`}
+                >
+                  {pro.verified ? <BadgeCheck className="w-5 h-5" /> : <BadgeX className="w-5 h-5" />}
+                </button>
               </div>
             ))}
           </div>
