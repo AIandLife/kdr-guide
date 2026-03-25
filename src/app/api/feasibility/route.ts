@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { createClient } from '@supabase/supabase-js'
 import { findCouncilBySuburb, findCouncil, STATE_COST_RANGES } from '@/lib/council-data'
 import { getLiveZoning, type LiveZoneData } from '@/lib/spatial-api'
 
@@ -284,6 +285,23 @@ Be specific, honest, and practical. If risks are high, say so clearly. Use real 
               controller.enqueue(encoder.encode(event.delta.text))
             }
           }
+          // Log search to DB (fire-and-forget)
+          try {
+            const parsed = JSON.parse(accumulated)
+            const supabase = createClient(
+              process.env.NEXT_PUBLIC_SUPABASE_URL!,
+              process.env.SUPABASE_SERVICE_ROLE_KEY!
+            )
+            await supabase.from('feasibility_searches').insert({
+              suburb,
+              state: state || parsed.state || null,
+              lot_size: lotSize ? Number(lotSize) : null,
+              project_type: projectType || 'kdr',
+              council: councilData?.council || parsed.council || null,
+              feasibility_score: parsed.feasibilityScore || null,
+            })
+          } catch { /* non-critical */ }
+
           // Append live zone metadata as a trailing JSON line so client can pick it up
           if (liveMeta) {
             controller.enqueue(encoder.encode('\n__META__' + JSON.stringify(liveMeta)))
