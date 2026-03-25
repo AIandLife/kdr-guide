@@ -51,7 +51,6 @@ export default function SupplierRegisterPage() {
     wantsVerification: false,
   })
   const [verifyExpanded, setVerifyExpanded] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly'>('annual')
 
   const set = (k: keyof typeof form, v: unknown) => setForm(f => ({ ...f, [k]: v }))
 
@@ -371,7 +370,7 @@ export default function SupplierRegisterPage() {
                   </div>
                   <div>
                     <p className="font-bold text-gray-900 text-sm">{isZh ? '认证商家' : 'Verified Business'}</p>
-                    <p className="text-xs text-orange-600">{isZh ? '$99/年 或 $12/月' : '$99/yr or $12/mo'}</p>
+                    <p className="text-xs text-orange-600">{isZh ? '$199/年' : '$199/yr'}</p>
                   </div>
                 </div>
                 <ul className="space-y-2 text-sm">
@@ -419,23 +418,46 @@ export default function SupplierRegisterPage() {
                   </button>
                 </div>
 
+                {/* Business type selector */}
                 <div>
-                  <label className="block text-sm text-gray-600 mb-2">
-                    {isZh ? 'ABN（澳洲企业）' : 'ABN (Australian businesses)'}
-                  </label>
-                  <input value={form.abn} onChange={e => set('abn', e.target.value)}
-                    placeholder="XX XXX XXX XXX"
-                    className={inputClass} />
+                  <label className="block text-sm text-gray-600 mb-2">{isZh ? '注册地' : 'Business registration'}</label>
+                  <div className="flex gap-2">
+                    {[
+                      { val: 'au', label: isZh ? '🇦🇺 澳洲企业' : '🇦🇺 Australian' },
+                      { val: 'cn', label: isZh ? '🇨🇳 中国企业' : '🇨🇳 China-based' },
+                    ].map(opt => (
+                      <button key={opt.val} type="button"
+                        onClick={() => set('businessLicenseNote', opt.val)}
+                        className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+                        style={form.businessLicenseNote === opt.val
+                          ? { background: '#fff7ed', border: '1px solid #fed7aa', color: '#ea580c' }
+                          : { background: '#f9fafb', border: '1px solid #e5e7eb', color: '#374151' }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm text-gray-600 mb-2">
-                    {isZh ? 'ASIC 公司注册号 / 营业执照（可选）' : 'ASIC number / Business licence (optional)'}
-                  </label>
-                  <input value={form.asicNumber} onChange={e => set('asicNumber', e.target.value)}
-                    placeholder={isZh ? '如：ACN 123 456 789 或统一社会信用代码' : 'e.g. ACN 123 456 789'}
-                    className={inputClass} />
-                </div>
+                {form.businessLicenseNote === 'au' && (
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-2">ABN</label>
+                    <input value={form.abn} onChange={e => set('abn', e.target.value)}
+                      placeholder="XX XXX XXX XXX"
+                      className={inputClass} />
+                  </div>
+                )}
+
+                {form.businessLicenseNote === 'cn' && (
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-2">
+                      {isZh ? '营业执照号 / 统一社会信用代码' : 'Business licence / Unified Social Credit Code'}
+                    </label>
+                    <input value={form.asicNumber} onChange={e => set('asicNumber', e.target.value)}
+                      placeholder={isZh ? '91XXXXXXXXXXXXXXXXXX' : '91XXXXXXXXXXXXXXXXXX'}
+                      className={inputClass} />
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm text-gray-600 mb-2 flex items-center gap-1.5">
@@ -450,28 +472,11 @@ export default function SupplierRegisterPage() {
                     className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none resize-none bg-white border border-gray-200 focus:border-orange-400" />
                 </div>
 
-                {/* Plan selector */}
-                <div>
-                  <p className="text-sm text-gray-600 mb-3">{isZh ? '选择套餐' : 'Choose a plan'}</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button type="button" onClick={() => setSelectedPlan('annual')}
-                      className={`relative p-4 rounded-xl border-2 text-center transition-all ${selectedPlan === 'annual' ? 'border-orange-400 bg-white' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
-                      {selectedPlan === 'annual' && (
-                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                          {isZh ? '最划算' : 'Best Value'}
-                        </span>
-                      )}
-                      <p className="text-xl font-bold text-gray-900">$99</p>
-                      <p className="text-xs text-gray-500">{isZh ? '/ 年（AUD）' : '/ year (AUD)'}</p>
-                      <p className="text-xs text-orange-500 font-medium mt-1">{isZh ? '仅 $8.25/月' : 'Only $8.25/mo'}</p>
-                    </button>
-                    <button type="button" onClick={() => setSelectedPlan('monthly')}
-                      className={`p-4 rounded-xl border-2 text-center transition-all ${selectedPlan === 'monthly' ? 'border-orange-400 bg-white' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
-                      <p className="text-xl font-bold text-gray-900">$12</p>
-                      <p className="text-xs text-gray-500">{isZh ? '/ 月（AUD）' : '/ month (AUD)'}</p>
-                      <p className="text-xs text-gray-400 mt-1">{isZh ? '随时取消' : 'Cancel anytime'}</p>
-                    </button>
-                  </div>
+                {/* Pricing */}
+                <div className="rounded-xl border-2 border-orange-200 bg-white p-4 text-center">
+                  <p className="text-3xl font-bold text-gray-900">$199</p>
+                  <p className="text-sm text-gray-500 mt-0.5">{isZh ? '/ 年（AUD）' : '/ year (AUD)'}</p>
+                  <p className="text-xs text-orange-500 font-medium mt-1">{isZh ? '认证有效期 12 个月' : '12-month verified status'}</p>
                 </div>
 
                 {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -485,9 +490,7 @@ export default function SupplierRegisterPage() {
                   <BadgeCheck className="w-4 h-4" />
                   {submitting
                     ? (isZh ? '提交中…' : 'Submitting…')
-                    : (isZh
-                        ? `提交认证申请 · ${selectedPlan === 'annual' ? 'AUD $99/年' : 'AUD $12/月'}`
-                        : `Submit & Verify · ${selectedPlan === 'annual' ? 'AUD $99/yr' : 'AUD $12/mo'}`)}
+                    : (isZh ? '提交认证申请 · AUD $199/年' : 'Submit & Verify · AUD $199/yr')}
                 </button>
                 <p className="text-xs text-gray-400 text-center">
                   {isZh ? '提交后我们将联系你完成支付和审核，通常 1–2 个工作日。' : 'We\'ll contact you to complete payment and review — usually within 1–2 business days.'}
