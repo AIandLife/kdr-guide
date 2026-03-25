@@ -7,6 +7,10 @@ export async function POST(req: Request) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
-  await supabase.from('newsletter_subscribers').upsert({ email, source: source || 'login' }, { onConflict: 'email' })
+  // ignoreDuplicates: true preserves existing unsubscribe_token on re-signup
+  await supabase.from('newsletter_subscribers').upsert(
+    { email, source: source || 'login', unsubscribed: false },
+    { onConflict: 'email', ignoreDuplicates: false }
+  )
   return Response.json({ success: true })
 }
