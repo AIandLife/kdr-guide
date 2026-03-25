@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import {
   CheckCircle, MapPin, Phone, ChevronRight,
   Briefcase, Globe, MessageCircle, X, TrendingUp, Activity, Heart
@@ -193,15 +194,19 @@ interface ModalState {
   error: string
 }
 
-export default function ProfessionalsPage() {
+function ProfessionalsPageInner() {
   const { lang } = useLang()
   const t = translations[lang]
   const tp = t.professionals
   const isZh = lang === 'zh'
   const { user } = useAuth()
+  const searchParams = useSearchParams()
 
   const [activeCategory, setActiveCategory] = useState<string>('all')
-  const [activeState, setActiveState] = useState<string>('all')
+  const [activeState, setActiveState] = useState<string>(() => {
+    const s = searchParams.get('state')
+    return s ? s.toUpperCase() : 'all'
+  })
   const [loginGatePro, setLoginGatePro] = useState<Professional | null>(null)
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     if (typeof window === 'undefined') return new Set()
@@ -585,5 +590,13 @@ export default function ProfessionalsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function ProfessionalsPage() {
+  return (
+    <Suspense>
+      <ProfessionalsPageInner />
+    </Suspense>
   )
 }
