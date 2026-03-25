@@ -51,7 +51,7 @@ interface Search {
   created_at: string
 }
 
-type Tab = 'forum' | 'professionals' | 'leads' | 'searches'
+type Tab = 'forum' | 'professionals' | 'leads' | 'searches' | 'newsletter'
 
 export default function AdminPage() {
   const [secret, setSecret] = useState('')
@@ -64,6 +64,26 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [nlForm, setNlForm] = useState({
+    issueNumber: 1,
+    heroTitle: '',
+    heroTitleEn: '',
+    heroBody: '',
+    heroBodyEn: '',
+    heroCtaLabel: '免费分析我的地块 / Analyse My Suburb',
+    heroCtaUrl: 'https://ausbuildcircle.com/feasibility',
+    quickBites: [
+      { zh: '', en: '' },
+      { zh: '', en: '' },
+      { zh: '', en: '' },
+    ],
+    buildTip: { zh: '', en: '' },
+    communityQ: { question: '', answer: '' },
+    platformUpdate: { zh: '', en: '' },
+  })
+  const [nlSending, setNlSending] = useState(false)
+  const [nlResult, setNlResult] = useState('')
+  const [nlPreview, setNlPreview] = useState(false)
 
   async function login() {
     setLoading(true)
@@ -212,11 +232,27 @@ export default function AdminPage() {
   const demoPosts = posts.filter(p => p.is_demo).length
   const demoPros = professionals.filter(p => p.is_demo).length
 
+  async function sendNewsletter() {
+    if (!confirm(`确认发送 Issue #${nlForm.issueNumber} 给所有订阅者？`)) return
+    setNlSending(true)
+    setNlResult('')
+    const res = await fetch('/api/newsletter/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
+      body: JSON.stringify(nlForm),
+    })
+    const data = await res.json()
+    if (data.sent !== undefined) setNlResult(`✅ 已发送 ${data.sent} 封，失败 ${data.failed}`)
+    else setNlResult(`❌ 错误: ${data.error}`)
+    setNlSending(false)
+  }
+
   const TABS: { id: Tab; label: string; count: number }[] = [
     { id: 'leads', label: '线索', count: leads.length },
     { id: 'searches', label: '查询记录', count: searches.length },
     { id: 'forum', label: '论坛帖子', count: posts.length },
     { id: 'professionals', label: '专业人士', count: professionals.length },
+    { id: 'newsletter', label: '发 Newsletter', count: 0 },
   ]
 
   return (
@@ -447,6 +483,103 @@ export default function AdminPage() {
               ))}
             </div>
           </>
+        )}
+
+        {/* ── Newsletter Tab ── */}
+        {tab === 'newsletter' && (
+          <div className="space-y-5">
+            <div className="rounded-xl p-5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <h2 className="text-white font-bold mb-4">发送 Newsletter</h2>
+
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">期号 Issue #</label>
+                  <input type="number" value={nlForm.issueNumber} onChange={e => setNlForm(f => ({ ...f, issueNumber: Number(e.target.value) }))}
+                    className="w-full px-3 py-2 rounded-lg text-white text-sm focus:outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                </div>
+              </div>
+
+              <div className="space-y-3 mb-4">
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">焦点标题（中文）</label>
+                  <input value={nlForm.heroTitle} onChange={e => setNlForm(f => ({ ...f, heroTitle: e.target.value }))} placeholder="例：推倒重建费用全解析..."
+                    className="w-full px-3 py-2 rounded-lg text-white text-sm focus:outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">Hero Title (English)</label>
+                  <input value={nlForm.heroTitleEn} onChange={e => setNlForm(f => ({ ...f, heroTitleEn: e.target.value }))} placeholder="e.g. The real cost of KDR in 2025..."
+                    className="w-full px-3 py-2 rounded-lg text-white text-sm focus:outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">焦点正文（中文）</label>
+                  <textarea rows={3} value={nlForm.heroBody} onChange={e => setNlForm(f => ({ ...f, heroBody: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg text-white text-sm focus:outline-none resize-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">Hero Body (English)</label>
+                  <textarea rows={3} value={nlForm.heroBodyEn} onChange={e => setNlForm(f => ({ ...f, heroBodyEn: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg text-white text-sm focus:outline-none resize-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-400 mb-2 font-semibold">市场速报 Quick Bites（3条）</p>
+              {nlForm.quickBites.map((b, i) => (
+                <div key={i} className="grid grid-cols-2 gap-2 mb-2">
+                  <input value={b.zh} onChange={e => setNlForm(f => { const qb = [...f.quickBites]; qb[i] = { ...qb[i], zh: e.target.value }; return { ...f, quickBites: qb } })}
+                    placeholder={`速报 ${i + 1}（中文）`} className="px-3 py-2 rounded-lg text-white text-sm focus:outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                  <input value={b.en} onChange={e => setNlForm(f => { const qb = [...f.quickBites]; qb[i] = { ...qb[i], en: e.target.value }; return { ...f, quickBites: qb } })}
+                    placeholder={`Bite ${i + 1} (English)`} className="px-3 py-2 rounded-lg text-white text-sm focus:outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                </div>
+              ))}
+
+              <p className="text-xs text-slate-400 mb-2 mt-4 font-semibold">省钱建造 Build Smart Tip</p>
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                <textarea rows={2} value={nlForm.buildTip.zh} onChange={e => setNlForm(f => ({ ...f, buildTip: { ...f.buildTip, zh: e.target.value } }))}
+                  placeholder="提示内容（中文）" className="px-3 py-2 rounded-lg text-white text-sm focus:outline-none resize-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                <textarea rows={2} value={nlForm.buildTip.en} onChange={e => setNlForm(f => ({ ...f, buildTip: { ...f.buildTip, en: e.target.value } }))}
+                  placeholder="Tip content (English)" className="px-3 py-2 rounded-lg text-white text-sm focus:outline-none resize-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+              </div>
+
+              <p className="text-xs text-slate-400 mb-2 font-semibold">社区问答（可选）</p>
+              <div className="space-y-2 mb-4">
+                <input value={nlForm.communityQ.question} onChange={e => setNlForm(f => ({ ...f, communityQ: { ...f.communityQ, question: e.target.value } }))}
+                  placeholder="问题 Question" className="w-full px-3 py-2 rounded-lg text-white text-sm focus:outline-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                <textarea rows={2} value={nlForm.communityQ.answer} onChange={e => setNlForm(f => ({ ...f, communityQ: { ...f.communityQ, answer: e.target.value } }))}
+                  placeholder="解答 Answer" className="w-full px-3 py-2 rounded-lg text-white text-sm focus:outline-none resize-none" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+              </div>
+
+              {nlResult && <p className="text-sm mb-4" style={{ color: nlResult.startsWith('✅') ? '#4ade80' : '#f87171' }}>{nlResult}</p>}
+
+              <div className="flex gap-3">
+                <button onClick={sendNewsletter} disabled={nlSending || !nlForm.heroTitle}
+                  className="px-6 py-2.5 rounded-xl text-white font-semibold text-sm disabled:opacity-50"
+                  style={{ background: '#f97316' }}>
+                  {nlSending ? '发送中...' : `🚀 发送给所有订阅者`}
+                </button>
+                <button onClick={() => setNlPreview(!nlPreview)} className="px-4 py-2.5 rounded-xl text-slate-300 text-sm" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+                  {nlPreview ? '隐藏预览' : '预览邮件'}
+                </button>
+              </div>
+            </div>
+
+            {nlPreview && nlForm.heroTitle && (
+              <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+                <p className="text-xs text-slate-400 px-4 py-2" style={{ background: 'rgba(255,255,255,0.04)' }}>邮件预览（实际发送效果）</p>
+                <iframe
+                  srcDoc={`<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body>${
+                    (() => { try {
+                      const { renderNewsletter } = require('@/lib/newsletter/template')
+                      return renderNewsletter({ ...nlForm, unsubscribeToken: 'preview-token' })
+                    } catch { return '<p style="padding:20px;color:#999">预览不可用，保存后部署查看</p>' } }
+                    )()
+                  }</body></html>`}
+                  className="w-full bg-white"
+                  style={{ height: '600px', border: 'none' }}
+                  title="Newsletter Preview"
+                />
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
