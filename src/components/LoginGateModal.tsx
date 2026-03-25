@@ -155,6 +155,9 @@ export function LoginGateModal({
                 <p className="text-sm text-gray-500">
                   {isZh ? `已发送 6 位验证码到 ${email}` : `We sent a 6-digit code to ${email}`}
                 </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {isZh ? '没收到？请检查垃圾邮件或 Junk 文件夹。' : "Didn't receive it? Check your spam or junk folder."}
+                </p>
               </div>
               <form onSubmit={handleVerifyOtp} className="space-y-3">
                 <input
