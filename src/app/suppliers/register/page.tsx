@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CheckCircle, ChevronRight, Upload, BadgeCheck, X } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
 import { SUPPLIER_CATEGORIES } from '@/lib/suppliers-data'
+import { useAuth } from '@/lib/auth-context'
+import { LoginGateModal } from '@/components/LoginGateModal'
 
 const STATES = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'ACT', 'TAS', 'NT']
 const ORIGINS = [
@@ -19,6 +21,8 @@ export default function SupplierRegisterPage() {
   const { lang } = useLang()
   const t = translations[lang]
   const isZh = lang === 'zh'
+  const { user, loading: authLoading } = useAuth()
+  const [showLoginGate, setShowLoginGate] = useState(false)
 
   const [step, setStep] = useState(1) // 1=basic, 2=contact, 3=verify, 4=done
   const [submitting, setSubmitting] = useState(false)
@@ -35,7 +39,7 @@ export default function SupplierRegisterPage() {
     description: '',
     // Step 2 — contact (hidden until verified)
     contactName: '',
-    email: '',
+    email: user?.email ?? '',
     phone: '',
     website: '',
     wechat: '',
@@ -95,6 +99,37 @@ export default function SupplierRegisterPage() {
   }
 
   const inputClass = "w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none transition-colors bg-gray-50 border border-gray-200 focus:border-orange-400"
+
+  // Login gate
+  if (!authLoading && !user) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <SiteNav backHref="/suppliers" backLabel={isZh ? '建材目录' : 'Suppliers'} currentPath="/suppliers" />
+        <div className="max-w-md mx-auto px-4 py-24 text-center">
+          <div className="text-5xl mb-4">🏪</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            {isZh ? '请先登录' : 'Sign in to continue'}
+          </h1>
+          <p className="text-gray-500 mb-8">
+            {isZh ? '入驻建材目录需要登录账号，方便你日后管理你的商家信息。' : 'You need an account to list your business — so you can manage it later.'}
+          </p>
+          <button
+            onClick={() => setShowLoginGate(true)}
+            className="px-8 py-3.5 rounded-xl text-white font-semibold text-base"
+            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
+          >
+            {isZh ? '登录 / 注册' : 'Sign in / Register'}
+          </button>
+        </div>
+        {showLoginGate && (
+          <LoginGateModal
+            onClose={() => { setShowLoginGate(false); window.location.href = '/suppliers' }}
+            redirectAfter="/suppliers/register"
+          />
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
