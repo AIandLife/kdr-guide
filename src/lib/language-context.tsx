@@ -24,19 +24,18 @@ function detectBrowserLang(): Lang {
   return 'en'
 }
 
-export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('en')
-
-  useEffect(() => {
-    // 1. Check saved preference
+function getInitialLang(): Lang {
+  try {
     const saved = localStorage.getItem('kdr-lang') as Lang | null
-    if (saved === 'en' || saved === 'zh') {
-      setLangState(saved)
-    } else {
-      // 2. Auto-detect from browser
-      setLangState(detectBrowserLang())
-    }
-  }, [])
+    if (saved === 'en' || saved === 'zh') return saved
+    return detectBrowserLang()
+  } catch {
+    return 'en'
+  }
+}
+
+export function LangProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Lang>(getInitialLang)
 
   const setLang = (l: Lang) => {
     setLangState(l)
