@@ -21,12 +21,22 @@ export async function POST(req: Request) {
       email: email || null,
     })
 
+    const subjectMap: Record<string, string> = {
+      bug: '🐛 Bug报告',
+      partnership: '🤝 合作意向',
+      feedback: '💬 用户意见',
+    }
+    const headerMap: Record<string, string> = {
+      bug: '🐛 Bug 报告',
+      partnership: '🤝 合作意向',
+      feedback: '💬 用户反馈',
+    }
     await resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
-      subject: `[澳洲建房圈 反馈] ${type === 'bug' ? '🐛 Bug报告' : '💬 用户意见'}`,
+      subject: `[澳洲建房圈 反馈] ${subjectMap[type] ?? '💬 用户意见'}`,
       html: `
-        <h3>${type === 'bug' ? '🐛 Bug 报告' : '💬 用户反馈'}</h3>
+        <h3>${headerMap[type] ?? '💬 用户反馈'}</h3>
         <p><strong>页面：</strong>${page || '未知'}</p>
         ${email ? `<p><strong>联系：</strong><a href="mailto:${email}">${email}</a></p>` : ''}
         <p><strong>内容：</strong></p>
