@@ -8,8 +8,19 @@ import { useLang } from '@/lib/language-context'
 import { useAuth } from '@/lib/auth-context'
 import { SiteNav } from '@/components/SiteNav'
 import { LoginGateModal } from '@/components/LoginGateModal'
-import { PROFESSIONALS, CATEGORIES, STATE_INFO } from '@/lib/professionals-data'
-import { useState } from 'react'
+import { PROFESSIONALS, CATEGORIES, STATE_INFO, type Professional } from '@/lib/professionals-data'
+import { useState, useEffect } from 'react'
+
+const CAT_MAP: Record<string, string> = {
+  'Builder': 'builder', 'Town Planner': 'planner', 'Building Designer': 'designer',
+  'Demolition Contractor': 'demolition', 'Structural Engineer': 'engineer',
+  'Geotechnical Engineer': 'engineer', 'Finance Broker': 'finance',
+  'Finance': 'finance', 'Surveyor': 'other', 'Arborist': 'other', 'Other': 'other',
+}
+
+function slugify(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
 
 const STATE_COLORS: Record<string, string> = {
   NSW: 'bg-blue-100 text-blue-700', VIC: 'bg-purple-100 text-purple-700',
@@ -36,27 +47,65 @@ export default function ProfessionalProfilePage({ params }: { params: Promise<{ 
   const isZh = lang === 'zh'
   const { user } = useAuth()
 
-  const found = PROFESSIONALS.find(p => p.slug === slug && p.state === state.toUpperCase())
-  if (!found) notFound()
-  const pro = found!
+  const [pro, setPro] = useState<Professional | null>(
+    PROFESSIONALS.find(p => p.slug === slug && p.state === state.toUpperCase()) ?? null
+  )
+  const [loadingPro, setLoadingPro] = useState(!pro)
+  const [notFoundState, setNotFoundState] = useState(false)
 
-  const cat = CATEGORIES.find(c => c.id === pro.category)
-  const stateInfo = STATE_INFO[state.toUpperCase()]
-  const related = PROFESSIONALS.filter(p => p.category === pro.category && p.slug !== pro.slug && p.state === pro.state).slice(0, 3)
+  useEffect(() => {
+    if (pro) return
+    fetch('/api/professionals-list')
+      .then(r => r.json())
+      .then((data: Array<{ business_name: string; category: string; state: string; regions: string[]; description: string; verified: boolean; website: string | null; wechat: string | null }>) => {
+        const match = data.find(d => slugify(d.business_name) === slug && d.state?.toUpperCase() === state.toUpperCase())
+        if (match) {
+          setPro({
+            slug,
+            name: match.business_name,
+            category: CAT_MAP[match.category] ?? 'other',
+            state: match.state?.toUpperCase() ?? state.toUpperCase(),
+            regions: match.regions ?? [],
+            specialties: [],
+            verified: match.verified,
+            featured: false,
+            description: match.description ?? '',
+            website: match.website ?? null,
+            wechat: match.wechat ?? null,
+          })
+        } else {
+          setNotFoundState(true)
+        }
+      })
+      .catch(() => setNotFoundState(true))
+      .finally(() => setLoadingPro(false))
+  }, [])
 
   const [loginGate, setLoginGate] = useState(false)
   const [sent, setSent] = useState(false)
   const [isFav, setIsFav] = useState(() => {
     if (typeof window === 'undefined') return false
-    try { return (JSON.parse(localStorage.getItem('kdr_favorites') || '[]') as string[]).includes(pro.slug) } catch { return false }
+    try { return (JSON.parse(localStorage.getItem('kdr_favorites') || '[]') as string[]).includes(slug) } catch { return false }
   })
   const [modal, setModal] = useState({ open: false, step: 1, submitting: false, error: '' })
-  const [form, setForm] = useState({ userName: '', userEmail: '', userPhone: '', suburb: '', projectType: '', timeline: '', message: '' })
+  const [form, setForm] = useState({ userName: '', userEmail: '', userPhone: '', suburb: '', userState: '', projectType: '', timeline: '', message: '' })
+
+  if (loadingPro) return (
+    <div className="min-h-screen bg-gray-50">
+      <SiteNav currentPath="/professionals" />
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center text-gray-400">Loading…</div>
+    </div>
+  )
+  if (notFoundState || !pro) return notFound()
+
+  const cat = CATEGORIES.find(c => c.id === pro.category)
+  const stateInfo = STATE_INFO[state.toUpperCase()]
+  const related = PROFESSIONALS.filter(p => p.category === pro.category && p.slug !== pro.slug && p.state === pro.state).slice(0, 3)
 
   function toggleFav() {
     try {
       const favs: string[] = JSON.parse(localStorage.getItem('kdr_favorites') || '[]')
-      const next = isFav ? favs.filter(s => s !== pro.slug) : [...favs, pro.slug]
+      const next = isFav ? favs.filter(s => s !== slug) : [...favs, slug]
       localStorage.setItem('kdr_favorites', JSON.stringify(next))
       setIsFav(!isFav)
     } catch {}
@@ -65,12 +114,12 @@ export default function ProfessionalProfilePage({ params }: { params: Promise<{ 
   function openQuote() {
     if (!user) { setLoginGate(true); return }
     setModal({ open: true, step: 1, submitting: false, error: '' })
-    setForm({ userName: '', userEmail: user.email ?? '', userPhone: '', suburb: '', projectType: '', timeline: '', message: '' })
+    setForm({ userName: '', userEmail: user.email ?? '', userPhone: '', suburb: '', userState: '', projectType: '', timeline: '', message: '' })
   }
 
   async function submit() {
-    if (!form.userName || !form.userEmail || !form.suburb) {
-      setModal(m => ({ ...m, error: isZh ? '请填写必填项' : 'Please fill in name, email, and suburb.' }))
+    if (!form.userName || !form.userEmail || !form.suburb || !form.userState) {
+      setModal(m => ({ ...m, error: isZh ? '请填写所有必填项' : 'Please fill in name, email, suburb, and state.' }))
       return
     }
     setModal(m => ({ ...m, submitting: true, error: '' }))
@@ -78,7 +127,7 @@ export default function ProfessionalProfilePage({ params }: { params: Promise<{ 
       await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ homeowner_id: user?.id ?? null, professional_name: pro.name, professional_category: pro.category, message: form.message, suburb: form.suburb, project_type: form.projectType }),
+        body: JSON.stringify({ homeowner_id: user?.id ?? null, professional_name: pro!.name, professional_category: pro!.category, message: form.message, suburb: `${form.suburb}, ${form.userState}`, project_type: form.projectType }),
       })
       setSent(true)
       setModal(m => ({ ...m, step: 3, submitting: false }))
@@ -239,9 +288,18 @@ export default function ProfessionalProfilePage({ params }: { params: Promise<{ 
                     ))}
                   </div>
                 </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '你的 Suburb *' : 'Your suburb *'}</label>
-                  <input value={form.suburb} onChange={e => setForm(f => ({ ...f, suburb: e.target.value }))} placeholder={isZh ? '如：Strathfield' : 'e.g. Strathfield'} className={inputClass} />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1.5">{isZh ? 'Suburb *' : 'Suburb *'}</label>
+                    <input value={form.suburb} onChange={e => setForm(f => ({ ...f, suburb: e.target.value }))} placeholder={isZh ? '如：Strathfield' : 'e.g. Strathfield'} className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '州 *' : 'State *'}</label>
+                    <select value={form.userState} onChange={e => setForm(f => ({ ...f, userState: e.target.value }))} className={inputClass}>
+                      <option value="">{isZh ? '选择州' : 'Select'}</option>
+                      {['NSW','VIC','QLD','WA','SA','ACT','TAS','NT'].map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '计划时间' : 'Timeline'}</label>
