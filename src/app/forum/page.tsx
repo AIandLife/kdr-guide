@@ -7,6 +7,7 @@ import { SiteNav } from '@/components/SiteNav'
 import { useLang } from '@/lib/language-context'
 import { useAuth } from '@/lib/auth-context'
 import NewPostModal from './NewPostModal'
+import { LoginGateModal } from '@/components/LoginGateModal'
 
 const CATEGORIES = [
   { id: 'all', zh: '全部', en: 'All' },
@@ -108,6 +109,12 @@ export default function ForumPage() {
   const [activeCity, setActiveCity] = useState('all')
   const [loading, setLoading] = useState(true)
   const [showNew, setShowNew] = useState(false)
+  const [showLoginGate, setShowLoginGate] = useState(false)
+
+  const openNewPost = () => {
+    if (!user) { setShowLoginGate(true); return }
+    setShowNew(true)
+  }
   const [reportedPosts, setReportedPosts] = useState<Set<string>>(new Set())
 
   const reportPost = async (e: React.MouseEvent, postId: string) => {
@@ -167,7 +174,7 @@ export default function ForumPage() {
             </p>
           </div>
           <button
-            onClick={() => setShowNew(true)}
+            onClick={openNewPost}
             className="flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-4 py-2.5 rounded-xl transition-colors text-sm"
           >
             <Plus className="w-4 h-4" />
@@ -221,7 +228,7 @@ export default function ForumPage() {
           <div className="text-center py-20">
             <MessageSquare className="w-12 h-12 mx-auto text-gray-200 mb-4" />
             <p className="text-gray-400 mb-4">{isZh ? '还没有帖子，来发第一帖吧' : 'No posts yet — be the first!'}</p>
-            <button onClick={() => setShowNew(true)} className="text-orange-500 hover:text-orange-600 font-medium text-sm">
+            <button onClick={openNewPost} className="text-orange-500 hover:text-orange-600 font-medium text-sm">
               {isZh ? '发帖 →' : 'Post →'}
             </button>
           </div>
@@ -301,6 +308,10 @@ export default function ForumPage() {
           </div>
         )}
       </div>
+
+      {showLoginGate && (
+        <LoginGateModal onClose={() => setShowLoginGate(false)} redirectAfter="/forum" />
+      )}
 
       {showNew && (
         <NewPostModal

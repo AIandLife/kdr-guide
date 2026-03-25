@@ -573,41 +573,17 @@ function FeasibilityContent() {
             <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">{tf.ctaTitle}</h2>
               <p className="text-gray-500 mb-6 max-w-md mx-auto">
-                {tf.ctaSubtitle} {result.suburb}。{tf.ctaFree}
+                {lang === 'zh'
+                  ? `已为你找到 ${result.suburb} 附近经过认证的 Builder 和 Town Planner，可以直接联系。`
+                  : `Browse verified builders and town planners near ${result.suburb} — contact them directly.`}
               </p>
-              {!leadSubmitted ? (
-                <form onSubmit={async e => {
-                  e.preventDefault()
-                  await fetch('/api/feasibility/subscribe', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      email: leadEmail,
-                      suburb: result?.suburb,
-                      state: result?.state,
-                      projectType: result?.projectType,
-                    }),
-                  }).catch(() => {})
-                  setLeadSubmitted(true)
-                }} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                  <input
-                    type="email"
-                    value={leadEmail}
-                    onChange={e => setLeadEmail(e.target.value)}
-                    placeholder={tf.ctaEmail}
-                    required
-                    className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400"
-                  />
-                  <button type="submit" className="bg-orange-500 hover:bg-orange-400 text-white font-semibold px-6 py-3 rounded-xl transition-colors whitespace-nowrap">
-                    {tf.ctaBtn}
-                  </button>
-                </form>
-              ) : (
-                <div className="flex items-center justify-center gap-2 text-green-600">
-                  <CheckCircle className="w-6 h-6" />
-                  <span className="font-medium">{tf.ctaSuccess}</span>
-                </div>
-              )}
+              <a
+                href={`/professionals?state=${result.state || ''}`}
+                className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base"
+              >
+                {lang === 'zh' ? '查看附近专业人士 →' : 'Find Professionals Near Me →'}
+              </a>
+              <p className="text-xs text-gray-400 mt-3">{tf.ctaFree}</p>
             </div>
 
             <p className="text-center text-xs text-gray-400 pb-4">{tf.disclaimer}</p>

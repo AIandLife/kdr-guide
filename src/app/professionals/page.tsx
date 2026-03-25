@@ -318,11 +318,20 @@ export default function ProfessionalsPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         {/* Page header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">
-            {isZh ? '找建房专家' : 'Find Build Experts'}
-          </h1>
-          <p className="text-gray-500">{tp.subtitle}</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-1">
+              {isZh ? '找建房专家' : 'Find Build Experts'}
+            </h1>
+            <p className="text-gray-500">{tp.subtitle}</p>
+          </div>
+          <a
+            href="/join"
+            className="shrink-0 flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-4 py-2.5 rounded-xl transition-colors text-sm"
+          >
+            <ChevronRight className="w-4 h-4" />
+            {isZh ? '专业人士入驻' : 'List Your Business'}
+          </a>
         </div>
 
         {/* Desktop: sidebar + main. Mobile: stacked */}

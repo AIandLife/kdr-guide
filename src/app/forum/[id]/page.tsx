@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { SiteNav } from '@/components/SiteNav'
 import { useLang } from '@/lib/language-context'
 import { useAuth } from '@/lib/auth-context'
+import { LoginGateModal } from '@/components/LoginGateModal'
 
 const CATEGORY_LABELS: Record<string, { zh: string; en: string }> = {
   help: { zh: '求助', en: 'Help Needed' },
@@ -111,6 +112,7 @@ function PostDetail() {
     user?.user_metadata?.full_name || user?.email?.split('@')[0] || ''
   )
   const [submitting, setSubmitting] = useState(false)
+  const [showLoginGate, setShowLoginGate] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -145,6 +147,7 @@ function PostDetail() {
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!replyBody.trim()) return
+    if (!user) { setShowLoginGate(true); return }
     setSubmitting(true)
     const supabase = createClient()
     const { error } = await supabase.from('forum_replies').insert({
@@ -282,6 +285,10 @@ function PostDetail() {
           </div>
         </form>
       </div>
+
+      {showLoginGate && (
+        <LoginGateModal onClose={() => setShowLoginGate(false)} redirectAfter={`/forum/${id}`} />
+      )}
     </div>
   )
 }

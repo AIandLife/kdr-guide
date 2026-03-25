@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { MessageCircle, X, Send, CheckCircle, Bug, Handshake } from 'lucide-react'
+import { useAuth } from '@/lib/auth-context'
 
 type FeedbackType = 'feedback' | 'bug' | 'partnership'
 
@@ -24,10 +25,11 @@ const HEADER_LABELS: Record<FeedbackType, string> = {
 }
 
 export default function FeedbackWidget() {
+  const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const [type, setType] = useState<FeedbackType>('feedback')
   const [message, setMessage] = useState('')
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(user?.email ?? '')
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
 
