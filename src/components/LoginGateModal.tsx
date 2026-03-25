@@ -1,31 +1,66 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Building2, Mail, Loader2 } from 'lucide-react'
+import { X, Building2, Mail, Loader2, KeyRound } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useLang } from '@/lib/language-context'
+import { useRouter } from 'next/navigation'
 
 interface LoginGateModalProps {
   onClose: () => void
   redirectAfter?: string
+  subtitle?: { zh: string; en: string }
 }
 
-export function LoginGateModal({ onClose, redirectAfter = '/professionals' }: LoginGateModalProps) {
+export function LoginGateModal({
+  onClose,
+  redirectAfter = '/professionals',
+  subtitle,
+}: LoginGateModalProps) {
   const { lang } = useLang()
   const isZh = lang === 'zh'
+  const router = useRouter()
   const [email, setEmail] = useState('')
-  const [sent, setSent] = useState(false)
+  const [otp, setOtp] = useState('')
+  const [step, setStep] = useState<'email' | 'otp'>('email')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const supabase = createClient()
 
-  const handleMagicLink = async (e: React.FormEvent) => {
+  const defaultSubtitle = {
+    zh: '登录后可以发送询价并保存联系记录。',
+    en: 'Log in to send enquiries and keep track of your contacts.',
+  }
+  const sub = subtitle ?? defaultSubtitle
+
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError('')
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${redirectAfter}` },
+      options: { shouldCreateUser: true },
     })
-    if (!error) setSent(true)
+    if (error) setError(error.message)
+    else setStep('otp')
+    setLoading(false)
+  }
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: otp.trim(),
+      type: 'email',
+    })
+    if (error) {
+      setError(isZh ? '验证码不正确或已过期，请重试' : 'Invalid or expired code. Please try again.')
+    } else {
+      onClose()
+      router.push(redirectAfter)
+    }
     setLoading(false)
   }
 
@@ -57,23 +92,13 @@ export function LoginGateModal({ onClose, redirectAfter = '/professionals' }: Lo
         </div>
 
         <div className="px-6 py-5">
-          {sent ? (
-            <div className="text-center py-4">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Mail className="w-6 h-6 text-green-600" />
-              </div>
-              <p className="font-semibold text-gray-900 mb-1">{isZh ? '登录链接已发送！' : 'Check your email!'}</p>
-              <p className="text-sm text-gray-500">{isZh ? `点击邮件里的链接即可登录。` : `Click the link we sent to ${email}`}</p>
-            </div>
-          ) : (
+          {step === 'email' ? (
             <>
               <h2 className="text-lg font-bold text-gray-900 mb-1">
                 {isZh ? '请先登录' : 'Sign in to continue'}
               </h2>
               <p className="text-sm text-gray-500 mb-5">
-                {isZh
-                  ? '登录后可以发送询价并保存联系记录。'
-                  : 'Log in to send enquiries and keep track of your contacts.'}
+                {isZh ? sub.zh : sub.en}
               </p>
 
               {/* Google */}
@@ -92,11 +117,11 @@ export function LoginGateModal({ onClose, redirectAfter = '/professionals' }: Lo
 
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex-1 h-px bg-gray-200" />
-                <span className="text-xs text-gray-400">{isZh ? '或用邮箱' : 'or'}</span>
+                <span className="text-xs text-gray-400">{isZh ? '或用邮箱验证码' : 'or use email code'}</span>
                 <div className="flex-1 h-px bg-gray-200" />
               </div>
 
-              <form onSubmit={handleMagicLink} className="space-y-3">
+              <form onSubmit={handleSendOtp} className="space-y-3">
                 <input
                   type="email"
                   value={email}
@@ -105,6 +130,7 @@ export function LoginGateModal({ onClose, redirectAfter = '/professionals' }: Lo
                   required
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400"
                 />
+                {error && <p className="text-xs text-red-500">{error}</p>}
                 <button
                   type="submit"
                   disabled={loading}
@@ -112,10 +138,55 @@ export function LoginGateModal({ onClose, redirectAfter = '/professionals' }: Lo
                   style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-                  {isZh ? '发送登录链接' : 'Send magic link'}
+                  {isZh ? '发送验证码' : 'Send code'}
                 </button>
               </form>
             </>
+          ) : (
+            /* OTP step */
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <KeyRound className="w-6 h-6 text-orange-500" />
+                </div>
+                <p className="font-semibold text-gray-900 mb-1">
+                  {isZh ? '输入验证码' : 'Enter your code'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {isZh ? `已发送 6 位验证码到 ${email}` : `We sent a 6-digit code to ${email}`}
+                </p>
+              </div>
+              <form onSubmit={handleVerifyOtp} className="space-y-3">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]{6}"
+                  maxLength={6}
+                  value={otp}
+                  onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                  placeholder="123456"
+                  required
+                  autoFocus
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400 text-center text-xl tracking-widest font-mono"
+                />
+                {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+                <button
+                  type="submit"
+                  disabled={loading || otp.length < 6}
+                  className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                  style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
+                >
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  {isZh ? '验证并登录' : 'Verify & sign in'}
+                </button>
+              </form>
+              <button
+                onClick={() => { setStep('email'); setOtp(''); setError('') }}
+                className="w-full text-center text-sm text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                {isZh ? '← 重新输入邮箱' : '← Change email'}
+              </button>
+            </div>
           )}
         </div>
       </div>

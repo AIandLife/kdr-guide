@@ -167,7 +167,14 @@ export default function JoinPage() {
             </p>
           </div>
         </div>
-        <LoginGateModal onClose={() => window.location.href = '/professionals'} redirectAfter="/join" />
+        <LoginGateModal
+          onClose={() => { window.location.href = '/professionals' }}
+          redirectAfter="/join"
+          subtitle={{
+            zh: '入驻需要账号，方便你日后管理和更新你的专业资料。',
+            en: 'You need an account to list your business — so you can manage your profile later.',
+          }}
+        />
       </div>
     )
   }
