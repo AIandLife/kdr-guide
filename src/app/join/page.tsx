@@ -1,13 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   CheckCircle, ChevronRight, Loader2, Shield, Star, Phone,
   HardHat, FileText, Zap, Droplets, Hammer, DollarSign, Briefcase, Ruler,
   CreditCard, Lock, PenTool
 } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
+import { useAuth } from '@/lib/auth-context'
 import { SiteNav } from '@/components/SiteNav'
+import { LoginGateModal } from '@/components/LoginGateModal'
 import { cn } from '@/lib/cn'
 
 const CATEGORIES = [
@@ -86,12 +88,18 @@ type View = 'form' | 'listed' | 'verify_requested' | 'done'
 export default function JoinPage() {
   const { lang } = useLang()
   const isZh = lang === 'zh'
+  const { user, loading: authLoading } = useAuth()
 
   const [view, setView] = useState<View>('form')
   const [form, setForm] = useState({
     businessName: '', contactName: '', email: '', phone: '',
     state: '', category: '', regions: '', website: '', wechat: '', description: '', abn: '',
   })
+
+  // Pre-fill email once user is known
+  useEffect(() => {
+    if (user?.email) setForm(f => ({ ...f, email: f.email || user.email! }))
+  }, [user])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [verifyDocs, setVerifyDocs] = useState<Record<string, string>>({})
@@ -136,6 +144,29 @@ export default function JoinPage() {
   }
 
   const inputClass = 'w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400'
+
+  // ── Login gate ────────────────────────────────────────────────────────────
+  if (!authLoading && !user) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <SiteNav backHref="/professionals" backLabel={isZh ? '返回' : 'Back'} currentPath="/join" />
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 mb-4 text-xs font-semibold text-orange-600 bg-orange-100 border border-orange-200">
+              {isZh ? '专业人士入驻' : 'For Professionals'}
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {isZh ? '免费收录你的业务' : 'List Your Business — Free'}
+            </h1>
+            <p className="text-gray-500 text-sm">
+              {isZh ? '请先登录，然后填写入驻信息。' : 'Please sign in first, then complete your listing.'}
+            </p>
+          </div>
+        </div>
+        <LoginGateModal onClose={() => window.location.href = '/professionals'} redirectAfter="/join" />
+      </div>
+    )
+  }
 
   // ── Step 1: Form ──────────────────────────────────────────────────────────
   if (view === 'form') {
