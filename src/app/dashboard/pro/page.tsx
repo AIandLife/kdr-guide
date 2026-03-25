@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import {
   CheckCircle, Clock, MessageSquare, Shield, Edit3,
-  AlertCircle, ChevronRight, Building2, Phone, Globe, PartyPopper
+  AlertCircle, Building2, Phone, Globe, PartyPopper, Save, X, Loader2
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/auth-context'
@@ -33,10 +33,167 @@ interface Enquiry {
   suburb: string
   project_type: string
   message: string
+  homeowner_name: string
+  homeowner_email: string
+  homeowner_phone: string
   status: string
   created_at: string
 }
 
+// ── Profile Editor Component ──────────────────────────────────────────────
+function ProfileEditor({
+  profile,
+  isZh,
+  onSaved,
+}: {
+  profile: ProProfile
+  isZh: boolean
+  onSaved: (updated: Partial<ProProfile>) => void
+}) {
+  const [editing, setEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
+  const [form, setForm] = useState({
+    business_name: profile.business_name || '',
+    contact_name: profile.contact_name || '',
+    phone: profile.phone || '',
+    website: profile.website || '',
+    wechat: profile.wechat || '',
+    description: profile.description || '',
+  })
+
+  const handleSave = async () => {
+    setSaving(true)
+    setSaveError('')
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('professionals')
+      .update(form)
+      .eq('id', profile.id)
+    if (error) {
+      setSaveError(error.message)
+    } else {
+      onSaved(form)
+      setEditing(false)
+    }
+    setSaving(false)
+  }
+
+  const field = (
+    label: string,
+    key: keyof typeof form,
+    opts?: { multiline?: boolean; placeholder?: string }
+  ) => (
+    <div>
+      <label className="block text-xs text-gray-400 mb-1">{label}</label>
+      {opts?.multiline ? (
+        <textarea
+          value={form[key]}
+          onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+          rows={3}
+          placeholder={opts.placeholder}
+          className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:outline-none focus:border-orange-400 resize-none"
+        />
+      ) : (
+        <input
+          type="text"
+          value={form[key]}
+          onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+          placeholder={opts?.placeholder}
+          className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:outline-none focus:border-orange-400"
+        />
+      )}
+    </div>
+  )
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="px-6 py-5 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+        <div>
+          <h2 className="font-semibold text-gray-900">{isZh ? '我的主页信息' : 'My listing details'}</h2>
+          <p className="text-xs text-gray-400 mt-0.5">{isZh ? '这些信息会在专业人士目录中公开展示。' : 'Shown publicly on your professional listing.'}</p>
+        </div>
+        {!editing && (
+          <button
+            onClick={() => setEditing(true)}
+            className="flex items-center gap-1.5 text-sm text-orange-500 hover:text-orange-600 font-medium border border-orange-200 rounded-xl px-3 py-1.5 hover:bg-orange-50 transition-colors"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+            {isZh ? '编辑' : 'Edit'}
+          </button>
+        )}
+      </div>
+
+      <div className="px-6 py-5">
+        {editing ? (
+          <div className="space-y-4">
+            {field(isZh ? '公司名称' : 'Business name', 'business_name')}
+            {field(isZh ? '联系人姓名' : 'Contact name', 'contact_name')}
+            {field(isZh ? '电话' : 'Phone', 'phone', { placeholder: '+61 4xx xxx xxx' })}
+            {field(isZh ? '网站' : 'Website', 'website', { placeholder: 'https://...' })}
+            {field(isZh ? 'WeChat ID' : 'WeChat ID', 'wechat')}
+            {field(
+              isZh ? '业务介绍' : 'About your business',
+              'description',
+              {
+                multiline: true,
+                placeholder: isZh ? '简要描述你的服务、专长和服务区域...' : 'Describe your services, expertise and coverage areas...',
+              }
+            )}
+
+            {saveError && <p className="text-xs text-red-500">{saveError}</p>}
+
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="flex items-center gap-2 bg-orange-500 hover:bg-orange-400 disabled:opacity-50 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors"
+              >
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                {isZh ? '保存' : 'Save'}
+              </button>
+              <button
+                onClick={() => { setEditing(false); setSaveError('') }}
+                className="flex items-center gap-2 text-gray-500 hover:text-gray-700 font-medium text-sm px-4 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors"
+              >
+                <X className="w-4 h-4" />
+                {isZh ? '取消' : 'Cancel'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <InfoRow label={isZh ? '公司名称' : 'Business name'} value={form.business_name} />
+            <InfoRow label={isZh ? '联系人' : 'Contact'} value={form.contact_name} />
+            <InfoRow label={isZh ? '邮箱' : 'Email'} value={profile.email} />
+            <InfoRow label={isZh ? '类别' : 'Category'} value={profile.category} />
+            <InfoRow label={isZh ? '州' : 'State'} value={profile.state} />
+            {form.phone && <InfoRow label={isZh ? '电话' : 'Phone'} icon={<Phone className="w-3.5 h-3.5" />} value={form.phone} />}
+            {form.website && <InfoRow label={isZh ? '网站' : 'Website'} icon={<Globe className="w-3.5 h-3.5" />} value={form.website} />}
+            {form.wechat && <InfoRow label="WeChat" value={form.wechat} />}
+            {form.description && (
+              <div className="pt-2 border-t border-gray-100">
+                <p className="text-xs text-gray-400 mb-1">{isZh ? '业务介绍' : 'About'}</p>
+                <p className="text-sm text-gray-700 whitespace-pre-line">{form.description}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function InfoRow({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-4">
+      <p className="text-xs text-gray-400 w-24 shrink-0 pt-0.5">{label}</p>
+      <p className="text-sm text-gray-900 flex items-center gap-1.5">{icon}{value || '—'}</p>
+    </div>
+  )
+}
+
+// ── Main Dashboard ────────────────────────────────────────────────────────
 function ProDashboard() {
   const { user, loading } = useAuth()
   const { lang } = useLang()
@@ -59,7 +216,6 @@ function ProDashboard() {
           setFetching(false)
           return
         }
-        // Only fetch enquiries addressed to this professional
         supabase.from('contact_requests').select('*')
           .eq('professional_name', prof.business_name)
           .order('created_at', { ascending: false })
@@ -83,12 +239,12 @@ function ProDashboard() {
     )
   }
 
-  const handleCheckout = async (plan: 'annual' | 'monthly') => {
+  const handleCheckout = async () => {
     setCheckingOut(true)
     const res = await fetch('/api/stripe/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan, email: user?.email, businessName: profile?.business_name }),
+      body: JSON.stringify({ plan: 'annual', email: user?.email, businessName: profile?.business_name }),
     })
     const data = await res.json()
     if (data.url) window.location.href = data.url
@@ -135,10 +291,10 @@ function ProDashboard() {
             <PartyPopper className="w-5 h-5 text-green-600 shrink-0" />
             <div>
               <p className="font-semibold text-green-800 text-sm">
-                {isZh ? '🎉 支付成功！认证申请已提交。' : '🎉 Payment received! Verification application submitted.'}
+                {isZh ? '🎉 支付成功！认证已即时生效。' : '🎉 Payment received! You are now verified.'}
               </p>
               <p className="text-xs text-green-600 mt-0.5">
-                {isZh ? '我们将在 1–2 个工作日内完成审核，审核通过后你的主页会显示认证徽章。' : 'We\'ll review and verify your listing within 1–2 business days.'}
+                {isZh ? '你的主页现已显示认证徽章，并获得优先排名。' : 'Your listing now shows a Verified badge and ranks above others.'}
               </p>
             </div>
           </div>
@@ -206,13 +362,24 @@ function ProDashboard() {
                   enquiries.map(e => (
                     <div key={e.id} className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
                       <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
                             <span className="text-xs text-gray-400">{formatDate(e.created_at)}</span>
                             {e.suburb && <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">{e.suburb}</span>}
                             {e.project_type && <span className="text-xs px-2 py-0.5 rounded-full bg-orange-50 text-orange-600">{e.project_type}</span>}
                           </div>
-                          {e.message && <p className="text-sm text-gray-700 mt-1">{e.message}</p>}
+                          {e.homeowner_name && (
+                            <p className="text-sm font-medium text-gray-900 mb-1">{e.homeowner_name}</p>
+                          )}
+                          <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+                            {e.homeowner_email && (
+                              <a href={`mailto:${e.homeowner_email}`} className="text-orange-500 hover:underline">{e.homeowner_email}</a>
+                            )}
+                            {e.homeowner_phone && (
+                              <a href={`tel:${e.homeowner_phone}`} className="hover:text-gray-700">{e.homeowner_phone}</a>
+                            )}
+                          </div>
+                          {e.message && <p className="text-sm text-gray-600 mt-2">{e.message}</p>}
                         </div>
                         <span className={`shrink-0 text-xs px-2 py-1 rounded-lg font-medium ${
                           e.status === 'replied' ? 'bg-green-100 text-green-600' :
@@ -232,35 +399,11 @@ function ProDashboard() {
 
             {/* ── Profile Tab ── */}
             {activeTab === 'profile' && (
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="px-6 py-5 border-b border-gray-100 bg-gray-50">
-                  <h2 className="font-semibold text-gray-900">{isZh ? '你的主页信息' : 'Your listing details'}</h2>
-                  <p className="text-xs text-gray-400 mt-0.5">{isZh ? '这些信息会在专业人士目录中展示。' : 'This information is shown on your public listing.'}</p>
-                </div>
-                <div className="px-6 py-5 space-y-4">
-                  <InfoRow label={isZh ? '公司名称' : 'Business name'} value={profile.business_name} />
-                  <InfoRow label={isZh ? '联系人' : 'Contact'} value={profile.contact_name} />
-                  <InfoRow label={isZh ? '邮箱' : 'Email'} value={profile.email} />
-                  {profile.phone && <InfoRow label={isZh ? '电话' : 'Phone'} icon={<Phone className="w-3.5 h-3.5" />} value={profile.phone} />}
-                  {profile.website && <InfoRow label={isZh ? '网站' : 'Website'} icon={<Globe className="w-3.5 h-3.5" />} value={profile.website} />}
-                  <InfoRow label={isZh ? '类别' : 'Category'} value={profile.category} />
-                  <InfoRow label={isZh ? '州' : 'State'} value={profile.state} />
-                  {profile.description && (
-                    <div className="pt-2 border-t border-gray-100">
-                      <p className="text-xs text-gray-400 mb-1">{isZh ? '业务介绍' : 'About'}</p>
-                      <p className="text-sm text-gray-700">{profile.description}</p>
-                    </div>
-                  )}
-                </div>
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
-                  <a href="/join"
-                    className="inline-flex items-center gap-1.5 text-sm text-orange-500 hover:text-orange-600 font-medium transition-colors">
-                    <Edit3 className="w-4 h-4" />
-                    {isZh ? '更新我的信息' : 'Update my details'}
-                    <ChevronRight className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
+              <ProfileEditor
+                profile={profile}
+                isZh={isZh}
+                onSaved={(updated) => setProfile(prev => prev ? { ...prev, ...updated } : prev)}
+              />
             )}
 
             {/* ── Verification Tab ── */}
@@ -280,7 +423,6 @@ function ProDashboard() {
                   </div>
                 ) : (
                   <>
-                    {/* Benefits */}
                     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
                       <h3 className="font-bold text-gray-900 mb-4">{isZh ? '认证的好处' : 'Why get verified?'}</h3>
                       <div className="space-y-3">
@@ -298,46 +440,26 @@ function ProDashboard() {
                       </div>
                     </div>
 
-                    {/* Pricing + action — ONLY visible to professionals in their own dashboard */}
                     <div className="bg-white rounded-2xl border border-orange-200 shadow-sm overflow-hidden">
                       <div className="bg-orange-50 px-6 py-4 border-b border-orange-100">
                         <h3 className="font-bold text-gray-900">{isZh ? '申请认证' : 'Apply for Verification'}</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">{isZh ? '提交材料后，我们会在 1–2 个工作日内完成审核。' : 'Submit your documents and we\'ll verify within 1–2 business days.'}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{isZh ? '付款后认证即时生效，主页立即显示认证徽章。' : 'Verification is instant after payment.'}</p>
                       </div>
                       <div className="px-6 py-5">
-                        {/* Pricing */}
-                        <div className="grid grid-cols-2 gap-3 mb-5">
-                          <div className="relative rounded-xl border-2 border-orange-400 bg-orange-50 p-4 text-center">
-                            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                              {isZh ? '推荐' : 'Best Value'}
-                            </span>
-                            <p className="text-2xl font-bold text-gray-900">$99</p>
-                            <p className="text-xs text-gray-500">{isZh ? '/ 年（AUD）' : '/ year (AUD)'}</p>
-                            <p className="text-xs text-orange-500 font-medium mt-0.5">{isZh ? '仅 $8.25/月' : '$8.25/mo'}</p>
-                          </div>
-                          <div className="rounded-xl border-2 border-gray-200 bg-gray-50 p-4 text-center">
-                            <p className="text-2xl font-bold text-gray-900">$12</p>
-                            <p className="text-xs text-gray-500">{isZh ? '/ 月（AUD）' : '/ month (AUD)'}</p>
-                            <p className="text-xs text-gray-400 mt-0.5">{isZh ? '随时取消' : 'Cancel anytime'}</p>
-                          </div>
+                        <div className="rounded-xl border-2 border-orange-400 bg-orange-50 p-5 text-center mb-5">
+                          <p className="text-3xl font-bold text-gray-900">$199</p>
+                          <p className="text-sm text-gray-500 mt-1">{isZh ? '/ 年（AUD）· 仅 $16.6/月' : '/ year (AUD) · just $16.60/mo'}</p>
+                          <p className="text-xs text-orange-500 font-medium mt-1">{isZh ? '年付最优惠，随时取消续订' : 'Best value · cancel anytime'}</p>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <button
-                            onClick={() => handleCheckout('annual')}
-                            disabled={checkingOut}
-                            className="flex flex-col items-center justify-center py-3 rounded-xl text-white font-semibold text-sm transition-all disabled:opacity-60"
-                            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}>
-                            <span>{isZh ? '年付 $99' : '$99 / year'}</span>
-                            <span className="text-xs font-normal opacity-80">{isZh ? '最优惠' : 'Best value'}</span>
-                          </button>
-                          <button
-                            onClick={() => handleCheckout('monthly')}
-                            disabled={checkingOut}
-                            className="flex flex-col items-center justify-center py-3 rounded-xl border-2 border-orange-400 text-orange-500 font-semibold text-sm transition-all hover:bg-orange-50 disabled:opacity-60">
-                            <span>{isZh ? '月付 $12' : '$12 / month'}</span>
-                            <span className="text-xs font-normal opacity-70">{isZh ? '随时取消' : 'Cancel anytime'}</span>
-                          </button>
-                        </div>
+                        <button
+                          onClick={handleCheckout}
+                          disabled={checkingOut}
+                          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-semibold text-sm transition-all disabled:opacity-60"
+                          style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
+                        >
+                          {checkingOut && <Loader2 className="w-4 h-4 animate-spin" />}
+                          {isZh ? '立即认证 · AUD $199/年 →' : 'Get Verified · AUD $199/year →'}
+                        </button>
                       </div>
                     </div>
                   </>
@@ -347,15 +469,6 @@ function ProDashboard() {
           </>
         )}
       </div>
-    </div>
-  )
-}
-
-function InfoRow({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-4">
-      <p className="text-xs text-gray-400 w-24 shrink-0 pt-0.5">{label}</p>
-      <p className="text-sm text-gray-900 flex items-center gap-1.5">{icon}{value}</p>
     </div>
   )
 }
