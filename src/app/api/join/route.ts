@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { businessName, contactName, email, phone, state, category, regions, website, description, abn } = body
+    const { businessName, contactName, email, phone, state, category, regions, website, description, abn, registrationCountry } = body
 
     if (!businessName || !contactName || !email || !state || !category) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 })
@@ -36,6 +36,7 @@ export async function POST(req: Request) {
         website: website || null,
         description: description || null,
         abn: abn || null,
+        registration_country: registrationCountry || 'australia',
         status: 'pending',
         trial_start_date: trialStart,
         trial_end_date: trialEnd,
@@ -60,6 +61,8 @@ export async function POST(req: Request) {
         description: description || null,
         verified: false,
         verification_status: 'free',
+        abn: abn || null,
+        registration_country: registrationCountry || 'australia',
       }, { onConflict: 'email' })
 
     // Email to admin
