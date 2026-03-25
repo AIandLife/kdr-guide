@@ -13,6 +13,7 @@ function LoginForm() {
   const next = searchParams.get('next') ?? '/'
 
   const [email, setEmail] = useState('')
+  const [newsletter, setNewsletter] = useState(true)
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -31,7 +32,16 @@ function LoginForm() {
       },
     })
     if (error) setError(error.message)
-    else setSent(true)
+    else {
+      setSent(true)
+      if (newsletter) {
+        fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, source: 'login' }),
+        }).catch(() => {})
+      }
+    }
     setLoading(false)
   }
 
@@ -115,6 +125,19 @@ function LoginForm() {
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400"
                 />
                 {error && <p className="text-xs text-red-500">{error}</p>}
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newsletter}
+                    onChange={e => setNewsletter(e.target.checked)}
+                    className="mt-0.5 accent-orange-500 w-4 h-4 shrink-0"
+                  />
+                  <span className="text-xs text-gray-500 leading-relaxed">
+                    {isZh
+                      ? '订阅我们的 Newsletter，获取建房资讯和活动通知（随时可取消）'
+                      : 'Subscribe to our newsletter for building tips and event updates (unsubscribe anytime)'}
+                  </span>
+                </label>
                 <button
                   type="submit"
                   disabled={loading}

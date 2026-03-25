@@ -11,6 +11,8 @@ import { cn } from '@/lib/cn'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
+import { useAuth } from '@/lib/auth-context'
+import { LoginGateModal } from '@/components/LoginGateModal'
 
 interface RiskFlag {
   type: string
@@ -120,6 +122,8 @@ function FeasibilityContent() {
   const [projectType, setProjectType] = useState(searchParams.get('projectType') || 'kdr')
   const [leadSubmitted, setLeadSubmitted] = useState(false)
   const [leadEmail, setLeadEmail] = useState('')
+  const [showLoginGate, setShowLoginGate] = useState(false)
+  const { user } = useAuth()
 
   useEffect(() => {
     const s = searchParams.get('suburb')
@@ -128,8 +132,23 @@ function FeasibilityContent() {
       const pt = searchParams.get('projectType') || 'kdr'
       setProjectType(pt)
       fetchFeasibility(s, searchParams.get('address') || '', searchParams.get('lotSize') || '', searchParams.get('state') || '', lang, pt)
+      return
     }
-  }, [searchParams, lang])
+    // Restore saved form data after login redirect
+    try {
+      const saved = sessionStorage.getItem('feasibility_form')
+      if (saved && user) {
+        const f = JSON.parse(saved)
+        sessionStorage.removeItem('feasibility_form')
+        setSuburb(f.suburb || '')
+        setAddress(f.address || '')
+        setLotSize(f.lotSize || '')
+        setState(f.state || '')
+        setProjectType(f.projectType || 'kdr')
+        if (f.suburb) fetchFeasibility(f.suburb, f.address || '', f.lotSize || '', f.state || '', lang, f.projectType || 'kdr')
+      }
+    } catch { /* ignore */ }
+  }, [searchParams, lang, user])
 
   const [loadingStep, setLoadingStep] = useState(0)
 
@@ -212,6 +231,14 @@ function FeasibilityContent() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!user) {
+      // Save form data and show login gate
+      try {
+        sessionStorage.setItem('feasibility_form', JSON.stringify({ suburb, address, lotSize, state, projectType }))
+      } catch { /* ignore */ }
+      setShowLoginGate(true)
+      return
+    }
     const params = new URLSearchParams({ suburb, lang, projectType })
     if (address) params.set('address', address)
     if (lotSize) params.set('lotSize', lotSize)
@@ -597,6 +624,17 @@ function FeasibilityContent() {
           </div>
         )}
       </div>
+
+      {showLoginGate && (
+        <LoginGateModal
+          onClose={() => setShowLoginGate(false)}
+          redirectAfter="/feasibility"
+          subtitle={{
+            zh: '登录后即可免费使用 AI 地块可行性分析，你之前填写的信息会自动保留。',
+            en: 'Sign in to run the free AI feasibility analysis. Your form data will be saved.',
+          }}
+        />
+      )}
     </div>
   )
 }
