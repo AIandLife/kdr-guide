@@ -350,20 +350,20 @@ export default function HomePage() {
       <section style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 text-center">
           <p className="text-xs font-semibold tracking-widest text-orange-400 uppercase mb-3">
-            {lang === 'zh' ? '澳洲商业联盟生态' : 'AusBiz Alliance Ecosystem'}
+            {lang === 'zh' ? '澳洲创业圈商业生态' : 'BossLink Ecosystem'}
           </p>
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
             {lang === 'zh' ? '我们是生态大家庭的一员' : 'Part of a Bigger Ecosystem'}
           </h2>
           <p className="text-slate-400 text-sm mb-8 max-w-lg mx-auto">
             {lang === 'zh'
-              ? '澳洲建房圈是澳洲商业联盟旗下的垂直平台之一，共同为华人在澳的生活、创业、置业提供专业支持。'
-              : 'AusBuildCircle is part of the AusBiz Alliance — a network of platforms supporting the Chinese-Australian community.'}
+              ? '澳洲建房圈是澳洲创业圈旗下的垂直平台之一，共同为华人在澳的生活、创业、置业提供专业支持。'
+              : 'AusBuildCircle is part of the BossLink ecosystem — a network of platforms supporting the Chinese-Australian community.'}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <a href="https://www.australiabusinessalliance.com" target="_blank" rel="noopener noreferrer"
+            <a href="https://bosslink.au" target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
-              {lang === 'zh' ? '澳洲商业联盟' : 'Australia Business Alliance'}
+              {lang === 'zh' ? '澳洲创业圈' : 'BossLink'}
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
             <a href="https://auspropertycircle.com" target="_blank" rel="noopener noreferrer"
@@ -399,7 +399,7 @@ export default function HomePage() {
               </p>
               <div className="space-y-2">
                 {[
-                  { href: 'https://www.australiabusinessalliance.com', label: lang === 'zh' ? '澳洲商业联盟' : 'Australia Business Alliance' },
+                  { href: 'https://bosslink.au', label: lang === 'zh' ? '澳洲创业圈' : 'BossLink' },
                   { href: 'https://auspropertycircle.com',             label: lang === 'zh' ? '澳洲房产圈' : 'Aus Property Circle' },
                   { href: '#', label: lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon' },
                 ].map(l => (
@@ -414,7 +414,7 @@ export default function HomePage() {
           </div>
           <div className="border-t border-slate-800 pt-6 text-center">
             <p className="text-xs text-slate-600">
-              {lang === 'zh' ? 'Built with ♥ 澳洲商业联盟生态' : 'Built with ♥ AusBiz Alliance'}
+              {lang === 'zh' ? 'Built with ♥ 澳洲创业圈商业生态' : 'Built with ♥ BossLink Ecosystem'}
             </p>
           </div>
         </div>
