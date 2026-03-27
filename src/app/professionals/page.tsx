@@ -209,6 +209,7 @@ function ProfessionalsPageInner() {
     const s = searchParams.get('state')
     return s ? s.toUpperCase() : 'all'
   })
+  const [mandarinOnly, setMandarinOnly] = useState(false)
   const [loginGatePro, setLoginGatePro] = useState<Professional | null>(null)
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     if (typeof window === 'undefined') return new Set()
@@ -271,6 +272,8 @@ function ProfessionalsPageInner() {
   const filtered = allPros.filter(p => {
     if (activeCategory !== 'all' && p.category !== activeCategory) return false
     if (activeState !== 'all' && p.state !== activeState && !p.regions.includes('All Australia')) return false
+    // Mandarin filter: use wechat field as proxy for Mandarin-speaking
+    if (mandarinOnly && !p.wechat) return false
     return true
   })
 
@@ -376,6 +379,23 @@ function ProfessionalsPageInner() {
               ))}
             </div>
           </div>
+          <div>
+            <p className="text-xs text-gray-400 uppercase font-medium mb-3">{isZh ? '语言' : 'Language'}</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setMandarinOnly(v => !v)}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border',
+                  mandarinOnly
+                    ? 'bg-green-100 text-green-700 border-green-300'
+                    : 'bg-gray-100 text-gray-600 border-transparent hover:bg-gray-200'
+                )}
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                Mandarin 普通话
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Cards */}
@@ -397,9 +417,14 @@ function ProfessionalsPageInner() {
                       className="font-semibold text-gray-900 mb-1 leading-tight hover:text-orange-500 transition-colors block">
                       {pro.name}
                     </a>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       {pro.verified && <span className="flex items-center gap-1 text-xs text-green-600"><CheckCircle className="w-3.5 h-3.5" />{tp.verified}</span>}
                       <span className={cn('text-xs px-2 py-0.5 rounded-full', STATE_COLORS[pro.state] || 'bg-gray-100 text-gray-500')}>{pro.state}</span>
+                      {pro.wechat && (
+                        <span className="flex items-center gap-1 text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full border border-green-200">
+                          <MessageCircle className="w-3 h-3" />普通话
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-1">

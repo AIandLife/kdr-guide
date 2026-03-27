@@ -729,7 +729,7 @@ function FeasibilityContent() {
               </div>
             </div>
 
-            {/* Lead CTA */}
+            {/* Post-report CTA section */}
             <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">{tf.ctaTitle}</h2>
               <p className="text-gray-500 mb-6 max-w-md mx-auto text-center">
@@ -738,15 +738,37 @@ function FeasibilityContent() {
                   : `Browse verified builders and town planners near ${result.suburb} — contact them directly.`}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                {/* 1. Find professionals — link filtered to report state + top recommended role */}
                 <Link
-                  href={`/professionals?state=${result.state || ''}`}
+                  href={`/professionals?state=${result.state || ''}${result.professionals?.[0]?.role ? `&category=${result.professionals[0].role.toLowerCase().replace(/\s+/g, '-')}` : ''}`}
                   className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base"
                 >
-                  {lang === 'zh' ? '查看附近专业人士 →' : 'Find Professionals Near Me →'}
+                  {lang === 'zh'
+                    ? `在 ${result.state || '附近'} 找 ${result.professionals?.[0]?.role || '专业人士'} →`
+                    : `Find a ${result.professionals?.[0]?.role || 'Professional'} in ${result.suburb} →`}
                 </Link>
+                {/* 2. Email report */}
                 <EmailReportButton suburb={result.suburb} state={result.state} lang={lang} userEmail={user?.email} />
               </div>
-              <p className="text-xs text-gray-400 mt-3 text-center">{tf.ctaFree}</p>
+              {/* 3. Run another suburb */}
+              <div className="mt-4 text-center">
+                <button
+                  onClick={() => {
+                    setResult(null)
+                    setSuburb('')
+                    setAddress('')
+                    setLotSize('')
+                    setState('')
+                    router.push('/feasibility')
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-orange-600 transition-colors px-4 py-2 rounded-lg hover:bg-orange-100"
+                >
+                  <Home className="w-4 h-4" />
+                  {lang === 'zh' ? '换一个区域重新查询' : 'Run another suburb'}
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 mt-2 text-center">{tf.ctaFree}</p>
             </div>
 
             <p className="text-center text-xs text-gray-400 pb-4">{tf.disclaimer}</p>
