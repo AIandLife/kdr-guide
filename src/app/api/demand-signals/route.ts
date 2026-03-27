@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
+export const runtime = 'edge'
+
 // Suburb pool lives server-side only — not in client bundle
 const SUBURB_POOL = [
   { suburb: 'Strathfield', state: 'NSW' }, { suburb: 'Parramatta', state: 'NSW' },
@@ -154,6 +156,9 @@ export async function GET() {
     },
     kdrPct,
   }, {
-    headers: { 'Cache-Control': 'no-store' },
+    headers: {
+      // Edge CDN 缓存 2 分钟，2-5 分钟内 stale-while-revalidate（后台刷新时仍返回缓存）
+      'Cache-Control': 's-maxage=120, stale-while-revalidate=300',
+    },
   })
 }

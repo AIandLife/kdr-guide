@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import {
   CheckCircle, ChevronRight, Loader2, Shield, Star, Phone,
   HardHat, FileText, Zap, Droplets, Hammer, DollarSign, Briefcase, Ruler,
@@ -611,10 +612,10 @@ export default function JoinPage() {
             ? `${form.businessName} 已收录在我们的目录中。如果你以后想申请认证，随时可以再回来。`
             : `${form.businessName} is in our directory. If you ever want to get verified, you can always come back and apply.`}
         </p>
-        <a href="/" className="inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-xl"
+        <Link href="/" className="inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-xl"
           style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}>
           {isZh ? '返回首页' : 'Back to Home'}
-        </a>
+        </Link>
       </div>
     </div>
   )

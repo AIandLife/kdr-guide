@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { CheckCircle, MapPin, Phone, ChevronRight, Globe, MessageCircle, X, Briefcase, Heart } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useLang } from '@/lib/language-context'
@@ -122,7 +123,7 @@ export function StateProfessionalsClient({ state, info, professionals }: Props) 
         {/* State navigation */}
         <div className="flex flex-wrap gap-2 mb-6">
           {['NSW','VIC','QLD','WA','SA','ACT','TAS','NT'].map(s => (
-            <a
+            <Link
               key={s}
               href={`/professionals/${s.toLowerCase()}`}
               className={cn('px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
@@ -130,7 +131,7 @@ export function StateProfessionalsClient({ state, info, professionals }: Props) 
               )}
             >
               {s}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -168,9 +169,9 @@ export function StateProfessionalsClient({ state, info, professionals }: Props) 
                 )}
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex-1 min-w-0">
-                    <a href={`/professionals/${state.toLowerCase()}/${pro.slug}`} className="font-semibold text-gray-900 mb-1 leading-tight hover:text-orange-500 transition-colors block">
+                    <Link href={`/professionals/${state.toLowerCase()}/${pro.slug}`} className="font-semibold text-gray-900 mb-1 leading-tight hover:text-orange-500 transition-colors block">
                       {pro.name}
-                    </a>
+                    </Link>
                     <div className="flex items-center gap-2">
                       {pro.verified && <span className="flex items-center gap-1 text-xs text-green-600"><CheckCircle className="w-3.5 h-3.5" />{isZh ? '已认证' : 'Verified'}</span>}
                       <span className={cn('text-xs px-2 py-0.5 rounded-full', STATE_COLORS[pro.state] || 'bg-gray-100 text-gray-500')}>{pro.state}</span>
@@ -209,10 +210,10 @@ export function StateProfessionalsClient({ state, info, professionals }: Props) 
                 )}
 
                 <div className="flex gap-2">
-                  <a href={`/professionals/${state.toLowerCase()}/${pro.slug}`}
+                  <Link href={`/professionals/${state.toLowerCase()}/${pro.slug}`}
                     className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors text-center border border-gray-200 text-gray-700 hover:border-orange-300 hover:text-orange-600">
                     {isZh ? '查看详情' : 'View Profile'}
-                  </a>
+                  </Link>
                   <button
                     onClick={() => !sent && openModal(pro)}
                     disabled={sent}
@@ -237,7 +238,7 @@ export function StateProfessionalsClient({ state, info, professionals }: Props) 
           <p className="text-sm text-gray-400">
             {isZh ? `你是 ${info.name} 的 KDR 专业人士？` : `Are you a KDR professional in ${info.name}?`}
             {' '}
-            <a href="/join" className="text-orange-500 hover:text-orange-600 font-medium">{isZh ? '免费收录你的业务 →' : 'List your business for free →'}</a>
+            <Link href="/join" className="text-orange-500 hover:text-orange-600 font-medium">{isZh ? '免费收录你的业务 →' : 'List your business for free →'}</Link>
           </p>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useParams } from 'next/navigation'
+import Link from 'next/link'
 import { ArrowLeft, MessageSquare, BadgeCheck, Clock, MapPin, Loader2, Send, ExternalLink } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { SiteNav } from '@/components/SiteNav'
@@ -79,13 +80,13 @@ function AuthorBlock({ name, badge, business, lang, compact = false }: {
           {business && (
             <span className="text-xs text-blue-600 font-medium">{business}</span>
           )}
-          <a
+          <Link
             href={`/professionals?q=${encodeURIComponent(business || name)}`}
             className="inline-flex items-center gap-1 text-xs text-orange-500 hover:text-orange-600 font-medium border border-orange-200 rounded-full px-2 py-0.5 bg-orange-50 hover:bg-orange-100 transition-colors"
           >
             <ExternalLink className="w-3 h-3" />
             {isZh ? '查看主页' : 'View profile'}
-          </a>
+          </Link>
         </>
       )}
       {badge === 'owner' && (
@@ -182,10 +183,10 @@ function PostDetail() {
     <div className="min-h-screen bg-gray-50">
       <SiteNav currentPath="/forum" />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-        <a href="/forum" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors">
+        <Link href="/forum" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           {isZh ? '返回社区' : 'Back to community'}
-        </a>
+        </Link>
 
         {/* Post */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mb-4">

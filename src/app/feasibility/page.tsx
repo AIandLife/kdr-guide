@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   MapPin, AlertTriangle, CheckCircle, XCircle, Clock, DollarSign,
   ChevronRight, Loader2, Users, Flame,
-  Droplets, Landmark, Shield, Info, Home
+  Droplets, Landmark, Shield, Info, Home, Mail, Send
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useLang } from '@/lib/language-context'
@@ -112,6 +112,66 @@ function RiskBadge({ level, lang }: { level: 'Low' | 'Medium' | 'High'; lang: st
   )
 }
 
+function EmailReportButton({ suburb, state, lang, userEmail }: { suburb: string; state: string; lang: string; userEmail?: string }) {
+  const [email, setEmail] = useState(userEmail || '')
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [showInput, setShowInput] = useState(false)
+
+  const handleSend = async () => {
+    if (!email) return
+    setSending(true)
+    try {
+      await fetch('/api/feasibility/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, suburb, state, lang }),
+      })
+      setSent(true)
+    } catch { /* non-critical */ }
+    setSending(false)
+  }
+
+  if (sent) return (
+    <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+      <CheckCircle className="w-4 h-4 shrink-0" />
+      {lang === 'zh' ? '报告已发送到你的邮箱！' : 'Report sent to your email!'}
+    </div>
+  )
+
+  if (showInput) return (
+    <div className="flex gap-2">
+      <input
+        type="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        placeholder={lang === 'zh' ? '你的邮箱' : 'your@email.com'}
+        className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+        onKeyDown={e => e.key === 'Enter' && handleSend()}
+        autoFocus
+      />
+      <button
+        onClick={handleSend}
+        disabled={sending || !email}
+        className="flex items-center gap-1.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors disabled:opacity-50 shrink-0"
+      >
+        {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+        {lang === 'zh' ? '发送' : 'Send'}
+      </button>
+    </div>
+  )
+
+  return (
+    <button
+      onClick={() => userEmail ? handleSend() : setShowInput(true)}
+      className="inline-flex items-center justify-center gap-2 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold px-6 py-3.5 rounded-xl transition-colors text-base"
+    >
+      {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+      {lang === 'zh' ? '发送报告到邮箱' : 'Email me this report'}
+    </button>
+  )
+}
+
 function FeasibilityContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -127,8 +187,6 @@ function FeasibilityContent() {
   const [lotSize, setLotSize] = useState(searchParams.get('lotSize') || '')
   const [state, setState] = useState(searchParams.get('state') || '')
   const [projectType, setProjectType] = useState(searchParams.get('projectType') || 'kdr')
-  const [leadSubmitted, setLeadSubmitted] = useState(false)
-  const [leadEmail, setLeadEmail] = useState('')
   const [showLoginGate, setShowLoginGate] = useState(false)
   const { user } = useAuth()
 
@@ -175,7 +233,7 @@ function FeasibilityContent() {
       const res = await fetch('/api/feasibility', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ suburb: sub, address: addr || null, lotSize: lot ? Number(lot) : null, state: st, lang: l, projectType: pt }),
+        body: JSON.stringify({ suburb: sub, address: addr || null, lotSize: lot ? Number(lot) : null, state: st, lang: l, projectType: pt, userId: user?.id || null }),
       })
 
       if (!res.ok) {
@@ -672,20 +730,23 @@ function FeasibilityContent() {
             </div>
 
             {/* Lead CTA */}
-            <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{tf.ctaTitle}</h2>
-              <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">{tf.ctaTitle}</h2>
+              <p className="text-gray-500 mb-6 max-w-md mx-auto text-center">
                 {lang === 'zh'
                   ? `已为你找到 ${result.suburb} 附近经过认证的 Builder 和 Town Planner，可以直接联系。`
                   : `Browse verified builders and town planners near ${result.suburb} — contact them directly.`}
               </p>
-              <Link
-                href={`/professionals?state=${result.state || ''}`}
-                className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base"
-              >
-                {lang === 'zh' ? '查看附近专业人士 →' : 'Find Professionals Near Me →'}
-              </Link>
-              <p className="text-xs text-gray-400 mt-3">{tf.ctaFree}</p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link
+                  href={`/professionals?state=${result.state || ''}`}
+                  className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base"
+                >
+                  {lang === 'zh' ? '查看附近专业人士 →' : 'Find Professionals Near Me →'}
+                </Link>
+                <EmailReportButton suburb={result.suburb} state={result.state} lang={lang} userEmail={user?.email} />
+              </div>
+              <p className="text-xs text-gray-400 mt-3 text-center">{tf.ctaFree}</p>
             </div>
 
             <p className="text-center text-xs text-gray-400 pb-4">{tf.disclaimer}</p>

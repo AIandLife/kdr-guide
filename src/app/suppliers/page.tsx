@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import {
   CheckCircle, HelpCircle, Globe,
   Mail, Phone, Star, ChevronRight, MapPin, MessageCircle
@@ -164,10 +165,10 @@ export default function SuppliersPage() {
               <span>{isZh ? item.zh : item.en}</span>
             </div>
           ))}
-          <a href="/suppliers/register" className="flex items-center gap-1.5 text-sm font-semibold text-white bg-orange-500 hover:bg-orange-400 transition-colors rounded-lg px-3 py-2">
+          <Link href="/suppliers/register" className="flex items-center gap-1.5 text-sm font-semibold text-white bg-orange-500 hover:bg-orange-400 transition-colors rounded-lg px-3 py-2">
             <span className="text-lg leading-none">+</span>
             <span>{isZh ? '新商家申请入驻' : 'List your business'}</span>
-          </a>
+          </Link>
         </div>
 
         {/* Verification explainer */}
@@ -412,9 +413,9 @@ export default function SuppliersPage() {
                 ) : (
                   <div className="pt-3 text-xs text-gray-400 border-t border-gray-100 flex items-center justify-between gap-2">
                     <span className="italic">{isZh ? '联系方式未经核实，请自行尽职调查。' : 'Contact details unverified. Please do your own due diligence.'}</span>
-                    <a href="/suppliers/register" className="shrink-0 text-orange-500 hover:text-orange-600 font-medium not-italic">
+                    <Link href="/suppliers/register" className="shrink-0 text-orange-500 hover:text-orange-600 font-medium not-italic">
                       {isZh ? '申请认证 →' : 'Get Verified →'}
-                    </a>
+                    </Link>
                   </div>
                 )}
               </div>
@@ -431,10 +432,10 @@ export default function SuppliersPage() {
 
         {/* B2B entry point */}
         <div className="border-t border-gray-200 pt-8 text-center">
-          <a href="/suppliers/register" className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+          <Link href="/suppliers/register" className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
             <span className="text-xl leading-none">+</span>
             {isZh ? '新商家申请入驻' : 'List your business'}
-          </a>
+          </Link>
         </div>
       </div>
     </div>

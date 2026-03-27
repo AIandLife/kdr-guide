@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import {
   CheckCircle, ChevronDown, ChevronRight,
   ClipboardList, Ruler, FileText, Hammer, Zap, Home, DollarSign, Building2
@@ -332,10 +333,10 @@ export default function GuidePage() {
         <div className="mt-10 bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.guide.ctaTitle}</h2>
           <p className="text-gray-500 mb-6">{t.guide.ctaSubtitle}</p>
-          <a href="/feasibility" className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors">
+          <Link href="/feasibility" className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors">
             {t.guide.ctaBtn}
             <ChevronRight className="w-4 h-4" />
-          </a>
+          </Link>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { Building2, Mail, Loader2, CheckCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useLang } from '@/lib/language-context'
@@ -57,12 +58,12 @@ function LoginForm() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <a href="/" className="inline-flex items-center gap-2 mb-6">
+          <Link href="/" className="inline-flex items-center gap-2 mb-6">
             <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-md shadow-orange-200">
               <Building2 className="w-6 h-6 text-white" />
             </div>
             <span className="font-bold text-xl text-gray-900">AusBuildCircle</span>
-          </a>
+          </Link>
           <h1 className="text-2xl font-bold text-gray-900 mb-1">
             {isZh ? '登录 / 注册' : 'Sign in'}
           </h1>

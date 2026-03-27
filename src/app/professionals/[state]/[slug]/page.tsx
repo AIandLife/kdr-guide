@@ -2,6 +2,7 @@
 
 import { use } from 'react'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import { CheckCircle, MapPin, Globe, MessageCircle, Phone, ArrowLeft, ChevronRight, X, Heart } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useLang } from '@/lib/language-context'
@@ -235,14 +236,14 @@ export default function ProfessionalProfilePage({ params }: { params: Promise<{ 
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {related.map(r => (
-                <a key={r.slug} href={`/professionals/${r.state.toLowerCase()}/${r.slug}`}
+                <Link key={r.slug} href={`/professionals/${r.state.toLowerCase()}/${r.slug}`}
                   className="bg-white border border-gray-200 rounded-xl p-4 hover:border-orange-200 hover:shadow-md transition-all group">
                   <p className="font-semibold text-gray-900 group-hover:text-orange-500 transition-colors mb-1 text-sm">{r.name}</p>
                   <div className="flex flex-wrap gap-1 mb-2">
                     {r.specialties.slice(0, 2).map(s => <span key={s} className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{s}</span>)}
                   </div>
                   <p className="text-xs text-gray-400">{r.regions.slice(0, 2).join(' · ')}</p>
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -250,10 +251,10 @@ export default function ProfessionalProfilePage({ params }: { params: Promise<{ 
 
         {/* Back link */}
         <div className="mt-8 text-center">
-          <a href={`/professionals/${state}`} className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+          <Link href={`/professionals/${state}`} className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             {isZh ? `查看所有 ${pro.state} 专业人士` : `All ${pro.state} professionals`}
-          </a>
+          </Link>
         </div>
       </div>
 

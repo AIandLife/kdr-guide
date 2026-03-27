@@ -119,15 +119,26 @@ export async function POST(req: Request) {
 
   if (event.type === 'customer.subscription.deleted') {
     const sub = event.data.object as Stripe.Subscription
-    await supabase
-      .from('professionals')
-      .update({ verification_status: 'free', verified: false })
-      .eq('email', sub.metadata?.email ?? '')
+
+    // Look up email via stripe_subscription_id (metadata.email is empty on subscription objects)
+    const { data: appRow } = await supabase
+      .from('kdr_professional_applications')
+      .select('email')
+      .eq('stripe_subscription_id', sub.id)
+      .single()
 
     await supabase
       .from('kdr_professional_applications')
       .update({ status: 'free', stripe_subscription_id: null })
       .eq('stripe_subscription_id', sub.id)
+
+    if (appRow?.email) {
+      await supabase
+        .from('professionals')
+        .update({ verification_status: 'free', verified: false })
+        .eq('email', appRow.email)
+      console.log(`Subscription cancelled: ${appRow.email}`)
+    }
   }
 
   return Response.json({ received: true })

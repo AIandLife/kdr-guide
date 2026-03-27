@@ -2,9 +2,11 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import {
   CheckCircle, Clock, MessageSquare, Shield, Edit3,
-  AlertCircle, Building2, Phone, Globe, PartyPopper, Save, X, Loader2
+  AlertCircle, Building2, Phone, Globe, PartyPopper, Save, X, Loader2,
+  RefreshCw, TrendingUp, Mail as MailIcon
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/auth-context'
@@ -38,6 +40,11 @@ interface Enquiry {
   homeowner_phone: string
   status: string
   created_at: string
+}
+
+interface ApplicationInfo {
+  paid_at: string | null
+  stripe_subscription_id: string | null
 }
 
 // ── Profile Editor Component ──────────────────────────────────────────────
@@ -202,9 +209,11 @@ function ProDashboard() {
   const justPaid = searchParams.get('verified') === '1'
   const [profile, setProfile] = useState<ProProfile | null>(null)
   const [enquiries, setEnquiries] = useState<Enquiry[]>([])
+  const [appInfo, setAppInfo] = useState<ApplicationInfo | null>(null)
   const [fetching, setFetching] = useState(true)
   const [activeTab, setActiveTab] = useState<'enquiries' | 'profile' | 'verify'>(justPaid ? 'verify' : 'enquiries')
   const [checkingOut, setCheckingOut] = useState(false)
+  const [markingReplied, setMarkingReplied] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -216,13 +225,22 @@ function ProDashboard() {
           setFetching(false)
           return
         }
-        supabase.from('contact_requests').select('*')
-          .eq('professional_name', prof.business_name)
-          .order('created_at', { ascending: false })
-          .then(({ data: enqs }) => {
-            setEnquiries(enqs ?? [])
-            setFetching(false)
-          })
+        // Fetch enquiries + application info in parallel
+        Promise.all([
+          supabase.from('contact_requests').select('*')
+            .eq('professional_name', prof.business_name)
+            .order('created_at', { ascending: false }),
+          supabase.from('kdr_professional_applications')
+            .select('paid_at, stripe_subscription_id')
+            .eq('email', prof.email)
+            .order('paid_at', { ascending: false })
+            .limit(1)
+            .single(),
+        ]).then(([{ data: enqs }, { data: app }]) => {
+          setEnquiries(enqs ?? [])
+          setAppInfo(app ?? null)
+          setFetching(false)
+        })
       })
   }, [user])
 
@@ -233,7 +251,7 @@ function ProDashboard() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-500 mb-4">{isZh ? '请先登录' : 'Please sign in first'}</p>
-          <a href="/login" className="text-orange-500 hover:text-orange-600 font-medium">{isZh ? '去登录 →' : 'Sign in →'}</a>
+          <Link href="/login" className="text-orange-500 hover:text-orange-600 font-medium">{isZh ? '去登录 →' : 'Sign in →'}</Link>
         </div>
       </div>
     )
@@ -251,13 +269,38 @@ function ProDashboard() {
     else setCheckingOut(false)
   }
 
-  const formatDate = (iso: string) => new Date(iso).toLocaleDateString(isZh ? 'zh-CN' : 'en-AU', { day: 'numeric', month: 'short' })
+  const handleMarkReplied = async (enquiryId: string) => {
+    setMarkingReplied(enquiryId)
+    const supabase = createClient()
+    await supabase.from('contact_requests').update({ status: 'replied' }).eq('id', enquiryId)
+    setEnquiries(prev => prev.map(e => e.id === enquiryId ? { ...e, status: 'replied' } : e))
+    setMarkingReplied(null)
+  }
+
+  const formatDate = (iso: string) => new Date(iso).toLocaleDateString(isZh ? 'zh-CN' : 'en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+
+  // Subscription expiry: paid_at + 1 year
+  const subscriptionExpiry = appInfo?.paid_at
+    ? new Date(new Date(appInfo.paid_at).getTime() + 365 * 24 * 60 * 60 * 1000)
+    : null
+  const now = new Date()
+  const daysUntilExpiry = subscriptionExpiry
+    ? Math.ceil((subscriptionExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    : null
+  const isExpired = daysUntilExpiry !== null && daysUntilExpiry <= 0
+  const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry > 0 && daysUntilExpiry <= 30
 
   const statusBadge = (status: string) => {
-    if (status === 'verified') return <span className="flex items-center gap-1 text-xs text-green-600 font-medium"><CheckCircle className="w-3.5 h-3.5" />{isZh ? '已认证' : 'Verified'}</span>
+    if (status === 'verified') {
+      if (isExpired) return <span className="flex items-center gap-1 text-xs text-red-500 font-medium"><AlertCircle className="w-3.5 h-3.5" />{isZh ? '认证已过期' : 'Subscription expired'}</span>
+      if (isExpiringSoon) return <span className="flex items-center gap-1 text-xs text-orange-500 font-medium"><Clock className="w-3.5 h-3.5" />{isZh ? `认证将在 ${daysUntilExpiry} 天后到期` : `Renew in ${daysUntilExpiry} days`}</span>
+      return <span className="flex items-center gap-1 text-xs text-green-600 font-medium"><CheckCircle className="w-3.5 h-3.5" />{isZh ? '已认证' : 'Verified'}</span>
+    }
     if (status === 'pending') return <span className="flex items-center gap-1 text-xs text-orange-500 font-medium"><Clock className="w-3.5 h-3.5" />{isZh ? '审核中' : 'Pending'}</span>
     return <span className="flex items-center gap-1 text-xs text-gray-400"><AlertCircle className="w-3.5 h-3.5" />{isZh ? '免费版' : 'Free listing'}</span>
   }
+
+  const newEnquiries = enquiries.filter(e => e.status === 'new' || e.status === 'sent' || !e.status).length
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -277,11 +320,11 @@ function ProDashboard() {
             </div>
           </div>
           {!profile && (
-            <a href="/join"
+            <Link href="/join"
               className="shrink-0 inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
               <Building2 className="w-4 h-4" />
               {isZh ? '创建我的主页' : 'Create my listing'}
-            </a>
+            </Link>
           )}
         </div>
 
@@ -300,6 +343,62 @@ function ProDashboard() {
           </div>
         )}
 
+        {/* Expiry warning banner */}
+        {profile && (isExpired || isExpiringSoon) && (
+          <div className={`mb-6 rounded-2xl border px-5 py-4 flex items-center justify-between gap-4 ${isExpired ? 'bg-red-50 border-red-200' : 'bg-orange-50 border-orange-200'}`}>
+            <div className="flex items-start gap-3">
+              <AlertCircle className={`w-5 h-5 shrink-0 mt-0.5 ${isExpired ? 'text-red-500' : 'text-orange-500'}`} />
+              <div>
+                <p className={`font-semibold text-sm ${isExpired ? 'text-red-800' : 'text-orange-800'}`}>
+                  {isExpired
+                    ? (isZh ? '认证订阅已过期' : 'Subscription expired')
+                    : (isZh ? `认证将在 ${daysUntilExpiry} 天后到期` : `Verification expires in ${daysUntilExpiry} days`)}
+                </p>
+                <p className={`text-xs mt-0.5 ${isExpired ? 'text-red-600' : 'text-orange-600'}`}>
+                  {isExpired
+                    ? (isZh ? '你的主页已失去认证徽章和优先排名。续费后立即恢复。' : 'Your listing has lost its Verified badge and priority ranking. Renew to restore.')
+                    : (isZh ? '续费以保持认证徽章和优先排名。' : 'Renew to keep your Verified badge and priority ranking.')}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleCheckout}
+              disabled={checkingOut}
+              className="shrink-0 flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold text-sm px-4 py-2 rounded-xl transition-colors disabled:opacity-60"
+            >
+              {checkingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+              {isZh ? '立即续费' : 'Renew Now'}
+            </button>
+          </div>
+        )}
+
+        {/* Stats row (only when verified and has data) */}
+        {profile && profile.verification_status === 'verified' && !isExpired && (
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+              <p className="text-2xl font-bold text-gray-900">{enquiries.length}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{isZh ? '总询盘' : 'Total enquiries'}</p>
+            </div>
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+              <p className="text-2xl font-bold text-orange-500">{newEnquiries}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{isZh ? '未回复' : 'Awaiting reply'}</p>
+            </div>
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 text-center">
+              {subscriptionExpiry ? (
+                <>
+                  <p className="text-sm font-bold text-gray-900">{subscriptionExpiry.toLocaleDateString(isZh ? 'zh-CN' : 'en-AU', { month: 'short', year: 'numeric' })}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{isZh ? '认证到期' : 'Renews'}</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-bold text-green-600">✓</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{isZh ? '已认证' : 'Verified'}</p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* No profile yet */}
         {!fetching && !profile && (
           <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center shadow-sm">
@@ -310,10 +409,10 @@ function ProDashboard() {
             <p className="text-sm text-gray-500 mb-6">
               {isZh ? '填写你的业务信息，免费收录进 KDR 专业人士目录。' : 'Fill in your business details to get listed in our professional directory for free.'}
             </p>
-            <a href="/join"
+            <Link href="/join"
               className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors">
               {isZh ? '免费创建主页 →' : 'Create listing — free →'}
-            </a>
+            </Link>
           </div>
         )}
 
@@ -335,9 +434,9 @@ function ProDashboard() {
                 >
                   <Icon className="w-4 h-4" />
                   {label}
-                  {key === 'enquiries' && enquiries.length > 0 && (
+                  {key === 'enquiries' && newEnquiries > 0 && (
                     <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${activeTab === key ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600'}`}>
-                      {enquiries.length}
+                      {newEnquiries}
                     </span>
                   )}
                 </button>
@@ -373,7 +472,10 @@ function ProDashboard() {
                           )}
                           <div className="flex flex-wrap gap-3 text-xs text-gray-500">
                             {e.homeowner_email && (
-                              <a href={`mailto:${e.homeowner_email}`} className="text-orange-500 hover:underline">{e.homeowner_email}</a>
+                              <a href={`mailto:${e.homeowner_email}`} className="flex items-center gap-1 text-orange-500 hover:underline">
+                                <MailIcon className="w-3 h-3" />
+                                {e.homeowner_email}
+                              </a>
                             )}
                             {e.homeowner_phone && (
                               <a href={`tel:${e.homeowner_phone}`} className="hover:text-gray-700">{e.homeowner_phone}</a>
@@ -381,15 +483,29 @@ function ProDashboard() {
                           </div>
                           {e.message && <p className="text-sm text-gray-600 mt-2">{e.message}</p>}
                         </div>
-                        <span className={`shrink-0 text-xs px-2 py-1 rounded-lg font-medium ${
-                          e.status === 'replied' ? 'bg-green-100 text-green-600' :
-                          e.status === 'read' ? 'bg-blue-100 text-blue-600' :
-                          'bg-amber-50 text-amber-600'
-                        }`}>
-                          {e.status === 'replied' ? (isZh ? '已回复' : 'Replied') :
-                           e.status === 'read' ? (isZh ? '已读' : 'Read') :
-                           (isZh ? '新询盘' : 'New')}
-                        </span>
+                        <div className="flex flex-col items-end gap-2 shrink-0">
+                          <span className={`text-xs px-2 py-1 rounded-lg font-medium ${
+                            e.status === 'replied' ? 'bg-green-100 text-green-600' :
+                            e.status === 'read' ? 'bg-blue-100 text-blue-600' :
+                            'bg-amber-50 text-amber-600'
+                          }`}>
+                            {e.status === 'replied' ? (isZh ? '已回复' : 'Replied') :
+                             e.status === 'read' ? (isZh ? '已读' : 'Read') :
+                             (isZh ? '新询盘' : 'New')}
+                          </span>
+                          {e.status !== 'replied' && (
+                            <button
+                              onClick={() => handleMarkReplied(e.id)}
+                              disabled={markingReplied === e.id}
+                              className="text-xs text-gray-400 hover:text-green-600 flex items-center gap-1 transition-colors disabled:opacity-50"
+                            >
+                              {markingReplied === e.id
+                                ? <Loader2 className="w-3 h-3 animate-spin" />
+                                : <CheckCircle className="w-3 h-3" />}
+                              {isZh ? '标记已回复' : 'Mark replied'}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))
@@ -409,11 +525,36 @@ function ProDashboard() {
             {/* ── Verification Tab ── */}
             {activeTab === 'verify' && (
               <div className="space-y-4">
-                {profile.verification_status === 'verified' ? (
-                  <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
-                    <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-3" />
-                    <h3 className="font-bold text-gray-900 mb-1">{isZh ? '已认证' : 'You\'re Verified!'}</h3>
-                    <p className="text-sm text-gray-500">{isZh ? '你的主页已显示认证徽章，搜索结果优先排名。' : 'Your listing shows a Verified badge and ranks above unverified profiles.'}</p>
+                {profile.verification_status === 'verified' && !isExpired ? (
+                  <div className="bg-green-50 border border-green-200 rounded-2xl p-6">
+                    <div className="flex items-start gap-4">
+                      <CheckCircle className="w-10 h-10 text-green-500 shrink-0 mt-1" />
+                      <div className="flex-1">
+                        <h3 className="font-bold text-gray-900 mb-1">{isZh ? '已认证' : 'You\'re Verified!'}</h3>
+                        <p className="text-sm text-gray-500 mb-3">{isZh ? '你的主页已显示认证徽章，搜索结果优先排名。' : 'Your listing shows a Verified badge and ranks above unverified profiles.'}</p>
+                        {subscriptionExpiry && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <Clock className="w-4 h-4 text-gray-400" />
+                            <span className="text-gray-600">
+                              {isZh ? `认证有效期至：` : 'Verified until: '}
+                              <strong>{formatDate(subscriptionExpiry.toISOString())}</strong>
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {isExpiringSoon && (
+                      <div className="mt-4 pt-4 border-t border-green-200 flex items-center justify-between gap-4">
+                        <p className="text-sm text-orange-700">
+                          {isZh ? `认证将在 ${daysUntilExpiry} 天后到期，续费以保持优先排名。` : `Expires in ${daysUntilExpiry} days — renew to keep priority ranking.`}
+                        </p>
+                        <button onClick={handleCheckout} disabled={checkingOut}
+                          className="shrink-0 flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold text-sm px-4 py-2 rounded-xl transition-colors disabled:opacity-60">
+                          {checkingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                          {isZh ? '续费' : 'Renew'}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : profile.verification_status === 'pending' ? (
                   <div className="bg-orange-50 border border-orange-200 rounded-2xl p-6 text-center">
@@ -424,7 +565,10 @@ function ProDashboard() {
                 ) : (
                   <>
                     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-                      <h3 className="font-bold text-gray-900 mb-4">{isZh ? '认证的好处' : 'Why get verified?'}</h3>
+                      <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-orange-500" />
+                        {isZh ? '认证的好处' : 'Why get verified?'}
+                      </h3>
                       <div className="space-y-3">
                         {[
                           { icon: '✅', en: 'Verified badge shown to all homeowners', zh: '向所有业主显示已认证徽章' },

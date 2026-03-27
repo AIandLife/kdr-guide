@@ -33,7 +33,7 @@ function buildLiveZoneContext(z: LiveZoneData, lotSize: number | null): string {
 
 export async function POST(req: Request) {
   try {
-    const { suburb, state, lotSize, lang = 'en', projectType = 'kdr', address } = await req.json()
+    const { suburb, state, lotSize, lang = 'en', projectType = 'kdr', address, userId } = await req.json()
 
     if (!suburb) {
       return Response.json({ error: 'Suburb is required' }, { status: 400 })
@@ -306,21 +306,37 @@ Be specific, honest, and practical. If risks are high, say so clearly. Use real 
               controller.enqueue(encoder.encode(event.delta.text))
             }
           }
-          // Log search to DB (fire-and-forget)
+          // Log search + save user report to DB (fire-and-forget)
           try {
             const parsed = JSON.parse(accumulated)
             const supabase = createClient(
               process.env.NEXT_PUBLIC_SUPABASE_URL!,
               process.env.SUPABASE_SERVICE_ROLE_KEY!
             )
+            const dbState = state || parsed.state || null
             await supabase.from('feasibility_searches').insert({
               suburb,
-              state: state || parsed.state || null,
+              state: dbState,
               lot_size: lotSize ? Number(lotSize) : null,
               project_type: projectType || 'kdr',
               council: councilData?.council || parsed.council || null,
               feasibility_score: parsed.feasibilityScore || null,
             })
+            // Save full report for logged-in users
+            if (userId) {
+              await supabase.from('feasibility_reports').insert({
+                user_id: userId,
+                suburb,
+                state: dbState,
+                project_type: projectType || 'kdr',
+                feasibility_score: parsed.feasibilityScore || null,
+                feasibility_label: parsed.feasibilityLabel || null,
+                total_cost_min: parsed.costEstimate?.totalEstimate?.[0] || null,
+                total_cost_max: parsed.costEstimate?.totalEstimate?.[1] || null,
+                council: councilData?.council || parsed.council || null,
+                result_json: parsed,
+              })
+            }
           } catch { /* non-critical */ }
 
           // Append live zone metadata as a trailing JSON line so client can pick it up

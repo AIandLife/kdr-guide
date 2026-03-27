@@ -12,7 +12,7 @@ import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
 import { LoginGateModal } from '@/components/LoginGateModal'
 import { useAuth } from '@/lib/auth-context'
-import { PROJECT_LABELS, formatTimeAgo, getRotationInterval, type DemandSignal } from '@/lib/demand-signals'
+import { PROJECT_LABELS, formatTimeAgo, getRotationInterval, getInitialSignals, getWeeklyStats, type DemandSignal } from '@/lib/demand-signals'
 import { PROFESSIONALS, CATEGORIES, type Professional } from '@/lib/professionals-data'
 
 // ── Demand Signal Feed ────────────────────────────────────────────────────────
@@ -26,13 +26,15 @@ const COLOR_PILL: Record<string, string> = {
 interface ApiSignal extends DemandSignal { isReal?: boolean }
 
 function DemandFeed({ isZh }: { isZh: boolean }) {
-  const [signals, setSignals] = useState<ApiSignal[]>([])
-  const [weeklyCount, setWeeklyCount] = useState(0)
-  const [stateBreakdown, setStateBreakdown] = useState<Record<string, number>>({})
-  const [kdrPct, setKdrPct] = useState(52)
+  // 立即用客户端静态数据初始化（零延迟），API 返回后替换为含真实数据的结果
+  const [signals, setSignals] = useState<ApiSignal[]>(() => getInitialSignals())
+  const initStats = getWeeklyStats()
+  const [weeklyCount, setWeeklyCount] = useState(initStats.weeklyCount)
+  const [stateBreakdown, setStateBreakdown] = useState<Record<string, number>>(initStats.stateBreakdown)
+  const [kdrPct, setKdrPct] = useState(initStats.kdrPct)
   const [flashIdx, setFlashIdx] = useState<number>(-1)
 
-  // Fetch from API on mount — all generation happens server-side
+  // 后台静默刷新：用 API 数据（含真实搜索）替换初始静态数据
   useEffect(() => {
     fetch('/api/demand-signals')
       .then(r => r.json())
