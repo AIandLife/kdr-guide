@@ -747,8 +747,8 @@ function FeasibilityContent() {
               <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">{tf.ctaTitle}</h2>
               <p className="text-gray-500 mb-6 max-w-md mx-auto text-center">
                 {lang === 'zh'
-                  ? `已为你找到 ${result.suburb} 附近经过认证的 Builder 和 Town Planner，可以直接联系。`
-                  : `Browse verified builders and town planners near ${result.suburb} — contact them directly.`}
+                  ? `我们在 ${result.suburb} 附近有认证的 Builder、Town Planner 等专业人士，他们了解当地情况，可以直接联系咨询。`
+                  : `Our verified builders, town planners, and specialists near ${result.suburb} know the local rules — reach out directly.`}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 {/* 1. Find professionals — link filtered to report state + top recommended role */}

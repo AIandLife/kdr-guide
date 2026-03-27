@@ -31,7 +31,27 @@ function buildLiveZoneContext(z: LiveZoneData, lotSize: number | null): string {
   return lines
 }
 
+// IP-based rate limit: max 10 requests per hour per IP (Edge Runtime in-memory)
+const ipHits = new Map<string, number[]>()
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const windowMs = 60 * 60 * 1000 // 1 hour
+  const max = 10
+  const hits = (ipHits.get(ip) ?? []).filter(t => now - t < windowMs)
+  if (hits.length >= max) return false
+  hits.push(now)
+  ipHits.set(ip, hits)
+  return true
+}
+
 export async function POST(req: Request) {
+  // Rate limit by IP
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+  if (!checkRateLimit(ip)) {
+    return Response.json({ error: 'Too many requests. Please wait before running another check.' }, { status: 429 })
+  }
+
   try {
     const { suburb, state, lotSize, lang = 'en', projectType = 'kdr', address, userId } = await req.json()
 

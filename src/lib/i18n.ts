@@ -60,10 +60,10 @@ export const translations = {
         { title: 'Get your feasibility report', desc: 'Your rebuild potential, estimated costs, timeline, and clear next steps.' },
         { title: 'Connect with specialists', desc: 'We match you with verified KDR builders, planners, and tradespeople in your area.' },
       ],
-      ctaTitle: 'Ready to find out if you can rebuild?',
+      ctaTitle: 'Find out what your block can become.',
       ctaSubtitle: 'Takes 2 minutes. No consultant. No guessing. Just enter your suburb.',
       ctaBtn: 'Get My Free Report Now',
-      footerDisclaimer: 'Information only — not professional advice. Always consult your council.',
+      footerDisclaimer: 'For general guidance only. Connect with a verified specialist in our directory for property-specific advice.',
     },
     // Feasibility page
     feasibility: {
@@ -91,7 +91,7 @@ export const translations = {
       ctaEmail: 'Your email address',
       ctaBtn: 'Connect Me',
       ctaSuccess: 'We\'ll be in touch soon!',
-      disclaimer: 'This report is AI-generated and for information purposes only. Always verify with your local council and engage qualified professionals before making decisions.',
+      disclaimer: 'This report is AI-generated and provides directional guidance. For property-specific advice, connect with a verified town planner or builder in our directory above.',
       keyInsight: 'Key insight',
     },
     // Guide page
@@ -99,8 +99,8 @@ export const translations = {
       h1: 'The Complete KDR Process Guide',
       subtitle: 'Everything you need to know about knockdown rebuild in Australia — from first question to moving in.',
       overviewLabel: 'Project Overview',
-      ctaTitle: 'Ready to check your specific property?',
-      ctaSubtitle: 'Get an AI feasibility report for your suburb — council rules, costs, timeline, and who to call.',
+      ctaTitle: 'Find out what your block can do.',
+      ctaSubtitle: 'Get an AI feasibility report for your suburb — zoning rules, real costs, timeline, and verified specialists ready to help.',
       ctaBtn: 'Get Your Free Property Analysis',
     },
     // Professionals page
@@ -181,10 +181,10 @@ export const translations = {
         { title: '获取可行性报告', desc: '你的重建可行性、预估费用、时间线及下一步具体行动。' },
         { title: '联系专业人士', desc: '我们为你匹配当地经过认证的 Builder、规划师和专业工种。' },
       ],
-      ctaTitle: '准备好查询你的地块了吗？',
-      ctaSubtitle: '只需 2 分钟，无需顾问，无需猜测，直接输入你的区就行。',
+      ctaTitle: '马上看清你的地块潜力',
+      ctaSubtitle: '只需 2 分钟，输入你的区域，AI 立刻告诉你能建什么、大概要多少钱。',
       ctaBtn: '立即免费获取报告',
-      footerDisclaimer: '仅供参考，不构成专业建议。具体情况请咨询你的 Council。',
+      footerDisclaimer: '报告内容供方向性参考。如需针对你地块的专业意见，欢迎联系我们目录中的认证专业人士。',
     },
     // Feasibility page
     feasibility: {
@@ -212,7 +212,7 @@ export const translations = {
       ctaEmail: '你的邮箱地址',
       ctaBtn: '帮我联系',
       ctaSuccess: '我们会尽快与你联系！',
-      disclaimer: '本报告由 AI 生成，仅供参考。做任何决定前，请务必向当地 Council 及专业人士核实。',
+      disclaimer: '本报告由 AI 生成，供方向性参考。如需针对你地块的具体建议，可直接联系上方我们推荐的认证专业人士。',
       keyInsight: '关键提示',
     },
     // Guide page
@@ -220,8 +220,8 @@ export const translations = {
       h1: '澳洲推倒重建完整流程指南',
       subtitle: '关于澳洲推倒重建，你需要知道的一切 — 从第一个疑问到入住新家。',
       overviewLabel: '项目概览',
-      ctaTitle: '准备好查询你的具体地块了吗？',
-      ctaSubtitle: '获取 AI 可行性报告 — 包括 Council 规定、费用、时间线及该联系谁。',
+      ctaTitle: '看看你的地块能做什么',
+      ctaSubtitle: '获取 AI 可行性报告 — 分区政策、真实费用、时间线，以及我们的认证专业人士随时可以帮你。',
       ctaBtn: '免费获取地块分析报告',
     },
     // Professionals page
