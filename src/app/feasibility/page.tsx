@@ -2,10 +2,11 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 import {
   MapPin, AlertTriangle, CheckCircle, XCircle, Clock, DollarSign,
   ChevronRight, Loader2, Users, Flame,
-  Droplets, Landmark, Shield, Info
+  Droplets, Landmark, Shield, Info, Home
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useLang } from '@/lib/language-context'
@@ -46,6 +47,12 @@ interface FeasibilityResult {
     buildPerSqm: [number, number]
     totalEstimate: [number, number] | null
     totalNote: string
+    additionalCosts?: {
+      councilFees: [number, number]
+      soilTest: [number, number]
+      surveying: [number, number]
+      certification: [number, number]
+    }
   }
   timeline: { totalWeeks: [number, number]; phases: { phase: string; weeks: string }[] }
   nextSteps: { step: number; title: string; detail: string; urgency: string }[]
@@ -258,9 +265,10 @@ function FeasibilityContent() {
           <div className="flex flex-wrap gap-2 mb-4">
             {[
               { value: 'kdr', en: 'Knockdown & Rebuild', zh: '推倒重建' },
+              { value: 'dual-occ', en: 'Dual Occupancy', zh: '双住宅' },
+              { value: 'granny-flat', en: 'Granny Flat', zh: 'Granny Flat' },
               { value: 'renovation', en: 'Renovation', zh: '翻新' },
               { value: 'extension', en: 'Extension', zh: '扩建' },
-              { value: 'granny-flat', en: 'Granny Flat', zh: 'Granny Flat' },
             ].map(pt => (
               <button
                 key={pt.value}
@@ -401,6 +409,55 @@ function FeasibilityContent() {
               </div>
             )}
 
+            {/* Quick Summary Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {/* Verdict */}
+              <div className={cn(
+                'rounded-2xl p-4 flex flex-col items-center justify-center text-center border',
+                result.feasibilityScore >= 7 ? 'bg-green-50 border-green-200' :
+                result.feasibilityScore >= 5 ? 'bg-yellow-50 border-yellow-200' :
+                'bg-red-50 border-red-200'
+              )}>
+                {result.feasibilityScore >= 7
+                  ? <CheckCircle className="w-6 h-6 text-green-500 mb-1.5" />
+                  : result.feasibilityScore >= 5
+                    ? <AlertTriangle className="w-6 h-6 text-yellow-500 mb-1.5" />
+                    : <XCircle className="w-6 h-6 text-red-500 mb-1.5" />}
+                <p className="text-xs text-gray-500 mb-0.5">{lang === 'zh' ? '可行性' : 'Verdict'}</p>
+                <p className={cn(
+                  'text-sm font-bold',
+                  result.feasibilityScore >= 7 ? 'text-green-700' :
+                  result.feasibilityScore >= 5 ? 'text-yellow-700' : 'text-red-700'
+                )}>{result.feasibilityLabel}</p>
+              </div>
+              {/* Cost */}
+              <div className="rounded-2xl p-4 flex flex-col items-center justify-center text-center bg-white border border-gray-200">
+                <DollarSign className="w-6 h-6 text-orange-400 mb-1.5" />
+                <p className="text-xs text-gray-500 mb-0.5">{lang === 'zh' ? '估算总费用' : 'Est. Total Cost'}</p>
+                {result.costEstimate.totalEstimate ? (
+                  <p className="text-sm font-bold text-gray-900">
+                    ${Math.round(result.costEstimate.totalEstimate[0] / 1000)}k–${Math.round(result.costEstimate.totalEstimate[1] / 1000)}k
+                  </p>
+                ) : (
+                  <p className="text-xs text-gray-400">{lang === 'zh' ? '输入地块面积获取' : 'Enter lot size'}</p>
+                )}
+              </div>
+              {/* Timeline */}
+              <div className="rounded-2xl p-4 flex flex-col items-center justify-center text-center bg-white border border-gray-200">
+                <Clock className="w-6 h-6 text-purple-400 mb-1.5" />
+                <p className="text-xs text-gray-500 mb-0.5">{lang === 'zh' ? '预计工期' : 'Timeline'}</p>
+                <p className="text-sm font-bold text-gray-900">
+                  {Math.round(result.timeline.totalWeeks[0] / 4)}–{Math.round(result.timeline.totalWeeks[1] / 4)} {lang === 'zh' ? '个月' : 'months'}
+                </p>
+              </div>
+              {/* Approval path */}
+              <div className="rounded-2xl p-4 flex flex-col items-center justify-center text-center bg-white border border-gray-200">
+                <Shield className="w-6 h-6 text-blue-400 mb-1.5" />
+                <p className="text-xs text-gray-500 mb-0.5">{lang === 'zh' ? '审批路径' : 'Approval'}</p>
+                <p className="text-sm font-bold text-blue-700">{result.approvalPath.type}</p>
+              </div>
+            </div>
+
             {/* Header */}
             <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
@@ -520,8 +577,26 @@ function FeasibilityContent() {
                       ${result.costEstimate.buildPerSqm[0].toLocaleString()} – ${result.costEstimate.buildPerSqm[1].toLocaleString()}
                     </span>
                   </div>
+                  {result.costEstimate.additionalCosts && (
+                    <>
+                      <div className="border-t border-dashed border-gray-100 pt-3 mt-1">
+                        <p className="text-xs font-medium text-gray-400 mb-2">{lang === 'zh' ? '额外费用（常被低估）' : 'Additional costs (often overlooked)'}</p>
+                        {[
+                          { label: lang === 'zh' ? 'DA 申请费' : 'DA Application Fee', val: result.costEstimate.additionalCosts.councilFees },
+                          { label: lang === 'zh' ? '岩土检测' : 'Soil / Geotech Test', val: result.costEstimate.additionalCosts.soilTest },
+                          { label: lang === 'zh' ? '土地测量' : 'Surveying', val: result.costEstimate.additionalCosts.surveying },
+                          { label: lang === 'zh' ? '建筑认证 CC/OC' : 'Building Certification', val: result.costEstimate.additionalCosts.certification },
+                        ].map(item => (
+                          <div key={item.label} className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-gray-500">{item.label}</span>
+                            <span className="text-gray-600 font-medium">${item.val[0].toLocaleString()}–${item.val[1].toLocaleString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                   {result.costEstimate.totalEstimate && (
-                    <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
+                    <div className="border-t border-gray-200 pt-3 mt-1 flex items-center justify-between">
                       <span className="text-sm font-semibold text-gray-900">{tf.totalEstimate}</span>
                       <span className="text-sm font-bold text-orange-500">
                         ${(result.costEstimate.totalEstimate[0] / 1000).toFixed(0)}k – ${(result.costEstimate.totalEstimate[1] / 1000).toFixed(0)}k
@@ -604,12 +679,12 @@ function FeasibilityContent() {
                   ? `已为你找到 ${result.suburb} 附近经过认证的 Builder 和 Town Planner，可以直接联系。`
                   : `Browse verified builders and town planners near ${result.suburb} — contact them directly.`}
               </p>
-              <a
+              <Link
                 href={`/professionals?state=${result.state || ''}`}
                 className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base"
               >
                 {lang === 'zh' ? '查看附近专业人士 →' : 'Find Professionals Near Me →'}
-              </a>
+              </Link>
               <p className="text-xs text-gray-400 mt-3">{tf.ctaFree}</p>
             </div>
 

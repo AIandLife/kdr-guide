@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Search, CheckCircle, ChevronRight, Building2, DollarSign, Clock, Users, MapPin, ExternalLink } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
@@ -332,7 +333,7 @@ export default function HomePage() {
           <div className="max-w-2xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">{h.ctaTitle}</h2>
             <p className="text-gray-500 text-lg mb-8">{h.ctaSubtitle}</p>
-            <a
+            <Link
               href="/feasibility"
               className="inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-xl transition-all text-lg"
               style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 24px rgba(249,115,22,0.3)' }}
@@ -341,7 +342,7 @@ export default function HomePage() {
             >
               {h.ctaBtn}
               <ChevronRight className="w-5 h-5" />
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -417,12 +418,12 @@ export default function HomePage() {
               {lang === 'zh' ? 'Built with ♥ BossLink商业生态' : 'Built with ♥ BossLink Ecosystem'}
             </p>
             <div className="flex items-center gap-4">
-              <a href="/privacy" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+              <Link href="/privacy" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
                 {lang === 'zh' ? '隐私政策' : 'Privacy Policy'}
-              </a>
-              <a href="/terms" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+              </Link>
+              <Link href="/terms" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
                 {lang === 'zh' ? '服务条款' : 'Terms of Service'}
-              </a>
+              </Link>
             </div>
           </div>
         </div>

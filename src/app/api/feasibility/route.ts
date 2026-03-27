@@ -105,9 +105,10 @@ ${lotSize ? `- User's Lot Size: ${lotSize} sqm` : ''}
 
     const PROJECT_TYPE_LABELS: Record<string, { en: string; zh: string }> = {
       'kdr': { en: 'Knockdown & Rebuild (KDR)', zh: '推倒重建 (KDR)' },
+      'dual-occ': { en: 'Dual Occupancy (Duplex)', zh: '双住宅 (Dual Occ)' },
+      'granny-flat': { en: 'Granny Flat / Secondary Dwelling', zh: '独立辅助住宅 (Granny Flat)' },
       'renovation': { en: 'Major Renovation', zh: '大型翻新' },
       'extension': { en: 'Extension / Addition', zh: '扩建 / 加建' },
-      'granny-flat': { en: 'Granny Flat / Secondary Dwelling', zh: '独立辅助住宅 (Granny Flat)' },
     }
     const projectLabel = PROJECT_TYPE_LABELS[projectType] || PROJECT_TYPE_LABELS['kdr']
     const projectLabelText = isZh ? projectLabel.zh : projectLabel.en
@@ -140,6 +141,20 @@ PROJECT TYPE: Granny Flat / Secondary Dwelling
 - Costs: typically $120,000–$250,000 for a self-contained 1–2 bedroom unit
 - Key considerations: utilities connection, separate access, rental income potential
 - Often faster approval than full DA — this is a key selling point
+`
+            : projectType === 'dual-occ'
+            ? `
+PROJECT TYPE: Dual Occupancy (Dual Occ / Duplex)
+- Two separate dwellings on one lot — either attached (duplex) or detached
+- Eligibility: most councils require 600–700sqm minimum; check local LEP
+- In NSW: can be complying development (CDC) in R2 zones on 400sqm+ attached or 600sqm+ detached — but many councils impose stricter controls
+- Subdivision: to Torrens title lot requires 600sqm+ and council approval — check if Torrens, Strata or Community title is available
+- Key investor appeal: dual rental income or sell one dwelling after subdivision
+- Costs: typically $700k–$1.5m all-in for an attached duplex (two 3BR dwellings), varies significantly by state and finishes
+- Key risks: zone must explicitly permit dual occ, minimum lot size and frontage (often 9m+ per dwelling) critical, heritage and flood overlays can block it
+- In VIC: requires planning permit, no CDC equivalent for dual occ
+- In QLD: requires MCU or DA, no state-wide complying development path
+- Mandatory professionals: Town Planner (critical — check dual occ permissibility first), Surveyor, Builder specialising in dual occ/duplex
 `
             : ''
 
@@ -211,10 +226,16 @@ Generate a comprehensive, honest feasibility report tailored to the project type
     "description": <${isZh ? '2-3句简体中文描述该区域的审批流程' : '2-3 sentences about the approval process for this area'}>
   },
   "costEstimate": {
-    "demolition": <[min, max] in AUD>,
-    "buildPerSqm": <[min, max] in AUD>,
-    "totalEstimate": <if lot size given, provide [min, max] for a typical 4BR home build, otherwise null>,
-    "totalNote": <${isZh ? '简体中文说明总费用包含内容，如未提供地块面积则说明原因' : 'string explaining what the total includes or "Provide your lot size for a total estimate"'}>
+    "demolition": <[min, max] in AUD — for KDR/dual-occ only; use [0,0] for renovation/extension/granny-flat>,
+    "buildPerSqm": <[min, max] in AUD per sqm>,
+    "totalEstimate": <if lot size given, provide [min, max] total for build + demolition, otherwise null>,
+    "totalNote": <${isZh ? '简体中文说明总费用包含内容，需特别注明：以上不含DA费、岩土检测、测量及建筑认证费（额外约$15,000–$40,000）' : 'explain what total includes; note that DA fees, soil test, surveying and certification add approx $15,000–$40,000 on top'}>
+    "additionalCosts": {
+      "councilFees": <[min, max] AUD — council DA application fee for this LGA, typically $5,000–$15,000>,
+      "soilTest": <[min, max] AUD — geotechnical/soil test, typically $3,000–$8,000>,
+      "surveying": <[min, max] AUD — title re-establishment + feature/contour survey, typically $2,000–$5,000>,
+      "certification": <[min, max] AUD — building certification (CC + OC), typically $3,000–$8,000>
+    }
   },
   "timeline": {
     "totalWeeks": <[min, max]>,

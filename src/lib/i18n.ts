@@ -31,9 +31,10 @@ export const translations = {
       formProjectType: 'Step 1 — What are you planning?',
       formProjectTypes: [
         { value: 'kdr', label: 'Knockdown & Rebuild' },
+        { value: 'dual-occ', label: 'Dual Occupancy' },
+        { value: 'granny-flat', label: 'Granny Flat' },
         { value: 'renovation', label: 'Major Renovation' },
         { value: 'extension', label: 'Extension / Addition' },
-        { value: 'granny-flat', label: 'Granny Flat / Secondary Dwelling' },
       ],
       formBtn: 'Check My Feasibility — Free',
       formNote: 'No signup required. Instant AI-powered analysis.',
@@ -151,9 +152,10 @@ export const translations = {
       formProjectType: '第一步 — 你想做什么？',
       formProjectTypes: [
         { value: 'kdr', label: '推倒重建 (KDR)' },
+        { value: 'dual-occ', label: '双住宅 (Dual Occ)' },
+        { value: 'granny-flat', label: 'Granny Flat' },
         { value: 'renovation', label: '大型翻新' },
         { value: 'extension', label: '扩建 / 加建' },
-        { value: 'granny-flat', label: '独立辅助住宅 (Granny Flat)' },
       ],
       formBtn: '免费查询可行性',
       formNote: '无需注册，AI 即时分析。',
