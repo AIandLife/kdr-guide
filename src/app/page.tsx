@@ -361,7 +361,7 @@ export default function HomePage() {
               : 'AusBuildCircle is part of the BossLink ecosystem — a network of platforms supporting the Chinese-Australian community.'}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <a href="https://bosslink.au" target="_blank" rel="noopener noreferrer"
+            <a href="https://bosslink.ai" target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
               {lang === 'zh' ? '澳洲创业圈' : 'BossLink'}
               <ExternalLink className="w-3.5 h-3.5" />
@@ -399,7 +399,7 @@ export default function HomePage() {
               </p>
               <div className="space-y-2">
                 {[
-                  { href: 'https://bosslink.au', label: lang === 'zh' ? '澳洲创业圈' : 'BossLink' },
+                  { href: 'https://bosslink.ai', label: lang === 'zh' ? '澳洲创业圈' : 'BossLink' },
                   { href: 'https://auspropertycircle.com',             label: lang === 'zh' ? '澳洲房产圈' : 'Aus Property Circle' },
                   { href: '#', label: lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon' },
                 ].map(l => (
