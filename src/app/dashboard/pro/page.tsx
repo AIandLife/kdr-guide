@@ -372,8 +372,8 @@ function ProDashboard() {
           </div>
         )}
 
-        {/* Stats row (only when verified and has data) */}
-        {profile && profile.verification_status === 'verified' && !isExpired && (
+        {/* Stats row (show to all professionals with a profile) */}
+        {profile && enquiries.length > 0 && (
           <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="bg-white rounded-2xl border border-gray-200 p-4 text-center">
               <p className="text-2xl font-bold text-gray-900">{enquiries.length}</p>

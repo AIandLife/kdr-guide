@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     // Email notification — try to find the professional's email in DB
     const { data: pro } = await supabase
       .from('professionals')
-      .select('email, contact_name')
+      .select('email, contact_name, is_demo')
       .eq('business_name', professional_name)
       .single()
 
@@ -67,8 +67,8 @@ export async function POST(req: NextRequest) {
       </div>
     `
 
-    // Send to professional if found in DB, otherwise to admin
-    const toEmail = pro?.email || ADMIN_EMAIL
+    // Send to professional if found and not a demo listing, otherwise to admin
+    const toEmail = (pro?.email && !pro.is_demo) ? pro.email : ADMIN_EMAIL
     await resend.emails.send({
       from: FROM_EMAIL,
       to: toEmail,

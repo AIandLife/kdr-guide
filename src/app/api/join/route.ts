@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { businessName, contactName, email, phone, state, category, regions, website, description, abn, registrationCountry, businessNameEn, contactNameEn, descriptionEn } = body
+    const { businessName, contactName, email, phone, state, category, regions, website, description, abn, registrationCountry, businessNameEn, contactNameEn, descriptionEn, userId } = body
 
     if (!businessName || !contactName || !email || !state || !category) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 })
@@ -83,6 +83,7 @@ export async function POST(req: Request) {
         business_name_en: businessNameEn || null,
         contact_name_en: contactNameEn || null,
         description_en: descriptionEn || null,
+        ...(userId ? { user_id: userId } : {}),
       }, { onConflict: 'email' })
 
     // Emails — fire-and-forget, failures don't affect the response

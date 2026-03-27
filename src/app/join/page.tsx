@@ -201,6 +201,8 @@ export default function JoinPage() {
           businessNameEn: enConfirmed ? getEnBusinessName() : undefined,
           contactNameEn: enConfirmed ? enContactName : undefined,
           descriptionEn: enConfirmed ? enDescription : undefined,
+          // Bind user_id at join time if already logged in
+          userId: user?.id || undefined,
         }),
       })
       const data = await res.json()
