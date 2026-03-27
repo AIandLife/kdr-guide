@@ -35,7 +35,7 @@ const STAGES = [
     duration: '2–6 weeks',
     summary: 'Make sure the numbers work before committing.',
     steps: [
-      { title: 'Calculate total project cost', detail: 'Include: Demolition ($15k-40k), new build ($1,800-$5,000/sqm depending on state), council fees, DA/CDC costs, consultant fees, landscaping, connections, contingency (10-15%).' },
+      { title: 'Calculate total project cost', detail: 'Include: Demolition ($20k–50k), new build ($2,400–$4,500/sqm for most capital cities in 2024–26 — the old $1,800/sqm figure is pre-2022 and no longer realistic), Council DA/CDC fees ($5k–15k), Section 7.11 infrastructure contributions ($8k–30k — often missed), consultant fees, soil test ($3k–8k), surveying ($2k–5k), stormwater OSD tank ($8k–15k), landscaping, contingency (10–15%).' },
       { title: 'Assess finance options', detail: 'KDR typically uses a Construction Loan (drawn in stages) rather than a standard home loan. Talk to a mortgage broker who specialises in construction finance. Pre-approval before committing to a builder is critical.' },
       { title: 'Owner-builder vs licensed builder', detail: 'Owner-builders save money but face significant risk, insurance challenges, and resale complications. For most homeowners, using a licensed builder is strongly recommended.' },
       { title: 'Compare build cost vs buy new', detail: 'In most major cities, KDR is cheaper than buying an equivalent new home in the same suburb. The land is already yours — you\'re just paying for the build.' },
@@ -63,10 +63,10 @@ const STAGES = [
     duration: '8–52 weeks',
     summary: 'The longest and most uncertain stage — plan for delays.',
     steps: [
-      { title: 'CDC (Complying Development Certificate) — Faster path', detail: 'If your build meets all the rules as of right, a CDC can be approved by a private certifier in as little as 10 business days. No council involvement. Cost: ~$3,000-8,000. Available in NSW and some VIC zones.' },
-      { title: 'DA (Development Application) — Full council review', detail: 'Required if CDC isn\'t available or your design doesn\'t comply. Council has 40-60 business days to decide (NSW). Heritage items, non-standard designs, or neighbour objections can extend this significantly.' },
-      { title: 'Pre-DA meeting', detail: 'Highly recommended for complex sites. Most councils offer a pre-lodgement meeting where planners tell you the issues before formal submission. Saves time and money.' },
-      { title: 'Neighbour notifications', detail: 'DAs are publicly notified. Neighbours can object. Heritage and dual occupancy proposals attract the most objections. Build good relationships with neighbours early.' },
+      { title: 'CDC (Complying Development Certificate) — Faster path (NSW only)', detail: 'In NSW, if your build meets all rules as of right under the Housing SEPP 2021, a CDC can be approved by a private certifier in as little as 10 business days. Cost: ~$3,000–8,000. Critical: CDC is NOT available if your lot is in a heritage conservation area, flood planning level, or bushfire zone. VIC, QLD, WA, SA, and ACT have no CDC equivalent — they use Building Permits, Planning Permits, or Deemed-to-Comply pathways instead.' },
+      { title: 'DA (Development Application) — Full council review', detail: 'Required if CDC isn\'t available, or in all non-NSW states. Statutory timeframes: NSW 40–60 business days, but real-world times are often 6–18 months in complex councils. Inner Sydney (Inner West, Woollahra, North Sydney) averages 12–18 months. Heritage items, neighbour objections, or design review panel referrals can add further months. Build this reality into your finance and living arrangements plan.' },
+      { title: 'Pre-DA meeting — do not skip this', detail: 'Before lodging a DA, request a pre-DA meeting with council (most charge $200–500). Bring your concept plans and site details. A 1-hour meeting with a council planner can reveal fatal issues (heritage constraints, setback problems, tree issues) before you spend $15,000 on plans. Ask specifically: "What are the key issues for this site?" and "Is CDC available for this lot?"' },
+      { title: 'Neighbour notifications and objections', detail: 'DAs are publicly notified for 14–21 days. Neighbours can object in writing. Heritage, character area, dual occupancy, and second storey additions attract the most objections. Serious objections can trigger a Planning Panel referral (NSW, for contentious matters). Talk to your neighbours before lodging — it genuinely reduces risk.' },
       { title: 'Construction Certificate (CC)', detail: 'After DA approval, you still need a CC (construction certificate) before you can build. Involves detailed engineering drawings, structural plans, and certifier sign-off.' },
     ]
   },
@@ -78,8 +78,8 @@ const STAGES = [
     duration: '1–3 weeks',
     summary: 'The exciting part — down it comes.',
     steps: [
-      { title: 'Demolition permit', detail: 'Separate demolition permit required from council in most states. Submit before DA approval to save time. Include an asbestos survey for pre-1990 homes.' },
-      { title: 'Asbestos testing and removal', detail: 'Pre-1987 homes often contain asbestos in fibro sheeting, floor tiles, and roof sheeting. Licensed asbestos removalist required. Cost: $3,000-$20,000+ depending on extent.' },
+      { title: 'Demolition permit — sequence matters', detail: 'Important: you cannot legally demolish a dwelling until you have approval (either a CDC or a DA, or a standalone demolition approval subject to the same zoning rules). The common advice to "submit demolition permit before DA approval" means apply simultaneously — not that you can demolish before approval is granted. Doing so is an illegal demolition and can result in significant fines and council enforcement action.' },
+      { title: 'Asbestos testing and removal', detail: 'Pre-1987 homes almost certainly contain asbestos — fibro sheeting, floor tiles, roof sheeting, pipe lagging. Licensed asbestos removalist (Class A licence for friable asbestos) required by law. For a typical Strathfield, Box Hill, or Sunnybank home, budget $8,000–25,000 for asbestos survey + removal before any demolition begins. This is consistently the most underestimated demolition cost.' },
       { title: 'Service disconnections', detail: 'Arrange disconnection of water, gas, electricity, and NBN before demolition. Typically 4-8 weeks lead time with utilities. Don\'t leave this to the last minute.' },
       { title: 'Concrete slab removal', detail: 'If keeping the slab, have a structural engineer assess it first. Most new builds require a new slab. Slab removal adds $5,000-$15,000 but ensures clean foundations.' },
       { title: 'Site preparation', detail: 'After demolition: site levelling, boundary pegs, and survey marks for builder. Site access, temporary fencing, and council hoarding requirements if near a footpath.' },
@@ -110,7 +110,7 @@ const STAGES = [
     steps: [
       { title: 'Practical Completion Inspection (PCI)', detail: 'Walk through with your builder and create a defect list (the "list"). This is normal — expect 20-100 minor items on a new build. Builder must fix before final payment.' },
       { title: 'Occupation Certificate (OC)', detail: 'The OC is issued by your Principal Certifier after final inspections. You legally cannot move in without it. Convert your construction loan to a home loan once it\'s issued.' },
-      { title: 'Statutory warranty period', detail: 'In NSW: 6 years for major defects, 2 years for other defects. Builder must fix warranty issues within these periods. Document everything in writing.' },
+      { title: 'Statutory warranty period — varies by state', detail: 'NSW: 6 years major defects, 2 years other defects. VIC: 10 years structural defects under the Domestic Building Contracts Act (strongest protection in Australia). QLD: 6 years 6 months (QBCC). WA: 6 years. SA: 5 years structural. Document every defect in writing with photos and date-stamps. Verbal requests are not enforceable.' },
       { title: 'Final connections and setup', detail: 'Meter connections (electricity, gas), NBN installation, council footpath and driveway reinstatement. Allow 4-6 weeks post-OC for all services to be connected.' },
       { title: 'Maintenance period', detail: 'New homes settle. Expect minor cracking in plaster and grout (normal). Major structural issues are warranty items. Keep your defect list and follow up methodically.' },
     ]
@@ -151,7 +151,7 @@ const STAGES_ZH = [
     id: 2, icon: DollarSign, title: '可行性与融资', color: 'green', duration: '2–6 周',
     summary: '在做任何承诺之前，先确认数字是否合理。',
     steps: [
-      { title: '计算项目总费用', detail: '包含：拆除费（$15k–40k）、新建费（每平方米 $1,800–$5,000，因州而异）、Council 费用、DA/CDC 费用、顾问费、园艺景观、管道接驳、以及 10–15% 的预备金。' },
+      { title: '计算项目总费用', detail: '包含：拆除费（$20k–50k）、新建费（2024–26 年各首府城市约 $2,400–$4,500/㎡，以前的 $1,800/㎡ 是 2022 年前数据，现已不准确）、Council DA/CDC 费（$5k–15k）、Section 7.11 基础设施贡献费（$8k–30k，经常被忽略）、顾问费、土壤检测（$3k–8k）、测量费（$2k–5k）、雨水截流箱 OSD（$8k–15k）、园艺景观、10–15% 预备金。' },
       { title: '了解建筑贷款选项', detail: 'KDR 通常使用"建筑贷款"（Construction Loan），按施工阶段分批放款，而非一次性普通房贷。建议找专注建筑融资的贷款经纪，在确认 Builder 之前先获得预批。' },
       { title: '业主自建 vs 持牌建筑商', detail: '自建可以省钱，但风险高、保险复杂、转售困难。对大多数业主而言，使用持牌建筑商是更稳妥的选择。' },
       { title: '对比 KDR vs 买新房', detail: '在大多数主要城市，在同一 Suburb 推倒重建，比直接购买同等新房更便宜。因为土地已经是你的，你只需要支付建筑费用。' },
@@ -171,10 +171,10 @@ const STAGES_ZH = [
     id: 4, icon: FileText, title: 'Council 审批（DA 或 CDC）', color: 'yellow', duration: '8–52 周',
     summary: '整个流程中最长、最不确定的阶段——做好延误的心理准备。',
     steps: [
-      { title: 'CDC（合规建设证书）— 更快的审批路径', detail: '如果你的建筑方案完全符合现行规定，CDC 可由私人核查员（Private Certifier）审批，最快 10 个工作日即可获批，无需 Council 介入。费用约 $3,000–8,000。适用于 NSW 大部分地区和部分 VIC 区域。' },
-      { title: 'DA（开发申请）— 完整的 Council 审查流程', detail: '如果不符合 CDC 条件，或你的方案不符合既有规定，就需要提交 DA。Council 在 NSW 有 40–60 个工作日的审批期限。遗产物业、非标准设计或邻居异议都会大幅延长时间。' },
-      { title: 'Pre-DA 预申请会议', detail: '对于复杂地块，强烈建议先申请 Pre-DA 会议。大多数 Council 提供正式提交前的预咨询，规划师可以提前告知问题所在，节省时间和金钱。' },
-      { title: '邻居通知', detail: 'DA 会公开通知。邻居可以提出反对意见。遗产物业和双拼申请最容易引发投诉。建议提前与邻居建立良好关系。' },
+      { title: 'CDC（合规建设证书）— 仅适用于 NSW 的快速审批路径', detail: '在 NSW，如果你的方案完全符合 Housing SEPP 2021 的所有规定，CDC 可由私人核查员最快 10 个工作日审批，无需 Council 介入。费用约 $3,000–8,000。重要提示：如果你的地块位于遗产保护区、洪水规划区或丛林火灾区，CDC 不适用。VIC、QLD、WA、SA 和 ACT 没有 CDC 制度——它们分别使用 Building Permit、Planning Permit 或 Deemed-to-Comply 审批路径。' },
+      { title: 'DA（开发申请）— 完整的 Council 审查流程', detail: '不符合 CDC 条件时，或在 NSW 以外的所有州，都需要提交 DA。法定审批期限：NSW 40–60 个工作日，但实际往往需要 6–18 个月。内悉尼地区（内西区、Woollahra、North Sydney）平均需要 12–18 个月。遗产问题、邻居投诉或设计委员会审查都可能进一步延期。请在融资计划和临时住所安排中充分预留这段时间。' },
+      { title: 'Pre-DA 会议——这一步不能省', detail: '在正式递交 DA 前，先向 Council 申请一次 Pre-DA 会议（大多数 Council 收费 $200–500）。带上概念方案和地块资料去参会。1 小时的会议可能揭露致命问题——遗产限制、退缩不足、树木保护令——在你花费 $15,000 出图之前。务必明确问：「这块地有哪些主要限制？」以及「这块地是否可以走 CDC？」' },
+      { title: '邻居通知与反对意见', detail: 'DA 会在 14–21 天内公开通知。邻居可以书面提出反对意见。遗产区、特色区、双拼申请和二层加建最容易引发投诉。严重投诉可能触发规划委员会复议（NSW）。正式递交前主动和邻居沟通，能有效降低风险。' },
       { title: 'Construction Certificate（建筑证书）', detail: '获得 DA 批准后，仍需申请建筑证书（CC）才能开工。需要详细的工程图纸、结构设计和核查员签字确认。' },
     ]
   },
@@ -182,8 +182,8 @@ const STAGES_ZH = [
     id: 5, icon: Hammer, title: '拆除', color: 'red', duration: '1–3 周',
     summary: '激动人心的时刻——推倒开始了。',
     steps: [
-      { title: '拆除许可', detail: '大多数州需要在开发申请之前单独申请拆除许可。1987 年以前建造的房屋需附上石棉调查报告。' },
-      { title: '石棉检测与清除', detail: '1987 年以前的房屋通常含有石棉，常见于纤维水泥板、地砖和屋顶材料。必须由持牌石棉清除承包商处理。费用约 $3,000–20,000，视石棉范围而定。' },
+      { title: '拆除许可——顺序非常重要', detail: '重要提示：在获得批准之前（CDC、DA，或独立拆除许可），法律上不允许拆除任何住宅。「在 DA 批准前先递交拆除申请」意思是同步递交，而不是未获批就可以先拆。未经批准擅自拆除属于违法行为，可面临高额罚款和 Council 执法处置。' },
+      { title: '石棉检测与清除（最常被低估的费用）', detail: '1987 年以前的房屋几乎必然含有石棉——纤维水泥板、地砖、屋顶材料、管道包覆等。法律规定必须由持牌石棉清除承包商处理（松散型石棉需 Class A 执照）。对 Strathfield、Box Hill 或 Sunnybank 的典型住宅而言，石棉调查加清除预算 $8,000–25,000，这是拆除阶段最常被忽视的成本项。' },
       { title: '公共设施断开', detail: '拆除前需安排断开水、燃气、电力和 NBN。各公用事业公司通常需要 4–8 周提前通知。不要等到最后一刻才安排。' },
       { title: '混凝土地基处理', detail: '如果打算保留原有地基，须请结构工程师先评估。大多数新建工程需要全新地基。拆除旧地基会增加 $5,000–15,000，但可确保基础干净牢固。' },
       { title: '场地准备', detail: '拆除完成后：场地平整、边界桩和测量标记。如果靠近人行道，还需临时围栏和 Council 的围挡许可。' },
@@ -206,7 +206,7 @@ const STAGES_ZH = [
     steps: [
       { title: '实际完工检查（PCI）', detail: '与建筑商一起进行验收，制作缺陷清单（"punch list"）。这是正常的——新建房屋通常有 20–100 个小问题。建筑商必须在收到最终付款前完成修复。' },
       { title: '入住证书（OC）', detail: '入住证书由你的主要认证员在最终检查后签发。没有 OC，你在法律上不能入住。OC 签发后，将建筑贷款转换为普通房贷。' },
-      { title: '法定质保期', detail: 'NSW 规定：重大缺陷质保 6 年，其他缺陷质保 2 年。在此期间，建筑商必须修复任何质保问题。所有事项均需留有书面记录。' },
+      { title: '法定质保期——各州不同，务必了解', detail: 'NSW：重大缺陷 6 年，其他缺陷 2 年。VIC：结构缺陷 10 年（《家庭建筑合同法》，澳洲保护力度最强）。QLD：6 年 6 个月（QBCC）。WA：6 年。SA：结构缺陷 5 年。所有缺陷必须以书面方式记录，并附照片和日期。口头要求无法律效力。' },
       { title: '最终接驳与设置', detail: '电表、燃气表接驳，NBN 安装，Council 要求的人行道和车道修复。OC 签发后，所有服务接驳通常还需 4–6 周。' },
       { title: '维护期', detail: '新房会有沉降。石膏和瓷砖出现轻微裂缝属于正常现象。重大结构问题属于质保项目。保留好缺陷清单并逐一跟进处理。' },
     ]
@@ -259,6 +259,24 @@ export default function GuidePage() {
         <div className="mb-10">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">{t.guide.h1}</h1>
           <p className="text-gray-500 text-lg">{t.guide.subtitle}</p>
+        </div>
+
+        {/* Total duration banner */}
+        <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center shrink-0">
+              <ClipboardList className="w-5 h-5 text-orange-600" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-orange-600 uppercase tracking-wider">{lang === 'zh' ? '项目总时长' : 'Typical Total Duration'}</p>
+              <p className="text-2xl font-bold text-gray-900">{lang === 'zh' ? '12–24 个月' : '12–24 months'}</p>
+            </div>
+          </div>
+          <div className="sm:border-l sm:border-orange-200 sm:pl-4 text-sm text-gray-600">
+            {lang === 'zh'
+              ? '从第一步评估到拿到入住证书（OC）。遗产区、复杂地块或 DA 审批延误可能超过 24 个月。请在融资和住房安排上预留足够缓冲。'
+              : 'From first site assessment to Occupation Certificate. Heritage areas, complex sites, or DA delays can push beyond 24 months. Plan your finance and temporary accommodation accordingly.'}
+          </div>
         </div>
 
         {/* Overview timeline */}
@@ -322,6 +340,37 @@ export default function GuidePage() {
                         </div>
                       </div>
                     ))}
+                    {/* Contextual CTAs at key decision stages */}
+                    {stage.id === 2 && (
+                      <div className="mt-4 bg-orange-50 border border-orange-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <p className="text-sm text-orange-800 font-medium">
+                          {lang === 'zh' ? '不确定你的地块能否重建？先查一下。' : 'Not sure if your block is feasible? Check it for free.'}
+                        </p>
+                        <Link href="/feasibility" className="shrink-0 bg-orange-500 hover:bg-orange-400 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+                          {lang === 'zh' ? '免费查询我的地块 →' : 'Run a Free Feasibility Check →'}
+                        </Link>
+                      </div>
+                    )}
+                    {stage.id === 3 && (
+                      <div className="mt-4 bg-purple-50 border border-purple-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <p className="text-sm text-purple-800 font-medium">
+                          {lang === 'zh' ? '需要找 Town Planner 或建筑设计师？' : 'Need a Town Planner or building designer?'}
+                        </p>
+                        <Link href="/professionals" className="shrink-0 bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+                          {lang === 'zh' ? '查看已认证专业人士 →' : 'Browse Verified Professionals →'}
+                        </Link>
+                      </div>
+                    )}
+                    {stage.id === 4 && (
+                      <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <p className="text-sm text-yellow-800 font-medium">
+                          {lang === 'zh' ? '需要 Town Planner 处理你的 DA？' : 'Need a Town Planner to manage your DA?'}
+                        </p>
+                        <Link href="/professionals?category=Town+Planner" className="shrink-0 bg-yellow-500 hover:bg-yellow-400 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+                          {lang === 'zh' ? '找 Town Planner →' : 'Find a Town Planner →'}
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

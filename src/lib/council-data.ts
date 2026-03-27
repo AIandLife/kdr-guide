@@ -133,10 +133,10 @@ export const COUNCIL_DATA: CouncilPolicy[] = [
   {
     state: 'NSW', council: 'Strathfield Council', lga: 'Strathfield',
     minLotSize: 650, maxHeight: 9, minSetbackFront: 7.5, minSetbackSide: 1.2,
-    heritageRisk: 'Medium', floodRisk: 'Low', bushfireRisk: 'Low',
-    cdcEligible: true, daTimelineWeeks: [16, 30],
-    avgDemolitionCost: [22000, 36000], avgBuildCostPerSqm: [2800, 4200],
-    notes: 'High-value KDR market. Heritage items exist. Minimum lot size higher than many councils.'
+    heritageRisk: 'High', floodRisk: 'Low', bushfireRisk: 'Low',
+    cdcEligible: true, daTimelineWeeks: [24, 52],
+    avgDemolitionCost: [28000, 50000], avgBuildCostPerSqm: [2800, 4200],
+    notes: 'High-value KDR market. Multiple Heritage Conservation Areas (HCAs) — CDC not available in HCA lots. Setback is average of adjacent properties (not fixed 7.5m). Asbestos common in pre-1987 homes — budget $8k-20k for asbestos removal. Section 7.11 contributions ~$12k-18k. OSD stormwater tank required (~$8k-15k). Actual DA processing 6-12 months despite 16-week statutory target.'
   },
   {
     state: 'NSW', council: 'Sutherland Shire Council', lga: 'Sutherland',

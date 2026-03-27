@@ -362,16 +362,12 @@ export default function HomePage() {
               : 'AusBuildCircle is part of the BossLink ecosystem — a network of platforms supporting the Chinese-Australian community.'}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <a href="https://bosslink.ai" target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
-              {lang === 'zh' ? 'BossLink' : 'BossLink'}
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-            <a href="https://auspropertycircle.com" target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 border border-slate-600 hover:border-slate-400 text-slate-300 hover:text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
-              {lang === 'zh' ? '澳洲房产圈' : 'Aus Property Circle'}
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+            <span className="inline-flex items-center gap-1.5 border border-slate-700 text-slate-600 font-semibold px-5 py-2.5 rounded-xl text-sm cursor-default">
+              {lang === 'zh' ? 'BossLink（即将上线）' : 'BossLink — Coming Soon'}
+            </span>
+            <span className="inline-flex items-center gap-1.5 border border-slate-700 text-slate-600 font-semibold px-5 py-2.5 rounded-xl text-sm cursor-default">
+              {lang === 'zh' ? '澳洲房产圈（即将上线）' : 'Aus Property Circle — Coming Soon'}
+            </span>
             <span className="inline-flex items-center gap-1.5 border border-slate-700 text-slate-600 font-semibold px-5 py-2.5 rounded-xl text-sm cursor-default">
               {lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon'}
             </span>
@@ -400,15 +396,13 @@ export default function HomePage() {
               </p>
               <div className="space-y-2">
                 {[
-                  { href: 'https://bosslink.ai', label: lang === 'zh' ? 'BossLink' : 'BossLink' },
-                  { href: 'https://auspropertycircle.com',             label: lang === 'zh' ? '澳洲房产圈' : 'Aus Property Circle' },
-                  { href: '#', label: lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon' },
+                  { label: lang === 'zh' ? 'BossLink（即将上线）' : 'BossLink — Coming Soon' },
+                  { label: lang === 'zh' ? '澳洲房产圈（即将上线）' : 'Aus Property Circle — Coming Soon' },
+                  { label: lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon' },
                 ].map(l => (
-                  <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors">
+                  <span key={l.label} className="flex items-center gap-1 text-sm text-slate-600 cursor-default">
                     {l.label}
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                  </span>
                 ))}
               </div>
             </div>

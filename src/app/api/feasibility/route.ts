@@ -232,9 +232,12 @@ Generate a comprehensive, honest feasibility report tailored to the project type
     "totalNote": <${isZh ? '简体中文说明总费用包含内容，需特别注明：以上不含DA费、岩土检测、测量及建筑认证费（额外约$15,000–$40,000）' : 'explain what total includes; note that DA fees, soil test, surveying and certification add approx $15,000–$40,000 on top'}>
     "additionalCosts": {
       "councilFees": <[min, max] AUD — council DA application fee for this LGA, typically $5,000–$15,000>,
+      "s711Contributions": <[min, max] AUD — Section 7.11 / infrastructure contributions levied by council on new dwellings, typically $8,000–$30,000 in NSW; $0 for renovation/extension>,
       "soilTest": <[min, max] AUD — geotechnical/soil test, typically $3,000–$8,000>,
       "surveying": <[min, max] AUD — title re-establishment + feature/contour survey, typically $2,000–$5,000>,
-      "certification": <[min, max] AUD — building certification (CC + OC), typically $3,000–$8,000>
+      "certification": <[min, max] AUD — building certification (CC + OC), typically $3,000–$8,000>,
+      "stormwaterOSD": <[min, max] AUD — on-site stormwater detention tank if required by council, typically $8,000–$15,000; $0 if not required>,
+      "asbestos": <[min, max] AUD — asbestos survey + removal for pre-1987 homes, typically $5,000–$25,000; $0 for post-1990 homes>
     }
   },
   "timeline": {
@@ -265,7 +268,15 @@ Generate a comprehensive, honest feasibility report tailored to the project type
   "keyInsight": <${isZh ? '1句最重要的简体中文提示' : '1 sentence — the single most important thing this homeowner needs to know'}>
 }
 
-Be specific, honest, and practical. If risks are high, say so clearly. Use real Australian industry knowledge.`
+Be specific, honest, and practical. If risks are high, say so clearly. Use real Australian industry knowledge.
+
+CRITICAL ACCURACY RULES:
+- Build costs: Use 2024-2026 realistic ranges. Sydney/Melbourne/Perth mid-spec KDR = $2,800-$4,200/sqm minimum. Do NOT use $1,800/sqm — that is pre-2022 data.
+- DA timelines: Use real-world times, not statutory targets. Inner Sydney councils = 6-18 months. Outer suburban = 3-6 months.
+- Heritage: If the council has Heritage Conservation Areas (Strathfield, Woollahra, Inner West, Boroondara etc.), explicitly warn CDC may NOT be available.
+- Always include Section 7.11 contributions in NSW cost estimates (commonly $8,000-$20,000).
+- Always include OSD stormwater tank where required by council.
+- For pre-1987 homes, always flag asbestos removal cost.`
 
     // Attach live zone metadata for the frontend badge
     const liveMeta = liveZone ? {
