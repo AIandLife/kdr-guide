@@ -78,30 +78,75 @@ function nswZonePermitKDR(code: string): boolean | null {
 
 export async function getNSWZoning(lat: number, lng: number): Promise<LiveZoneData | null> {
   try {
-    const url = `${NSW_EPLAN_URL}?layers=epi&x=${lng}&y=${lat}&pageSize=1`
-    const res = await fetch(url, {
-      headers: { 'Accept': 'application/json', 'User-Agent': 'KDRGuide/1.0' },
-      signal: AbortSignal.timeout(8000),
-    })
-    if (!res.ok) return null
-    const data = await res.json()
+    // Query zone + heritage + flood + biodiversity overlays in parallel
+    const [zoneRes, heritageRes, floodRes] = await Promise.allSettled([
+      fetch(`${NSW_EPLAN_URL}?layers=epi&x=${lng}&y=${lat}&pageSize=1`, {
+        headers: { 'Accept': 'application/json', 'User-Agent': 'KDRGuide/1.0' },
+        signal: AbortSignal.timeout(8000),
+      }),
+      fetch(`${NSW_EPLAN_URL}?layers=heritagemap&x=${lng}&y=${lat}&pageSize=1`, {
+        headers: { 'Accept': 'application/json', 'User-Agent': 'KDRGuide/1.0' },
+        signal: AbortSignal.timeout(5000),
+      }),
+      fetch(`${NSW_EPLAN_URL}?layers=nearmap_flood&x=${lng}&y=${lat}&pageSize=1`, {
+        headers: { 'Accept': 'application/json', 'User-Agent': 'KDRGuide/1.0' },
+        signal: AbortSignal.timeout(5000),
+      }),
+    ])
 
-    // Response shape: { "Epi": [ { EpiName, LandZoneCode, LandZone, FSR, MaxBuildingHeight, MinLotSize, ... } ] }
-    const layers: NSWEpiLayer[] = data?.Epi || data?.EpiLayer || data?.epi || []
+    // Parse zone data
+    if (zoneRes.status !== 'fulfilled' || !zoneRes.value.ok) return null
+    const zoneData = await zoneRes.value.json()
+    const layers: NSWEpiLayer[] = zoneData?.Epi || zoneData?.EpiLayer || zoneData?.epi || []
     if (!layers.length) return null
 
-    // Prefer LEP over SEPP entries
     const lep = layers.find((l) => l.EpiType === 'LEP' || l.EpiName?.toLowerCase().includes('local')) || layers[0]
-
     const zoneCode = String(lep.LandZoneCode || lep.ZoneCode || '')
     const zoneName = String(lep.LandZone || lep.ZoneName || '')
-
     const fsr = lep.FSR || lep.FloorSpaceRatio ? String(lep.FSR || lep.FloorSpaceRatio) : null
     const maxHeight = parseMetres(lep.MaxBuildingHeight as string | undefined)
     const minLotSize = parseMetres(lep.MinLotSize as string | undefined)
 
     const notes: string[] = []
     if (lep.EpiName) notes.push(`Planning instrument: ${lep.EpiName}`)
+
+    // Parse heritage overlay — if any features returned, this address is in a HCA
+    let heritageFlag = false
+    let heritageNote = ''
+    if (heritageRes.status === 'fulfilled' && heritageRes.value.ok) {
+      try {
+        const hData = await heritageRes.value.json()
+        const hItems = hData?.HeritageMap || hData?.heritagemap || hData?.Heritage || []
+        if (Array.isArray(hItems) && hItems.length > 0) {
+          heritageFlag = true
+          const item = hItems[0] as Record<string, unknown>
+          const hName = item.HeritageItemName || item.HeritageName || item.NAME || ''
+          heritageNote = hName
+            ? `⚠️ Heritage overlay: ${hName} — CDC not available, DA required`
+            : '⚠️ Heritage Conservation Area — CDC not available, DA required'
+          notes.push(heritageNote)
+        }
+      } catch { /* non-critical */ }
+    }
+
+    // Parse flood overlay
+    let floodFlag = false
+    if (floodRes.status === 'fulfilled' && floodRes.value.ok) {
+      try {
+        const fData = await floodRes.value.json()
+        const fItems = fData?.NearMapFlood || fData?.flood || fData?.Flood || []
+        if (Array.isArray(fItems) && fItems.length > 0) {
+          floodFlag = true
+          notes.push('⚠️ Flood planning area — additional flood assessment required')
+        }
+      } catch { /* non-critical */ }
+    }
+
+    // CDC availability: not available in HCA or flood zones
+    const cdcBlocked = heritageFlag || floodFlag
+    if (cdcBlocked && zoneCode && nswZonePermitKDR(zoneCode)) {
+      notes.push('CDC pathway blocked by overlays — Development Application (DA) required')
+    }
 
     return {
       source: 'nsw-eplan',
@@ -152,32 +197,66 @@ function vicZonePermitKDR(code: string): boolean | null {
 export async function getVICZoning(lat: number, lng: number): Promise<LiveZoneData | null> {
   try {
     const geomParam = encodeURIComponent(JSON.stringify({ x: lng, y: lat }))
-    const params = `geometry=${geomParam}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&f=json`
-    const url = `${VIC_ZONE_URL}?${params}`
+    const queryParams = `geometry=${geomParam}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&f=json`
 
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'KDRGuide/1.0' },
-      signal: AbortSignal.timeout(8000),
-    })
-    if (!res.ok) return null
-    const data = await res.json()
-    const features: VicFeature[] = data?.features || []
+    // Query zone and overlays in parallel
+    const [zoneRes, overlayRes] = await Promise.allSettled([
+      fetch(`${VIC_ZONE_URL}?${queryParams}`, {
+        headers: { 'User-Agent': 'KDRGuide/1.0' },
+        signal: AbortSignal.timeout(8000),
+      }),
+      fetch(`${VIC_OVERLAY_URL}?${queryParams}`, {
+        headers: { 'User-Agent': 'KDRGuide/1.0' },
+        signal: AbortSignal.timeout(6000),
+      }),
+    ])
+
+    if (zoneRes.status !== 'fulfilled' || !zoneRes.value.ok) return null
+    const zoneData = await zoneRes.value.json()
+    const features: VicFeature[] = zoneData?.features || []
     if (!features.length) return null
 
     const attr = features[0].attributes
     const zoneCode = String(attr.ZONE_CODE || attr.ZoneCode || '')
     const zoneName = String(attr.ZONE_DESC || attr.ZoneName || attr.ZONE_DESC_SHORT || '')
 
+    const notes: string[] = []
+
+    // Parse overlays — Heritage Overlay (HO), Design & Development Overlay (DDO), Vegetation Protection (VPO)
+    let maxHeight: number | null = null
+    if (overlayRes.status === 'fulfilled' && overlayRes.value.ok) {
+      try {
+        const oData = await overlayRes.value.json()
+        const oFeatures: VicFeature[] = oData?.features || []
+        for (const f of oFeatures) {
+          const code = String(f.attributes.OVERLAY_CODE || f.attributes.CODE || '')
+          const desc = String(f.attributes.OVERLAY_DESC || f.attributes.DESC || '')
+          if (code.startsWith('HO')) {
+            notes.push(`⚠️ Heritage Overlay (${code}) — Planning Permit required, heritage assessment needed`)
+          } else if (code.startsWith('DDO')) {
+            // DDO often specifies height limits
+            const h = parseMetres(f.attributes.HEIGHT_LIMIT as string | undefined)
+            if (h) { maxHeight = h; notes.push(`Design & Development Overlay (${code}): height limit ${h}m`) }
+            else { notes.push(`Design & Development Overlay (${code}) applies — check height and setback controls`) }
+          } else if (code.startsWith('VPO') || code.startsWith('SLO')) {
+            notes.push(`⚠️ Vegetation/Landscape Overlay (${code}) — Arborist report likely required for tree removal`)
+          } else if (code.startsWith('FO') || desc.toLowerCase().includes('flood')) {
+            notes.push(`⚠️ Flood Overlay (${code}) — flood assessment required`)
+          }
+        }
+      } catch { /* non-critical */ }
+    }
+
     return {
       source: 'vic-vicplan',
       zoneCode,
       zoneName,
-      fsr: null,  // VIC doesn't have FSR in the zone layer; it's in overlays
-      maxHeight: null,
+      fsr: null,
+      maxHeight,
       minLotSize: null,
       lep: null,
       kdrPermitted: zoneCode ? vicZonePermitKDR(zoneCode) : null,
-      notes: [],
+      notes,
     }
   } catch {
     return null
@@ -186,9 +265,70 @@ export async function getVICZoning(lat: number, lng: number): Promise<LiveZoneDa
 
 // ─── QLD / WA / SA stubs (structured for future) ─────────────────────────────
 
-export async function getQLDZoning(_lat: number, _lng: number): Promise<LiveZoneData | null> {
-  // TODO: QLD Spatial Services — https://spatial-gis.information.qld.gov.au
+// QLD Planning Atlas — zone lookup via ArcGIS feature service
+const QLD_ZONE_URL =
+  'https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LocalGovernmentAreas/MapServer/0/query'
+
+const QLD_PLANNING_URL =
+  'https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/SPQEnvelope/MapServer/0/query'
+
+function qldZonePermitKDR(code: string): boolean | null {
+  const upper = code.toUpperCase()
+  // Low density, medium density, character residential — KDR permitted
+  if (['LDR', 'MDR', 'LMR', 'MHR', 'CR', 'RES'].some(z => upper.startsWith(z))) return true
+  // Rural residential
+  if (upper.startsWith('RR') || upper.startsWith('RURALRES')) return true
+  // Industrial / commercial / rural — no
+  if (['IND', 'COM', 'RUR', 'ENV', 'OPEN', 'CONS'].some(z => upper.startsWith(z))) return false
   return null
+}
+
+export async function getQLDZoning(lat: number, lng: number): Promise<LiveZoneData | null> {
+  try {
+    const geomParam = encodeURIComponent(JSON.stringify({ x: lng, y: lat }))
+    const params = `geometry=${geomParam}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=false&f=json`
+
+    const res = await fetch(`${QLD_ZONE_URL}?${params}`, {
+      headers: { 'User-Agent': 'KDRGuide/1.0' },
+      signal: AbortSignal.timeout(8000),
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    const features = data?.features || []
+    if (!features.length) return null
+
+    const attr = features[0].attributes
+    // QLD field names vary by council; try common patterns
+    const zoneCode = String(
+      attr.ZONE_CODE || attr.ZONECODE || attr.Zone_Code || attr.zone_code || attr.CODE || ''
+    )
+    const zoneName = String(
+      attr.ZONE_DESC || attr.ZONEDESC || attr.Zone_Description || attr.DESCRIPTION || attr.NAME || ''
+    )
+    const lga = String(attr.LGA_NAME || attr.LGA || '')
+
+    const notes: string[] = []
+    if (lga) notes.push(`Local Government Area: ${lga}`)
+
+    // QLD character residential overlay check
+    if (zoneCode.toUpperCase().includes('CR') || zoneName.toLowerCase().includes('character')) {
+      notes.push('⚠️ Character Residential zone — pre-1947 homes may be protected from demolition. Check with council before proceeding.')
+    }
+
+    return {
+      source: 'qld-spatial',
+      zoneCode,
+      zoneName,
+      fsr: null,
+      maxHeight: null,
+      minLotSize: null,
+      lep: null,
+      kdrPermitted: zoneCode ? qldZonePermitKDR(zoneCode) : null,
+      notes,
+    }
+  } catch {
+    return null
+  }
 }
 
 export async function getWAZoning(_lat: number, _lng: number): Promise<LiveZoneData | null> {

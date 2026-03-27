@@ -342,18 +342,40 @@ function FeasibilityContent() {
               </button>
             ))}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-            <div className="sm:col-span-2 relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                value={suburb}
-                onChange={e => setSuburb(e.target.value)}
-                placeholder={t.home.formSuburbPlaceholder}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400"
-                required
-              />
-            </div>
+          {/* Primary input: address OR suburb */}
+          <div className="relative mb-3">
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-400" />
+            <input
+              type="text"
+              value={address || suburb}
+              onChange={e => {
+                const val = e.target.value
+                // If input looks like a street address (starts with number), use as address
+                if (/^\d/.test(val)) {
+                  setAddress(val)
+                  // Extract suburb from address: last word-group before state/postcode
+                  const parts = val.split(',')
+                  const suburbPart = parts.length > 1 ? parts[parts.length - 1].trim().replace(/\s+(NSW|VIC|QLD|WA|SA|ACT|TAS|NT)\s*\d{4}$/i, '').trim() : ''
+                  if (suburbPart) setSuburb(suburbPart)
+                  else setSuburb(val)
+                } else {
+                  setSuburb(val)
+                  setAddress('')
+                }
+              }}
+              placeholder={lang === 'zh'
+                ? '输入街道地址或区域名 — 如：12 Smith St, Strathfield 或 Strathfield'
+                : 'Enter address or suburb — e.g. 12 Smith St, Strathfield or just Strathfield'}
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400 text-[16px]"
+              required
+            />
+            {address && (
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                {lang === 'zh' ? '地址级精准查询' : 'Address-level data'}
+              </span>
+            )}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <select
               value={state}
               onChange={e => setState(e.target.value)}
@@ -368,22 +390,13 @@ function FeasibilityContent() {
               type="number"
               value={lotSize}
               onChange={e => setLotSize(e.target.value)}
-              placeholder={lang === 'zh' ? '地块面积 (m²)' : 'Lot size (m²)'}
+              placeholder={lang === 'zh' ? '地块面积 (m²)（可选）' : 'Lot size m² (optional)'}
               className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400"
             />
-          </div>
-          {/* Street address — optional, enables live zoning lookup */}
-          <div className="mt-3 relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-400" />
-            <input
-              type="text"
-              value={address}
-              onChange={e => setAddress(e.target.value)}
-              placeholder={lang === 'zh'
-                ? '街道地址（可选）— 填写后启用实时规划区数据，例如：123 Smith Street, Bondi'
-                : 'Street address (optional) — enables live zoning lookup, e.g. 123 Smith Street, Bondi'}
-              className="w-full bg-green-50 border border-green-200 rounded-xl pl-10 pr-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-400 text-sm"
-            />
+            <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-xs text-green-700 flex items-center gap-2">
+              <MapPin className="w-3.5 h-3.5 shrink-0" />
+              <span>{lang === 'zh' ? '填写完整地址可获取地块级精准数据（遗产/洪水/分区）' : 'Full address unlocks parcel-level heritage, flood & zoning data'}</span>
+            </div>
           </div>
           <button
             type="submit"

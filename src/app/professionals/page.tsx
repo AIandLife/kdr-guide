@@ -398,6 +398,16 @@ function ProfessionalsPageInner() {
           </div>
         </div>
 
+        {/* Verification explanation */}
+        <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 mb-5 flex items-start gap-3 text-sm text-green-800">
+          <CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+          <span>
+            {isZh
+              ? <><strong>认证徽章说明：</strong>持有认证徽章的专业人士已提交 ABN 验证，并拥有有效的建商执照或行业注册。这不代表我们为其工作质量背书，你仍应自行查验执照并索取参考案例。</>
+              : <><strong>What "Verified" means:</strong> Verified professionals have submitted ABN confirmation and hold a current builder&apos;s licence or relevant industry registration. This does not constitute an endorsement of their work. Always verify licence status independently at your state&apos;s building authority and request project references.</>}
+          </span>
+        </div>
+
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-10">
           {filtered.map(pro => {

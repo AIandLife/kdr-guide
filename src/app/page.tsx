@@ -103,10 +103,24 @@ export default function HomePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!suburb.trim()) { setFormError(lang === 'zh' ? '请输入你的区域（Suburb）' : 'Please enter your suburb'); return }
+    if (!suburb.trim()) { setFormError(lang === 'zh' ? '请输入地址或区域名' : 'Please enter an address or suburb'); return }
     if (!state) { setFormError(lang === 'zh' ? '请选择所在州' : 'Please select a state'); return }
     setFormError('')
-    const params = new URLSearchParams({ suburb: suburb.trim(), lang, projectType, state })
+    const raw = suburb.trim()
+    // Detect if input is a street address (starts with a number)
+    const isAddress = /^\d/.test(raw)
+    const params = new URLSearchParams({ lang, projectType, state })
+    if (isAddress) {
+      // Extract suburb from end of address string
+      const parts = raw.split(',')
+      const suburbPart = parts.length > 1
+        ? parts[parts.length - 1].trim().replace(/\s+(NSW|VIC|QLD|WA|SA|ACT|TAS|NT)\s*\d{4}$/i, '').trim()
+        : raw
+      params.set('suburb', suburbPart || raw)
+      params.set('address', raw)
+    } else {
+      params.set('suburb', raw)
+    }
     if (lotSize) params.set('lotSize', lotSize)
     router.push(`/feasibility?${params.toString()}`)
   }
@@ -165,16 +179,19 @@ export default function HomePage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
                   <div className="sm:col-span-2">
-                    <label className="block text-xs text-gray-500 mb-1.5 font-medium">{h.formSuburb}</label>
+                    <label className="block text-xs text-gray-500 mb-1.5 font-medium">
+                      {lang === 'zh' ? '地址或区域名' : 'Address or Suburb'}
+                      <span className="ml-1.5 text-green-600 font-normal">{lang === 'zh' ? '（填完整地址获取精准数据）' : '(full address = parcel-level data)'}</span>
+                    </label>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                       <input
                         type="text"
                         value={suburb}
                         onChange={e => setSuburb(e.target.value)}
-                        placeholder={h.formSuburbPlaceholder}
+                        placeholder={lang === 'zh' ? '如：12 Smith St, Strathfield 或直接输入区名' : 'e.g. 12 Smith St, Strathfield or just Strathfield'}
                         autoComplete="off"
-                        className="w-full pl-10 pr-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none bg-gray-50 border border-gray-200 focus:border-orange-400 transition-colors"
+                        className="w-full pl-10 pr-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none bg-gray-50 border border-gray-200 focus:border-orange-400 transition-colors text-[16px]"
                       />
                     </div>
                   </div>

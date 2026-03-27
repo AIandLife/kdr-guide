@@ -28,8 +28,7 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
     { href: '/articles',      label: t.nav.articles },
     { href: '/professionals', label: t.nav.professionals },
     { href: '/suppliers',     label: t.nav.suppliers },
-    // Forum hidden until it has real content — re-enable by uncommenting the line below
-    // { href: '/forum',      label: t.nav.forum },
+    { href: '/forum',         label: t.nav.forum },
   ]
 
   const handleSignOut = async () => {
