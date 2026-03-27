@@ -9,6 +9,7 @@ import type { Lang } from '@/lib/i18n'
 export const metadata: Metadata = {
   title: 'AusBuildCircle 澳洲建房圈 – Australia\'s Knockdown Rebuild Expert',
   description: 'Enter your address and find out if your property is eligible for knockdown rebuild in Australia. AI-powered feasibility check, cost estimates, and builder matching.',
+  icons: { icon: '/logo-icon.png' },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

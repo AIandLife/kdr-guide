@@ -3,7 +3,8 @@
 import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Building2, Mail, Loader2, CheckCircle } from 'lucide-react'
+import { Mail, Loader2, CheckCircle } from 'lucide-react'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { useLang } from '@/lib/language-context'
 
@@ -59,9 +60,7 @@ function LoginForm() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-md shadow-orange-200">
-              <Building2 className="w-6 h-6 text-white" />
-            </div>
+            <Image src="/logo-icon.png" alt="AusBuildCircle" width={40} height={40} className="rounded-xl" />
             <span className="font-bold text-xl text-gray-900">AusBuildCircle</span>
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 mb-1">
