@@ -412,10 +412,18 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <div className="border-t border-slate-800 pt-6 text-center">
+          <div className="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-xs text-slate-600">
               {lang === 'zh' ? 'Built with ♥ 澳洲创业圈商业生态' : 'Built with ♥ BossLink Ecosystem'}
             </p>
+            <div className="flex items-center gap-4">
+              <a href="/privacy" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+                {lang === 'zh' ? '隐私政策' : 'Privacy Policy'}
+              </a>
+              <a href="/terms" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+                {lang === 'zh' ? '服务条款' : 'Terms of Service'}
+              </a>
+            </div>
           </div>
         </div>
       </footer>
