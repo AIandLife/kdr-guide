@@ -10,9 +10,10 @@ export async function POST(req: Request) {
   try {
     const { plan, email, businessName } = await req.json()
 
-    const priceId = plan === 'annual'
+    const priceId = (plan === 'annual'
       ? process.env.STRIPE_PRICE_ANNUAL
       : process.env.STRIPE_PRICE_MONTHLY
+    )?.trim()
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
