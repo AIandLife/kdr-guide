@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {
   CheckCircle, ChevronRight, Loader2, Shield, Star, Phone,
   HardHat, FileText, Zap, Droplets, Hammer, DollarSign, Briefcase, Ruler,
-  CreditCard, Lock, PenTool
+  CreditCard, Lock, PenTool, Globe, Check
 } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { useAuth } from '@/lib/auth-context'
@@ -86,6 +86,25 @@ const VERIFY_DOCS: Record<string, { label: string; labelZh: string; placeholder:
 
 type View = 'form' | 'listed' | 'verify_requested' | 'done'
 
+interface TranslationResult {
+  businessName: {
+    original: string
+    pinyin: string
+    suggested: string
+    note: string
+  }
+  contactName: {
+    original: string
+    translated: string
+    note: string
+  }
+  description: {
+    original: string
+    translated: string
+    confidence: number
+  }
+}
+
 export default function JoinPage() {
   const { lang } = useLang()
   const isZh = lang === 'zh'
@@ -107,7 +126,55 @@ export default function JoinPage() {
   const [verifyDocs, setVerifyDocs] = useState<Record<string, string>>({})
   const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly'>('annual')
 
+  // Bilingual translation state
+  const [translating, setTranslating] = useState(false)
+  const [translation, setTranslation] = useState<TranslationResult | null>(null)
+  const [showTranslationPanel, setShowTranslationPanel] = useState(false)
+  const [enBusinessNameChoice, setEnBusinessNameChoice] = useState<'original' | 'pinyin' | 'suggested' | 'custom'>('pinyin')
+  const [enBusinessNameCustom, setEnBusinessNameCustom] = useState('')
+  const [enContactName, setEnContactName] = useState('')
+  const [enDescription, setEnDescription] = useState('')
+  const [enConfirmed, setEnConfirmed] = useState(false)
+
   const set = (key: string, value: string) => setForm(f => ({ ...f, [key]: value }))
+
+  const handleGenerateTranslation = async () => {
+    setTranslating(true)
+    setEnConfirmed(false)
+    try {
+      const res = await fetch('/api/translate/professional', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          businessName: form.businessName,
+          contactName: form.contactName,
+          description: form.description,
+          direction: 'zh-to-en',
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.result) throw new Error('Translation failed')
+      const r: TranslationResult = data.result
+      setTranslation(r)
+      setEnBusinessNameChoice('pinyin')
+      setEnBusinessNameCustom(r.businessName.pinyin || r.businessName.original)
+      setEnContactName(r.contactName.translated || r.contactName.original)
+      setEnDescription(r.description.translated || r.description.original)
+      setShowTranslationPanel(true)
+    } catch {
+      // ignore — button just stays
+    } finally {
+      setTranslating(false)
+    }
+  }
+
+  const getEnBusinessName = () => {
+    if (!translation) return ''
+    if (enBusinessNameChoice === 'original') return translation.businessName.original
+    if (enBusinessNameChoice === 'pinyin') return translation.businessName.pinyin
+    if (enBusinessNameChoice === 'suggested') return translation.businessName.suggested
+    return enBusinessNameCustom
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -130,6 +197,10 @@ export default function JoinPage() {
           abn: form.registrationCountry === 'australia' ? (form.abn || undefined) : undefined,
           registrationCountry: form.registrationCountry,
           businessRegNumber: form.registrationCountry !== 'australia' ? (form.businessRegNumber || undefined) : undefined,
+          // Bilingual EN fields (only if confirmed)
+          businessNameEn: enConfirmed ? getEnBusinessName() : undefined,
+          contactNameEn: enConfirmed ? enContactName : undefined,
+          descriptionEn: enConfirmed ? enDescription : undefined,
         }),
       })
       const data = await res.json()
@@ -366,13 +437,154 @@ export default function JoinPage() {
                 {isZh ? '业务介绍' : 'About Your Business'}
               </h2>
               <textarea
-                value={form.description} onChange={e => set('description', e.target.value)}
+                value={form.description} onChange={e => { set('description', e.target.value); setEnConfirmed(false); setShowTranslationPanel(false) }}
                 placeholder={isZh
                   ? '简单介绍你的业务——专长、经验年数、擅长的项目类型等...'
                   : 'Tell us about your business — specialties, years of experience, types of projects you handle...'}
                 rows={4}
                 className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm resize-none bg-gray-50 border border-gray-200 focus:border-orange-400"
               />
+
+              {/* Bilingual: Generate English Version */}
+              {(form.businessName || form.description) && (
+                <div className="mt-4">
+                  {!showTranslationPanel ? (
+                    <button
+                      type="button"
+                      onClick={handleGenerateTranslation}
+                      disabled={translating}
+                      className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl px-4 py-2.5 transition-all disabled:opacity-60"
+                    >
+                      {translating
+                        ? <><Loader2 className="w-4 h-4 animate-spin" /> {isZh ? '生成中...' : 'Generating...'}</>
+                        : <><Globe className="w-4 h-4" /> {isZh ? '一键生成英文版本' : 'Generate English Version'}</>}
+                    </button>
+                  ) : (
+                    <div className="border border-blue-200 rounded-2xl overflow-hidden bg-blue-50/30">
+                      <div className="flex items-center justify-between px-4 py-3 bg-blue-50 border-b border-blue-100">
+                        <div className="flex items-center gap-2">
+                          <Globe className="w-4 h-4 text-blue-600" />
+                          <span className="text-sm font-semibold text-blue-700">{isZh ? '英文版本确认' : 'English Version — Review & Confirm'}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => { setShowTranslationPanel(false); setEnConfirmed(false) }}
+                          className="text-xs text-blue-400 hover:text-blue-600"
+                        >
+                          {isZh ? '收起' : 'Hide'}
+                        </button>
+                      </div>
+
+                      <div className="p-4 space-y-4">
+                        {/* Company name choices */}
+                        {translation && (
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-2">
+                              {isZh ? '公司名称（英文）' : 'Business Name (English)'}
+                            </label>
+                            <div className="space-y-2">
+                              {[
+                                { key: 'original' as const, label: isZh ? '保留中文原名' : 'Keep original', value: translation.businessName.original },
+                                { key: 'pinyin' as const, label: isZh ? '拼音音译' : 'Pinyin transliteration', value: translation.businessName.pinyin },
+                                ...(translation.businessName.suggested !== translation.businessName.pinyin
+                                  ? [{ key: 'suggested' as const, label: isZh ? '英文含义译名' : 'English meaning', value: translation.businessName.suggested }]
+                                  : []),
+                                { key: 'custom' as const, label: isZh ? '自定义' : 'Custom', value: '' },
+                              ].map(opt => (
+                                <label key={opt.key} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border cursor-pointer transition-all ${enBusinessNameChoice === opt.key ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+                                  <input
+                                    type="radio"
+                                    name="enBusinessName"
+                                    checked={enBusinessNameChoice === opt.key}
+                                    onChange={() => setEnBusinessNameChoice(opt.key)}
+                                    className="accent-blue-500"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <span className="text-xs text-gray-500">{opt.label}: </span>
+                                    {opt.key !== 'custom' && <span className="text-sm font-medium text-gray-800">{opt.value}</span>}
+                                    {opt.key === 'custom' && (
+                                      <input
+                                        type="text"
+                                        value={enBusinessNameCustom}
+                                        onChange={e => { setEnBusinessNameCustom(e.target.value); setEnBusinessNameChoice('custom') }}
+                                        onClick={() => setEnBusinessNameChoice('custom')}
+                                        placeholder={isZh ? '输入你想要的英文名称' : 'Type your preferred English name'}
+                                        className="ml-1 text-sm bg-transparent border-b border-gray-300 focus:border-blue-400 focus:outline-none text-gray-800 w-48"
+                                      />
+                                    )}
+                                  </div>
+                                </label>
+                              ))}
+                            </div>
+                            {translation.businessName.note && (
+                              <p className="text-xs text-gray-400 mt-1.5 pl-1">💡 {translation.businessName.note}</p>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Contact name */}
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                            {isZh ? '联系人姓名（英文）' : 'Contact Name (English)'}
+                          </label>
+                          <input
+                            type="text"
+                            value={enContactName}
+                            onChange={e => setEnContactName(e.target.value)}
+                            className="w-full px-3 py-2 rounded-xl text-sm bg-white border border-gray-200 focus:border-blue-400 focus:outline-none text-gray-800"
+                          />
+                          {translation?.contactName.note && (
+                            <p className="text-xs text-gray-400 mt-1 pl-1">💡 {translation.contactName.note}</p>
+                          )}
+                        </div>
+
+                        {/* Description */}
+                        <div>
+                          <label className="flex items-center justify-between text-xs font-medium text-gray-500 mb-1.5">
+                            <span>{isZh ? '业务介绍（英文）' : 'Business Description (English)'}</span>
+                            {translation && (
+                              <span className="text-gray-400 font-normal">{isZh ? '置信度' : 'Confidence'}: {translation.description.confidence}%</span>
+                            )}
+                          </label>
+                          <textarea
+                            value={enDescription}
+                            onChange={e => setEnDescription(e.target.value)}
+                            rows={4}
+                            className="w-full px-3 py-2 rounded-xl text-sm bg-white border border-gray-200 focus:border-blue-400 focus:outline-none text-gray-800 resize-none"
+                          />
+                        </div>
+
+                        {/* Confirm / Re-generate */}
+                        <div className="flex items-center gap-3 pt-1">
+                          {!enConfirmed ? (
+                            <button
+                              type="button"
+                              onClick={() => setEnConfirmed(true)}
+                              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all"
+                            >
+                              <Check className="w-4 h-4" />
+                              {isZh ? '确认使用此英文版本' : 'Use This English Version'}
+                            </button>
+                          ) : (
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-green-700 bg-green-50 border border-green-200">
+                              <CheckCircle className="w-4 h-4" />
+                              {isZh ? '英文版本已确认' : 'English version confirmed'}
+                            </div>
+                          )}
+                          <button
+                            type="button"
+                            onClick={handleGenerateTranslation}
+                            disabled={translating}
+                            className="text-xs text-blue-500 hover:text-blue-700 underline disabled:opacity-50"
+                          >
+                            {translating ? (isZh ? '生成中...' : 'Regenerating...') : (isZh ? '重新生成' : 'Regenerate')}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {error && (
