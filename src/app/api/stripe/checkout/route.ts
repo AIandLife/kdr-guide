@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   if (!process.env.STRIPE_PRICE_ANNUAL) return Response.json({ error: 'Stripe not configured: missing STRIPE_PRICE_ANNUAL' }, { status: 500 })
   if (!process.env.STRIPE_PRICE_MONTHLY) return Response.json({ error: 'Stripe not configured: missing STRIPE_PRICE_MONTHLY' }, { status: 500 })
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY.trim())
   try {
     const { plan, email, businessName } = await req.json()
 
