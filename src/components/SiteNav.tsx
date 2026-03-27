@@ -153,7 +153,7 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
               {t.nav.cta}
             </Link>
             {user ? (
-              <Link href="/dashboard/pro"
+              <Link href="/dashboard"
                 className="block w-full text-center border border-gray-200 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
                 {isZh ? '我的后台' : 'My Dashboard'}
               </Link>

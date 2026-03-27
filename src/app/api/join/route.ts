@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'terry@kdrguide.com.au'
-  const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@kdrguide.com.au'
+  const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@ausbuildcircle.com'
 
   try {
     const body = await req.json()
@@ -16,6 +16,19 @@ export async function POST(req: Request) {
 
     if (!businessName || !contactName || !email || !state || !category) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    // Simple rate limit: reject if same email submitted in last 60 minutes
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+    const { data: recentApp } = await supabase
+      .from('kdr_professional_applications')
+      .select('id')
+      .eq('email', email)
+      .gte('created_at', oneHourAgo)
+      .limit(1)
+      .maybeSingle()
+    if (recentApp) {
+      return Response.json({ error: 'Application already submitted recently. Please wait before trying again.' }, { status: 429 })
     }
 
     // Calculate trial dates
@@ -47,6 +60,7 @@ export async function POST(req: Request) {
 
     if (dbError) {
       console.error('DB error (applications):', dbError)
+      return Response.json({ error: 'Database error. Please try again.' }, { status: 500 })
     }
 
     // Also create/update in professionals table so dashboard works
@@ -71,8 +85,8 @@ export async function POST(req: Request) {
         description_en: descriptionEn || null,
       }, { onConflict: 'email' })
 
-    // Email to admin
-    await resend.emails.send({
+    // Emails — fire-and-forget, failures don't affect the response
+    resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
       subject: `[澳洲建房圈] New Professional Application — ${businessName}`,
@@ -89,14 +103,14 @@ export async function POST(req: Request) {
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Website</td><td style="padding:8px">${website || '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">ABN</td><td style="padding:8px">${abn || '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Description</td><td style="padding:8px">${description || '—'}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">EN Business Name</td><td style="padding:8px">${businessNameEn || '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Trial Period</td><td style="padding:8px">${trialStart} → ${trialEnd}</td></tr>
         </table>
         <p style="margin-top:16px"><a href="https://supabase.com/dashboard/project/lhuftwlywgemdjthinwl/editor" style="background:#f97316;color:white;padding:8px 16px;border-radius:6px;text-decoration:none">View in Supabase</a></p>
       `,
-    })
+    }).catch(err => console.error('Admin email failed:', err))
 
-    // Confirmation email to professional
-    await resend.emails.send({
+    resend.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: `Welcome to 澳洲建房圈 Professional Network — ${businessName}`,
@@ -126,7 +140,7 @@ export async function POST(req: Request) {
           </div>
         </div>
       `,
-    })
+    }).catch(err => console.error('Confirmation email failed:', err))
 
     return Response.json({ success: true, trialEnd })
 

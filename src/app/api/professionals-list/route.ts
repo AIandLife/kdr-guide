@@ -8,7 +8,7 @@ export async function GET() {
 
   const { data } = await supabase
     .from('professionals')
-    .select('business_name, category, state, regions, description, verified, verification_status, website, wechat')
+    .select('business_name, category, state, regions, description, verified, verification_status, website, wechat, phone')
     .order('verified', { ascending: false })
     .order('created_at', { ascending: false })
 

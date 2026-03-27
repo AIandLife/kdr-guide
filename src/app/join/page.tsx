@@ -281,7 +281,7 @@ export default function JoinPage() {
                 <div className="sm:col-span-2">
                   <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '公司名称 *' : 'Business Name *'}</label>
                   <input
-                    value={form.businessName} onChange={e => set('businessName', e.target.value)}
+                    value={form.businessName} onChange={e => { set('businessName', e.target.value); setEnConfirmed(false); setShowTranslationPanel(false) }}
                     placeholder={isZh ? '你的公司或商号名称' : 'Your company or trading name'}
                     required className={inputClass}
                   />
@@ -289,7 +289,7 @@ export default function JoinPage() {
                 <div>
                   <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '联系人姓名 *' : 'Contact Name *'}</label>
                   <input
-                    value={form.contactName} onChange={e => set('contactName', e.target.value)}
+                    value={form.contactName} onChange={e => { set('contactName', e.target.value); setEnConfirmed(false); setShowTranslationPanel(false) }}
                     placeholder={isZh ? '你的姓名' : 'Your name'}
                     required className={inputClass}
                   />

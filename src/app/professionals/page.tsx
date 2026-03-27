@@ -235,7 +235,7 @@ function ProfessionalsPageInner() {
     // Fetch from Supabase and merge with hardcoded
     fetch('/api/professionals-list')
       .then(r => r.json())
-      .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,verified:boolean,website:string|null,wechat:string|null}>) => {
+      .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,verified:boolean,website:string|null,wechat:string|null,phone:string|null}>) => {
         const CAT_MAP: Record<string, string> = {
           'Builder': 'builder', 'Town Planner': 'planner', 'Building Designer': 'designer',
           'Demolition Contractor': 'demolition', 'Structural Engineer': 'engineer',
@@ -254,6 +254,7 @@ function ProfessionalsPageInner() {
           description: r.description || '',
           website: r.website || null,
           wechat: r.wechat || null,
+          phone: r.phone || null,
         }))
         // Merge: DB pros first, then hardcoded (deduplicate by slug)
         const dbSlugs = new Set(pros.map(p => p.slug))
