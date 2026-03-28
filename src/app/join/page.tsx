@@ -756,7 +756,14 @@ export default function JoinPage() {
 
           <button
             type="button"
-            onClick={() => setView('done')}
+            onClick={async () => {
+              await fetch('/api/join/verify-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: form.email, businessName: form.businessName, category: form.category, verifyDocs }),
+              }).catch(() => {})
+              setView('done')
+            }}
             className="w-full text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 text-base mb-3"
             style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 24px rgba(249,115,22,0.3)' }}
           >

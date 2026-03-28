@@ -753,7 +753,17 @@ function FeasibilityContent() {
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 {/* 1. Find professionals — link filtered to report state + top recommended role */}
                 <Link
-                  href={`/professionals?state=${result.state || ''}${result.professionals?.[0]?.role ? `&category=${result.professionals[0].role.toLowerCase().replace(/\s+/g, '-')}` : ''}`}
+                  href={(() => {
+                    const ROLE_TO_CAT: Record<string, string> = {
+                      'Town Planner': 'planner', 'Builder': 'builder', 'Architect': 'designer',
+                      'Structural Engineer': 'engineer', 'Finance Broker': 'finance',
+                      'Demolition Contractor': 'demolition', 'Surveyor': 'other',
+                      'Arborist': 'other', 'Geotechnical Engineer': 'other',
+                    }
+                    const role = result.professionals?.[0]?.role || ''
+                    const cat = ROLE_TO_CAT[role] || ''
+                    return `/professionals?state=${result.state || ''}${cat ? `&category=${cat}` : ''}`
+                  })()}
                   className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base"
                 >
                   {lang === 'zh'

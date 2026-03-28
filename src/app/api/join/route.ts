@@ -108,7 +108,7 @@ export async function POST(req: Request) {
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">EN Business Name</td><td style="padding:8px">${businessNameEn || '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Trial Period</td><td style="padding:8px">${trialStart} → ${trialEnd}</td></tr>
         </table>
-        <p style="margin-top:16px"><a href="https://supabase.com/dashboard/project/lhuftwlywgemdjthinwl/editor" style="background:#f97316;color:white;padding:8px 16px;border-radius:6px;text-decoration:none">View in Supabase</a></p>
+        <p style="margin-top:16px"><a href="https://supabase.com/dashboard/project/nojfkmxcpdqzyrayvujv/editor" style="background:#f97316;color:white;padding:8px 16px;border-radius:6px;text-decoration:none">View in Supabase</a></p>
       `,
     }).catch(err => console.error('Admin email failed:', err))
 
@@ -135,7 +135,7 @@ export async function POST(req: Request) {
               <p style="margin:12px 0 0;color:#6b7280;font-size:14px">We'll be in touch before your trial ends with subscription options. No automatic charges.</p>
             </div>
 
-            <p>Once approved, your business will be listed in our directory, connecting you with homeowners actively planning knockdown rebuild projects in your area.</p>
+            <p>Once approved, your business will be listed in our directory, connecting you with homeowners planning knockdown rebuild, renovation, extension, and other residential projects in your area.</p>
 
             <p>Questions? Reply to this email anytime.</p>
             <p>The 澳洲建房圈 Team</p>

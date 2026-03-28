@@ -19,6 +19,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // Rate limit: max 3 contact requests from same email per hour
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+    const { count } = await supabase
+      .from('contact_requests')
+      .select('id', { count: 'exact', head: true })
+      .eq('homeowner_email', homeowner_email)
+      .gte('created_at', oneHourAgo)
+    if ((count ?? 0) >= 3) {
+      return NextResponse.json({ error: 'Too many requests. Please wait before sending more.' }, { status: 429 })
+    }
+
     // HTML-escape user-supplied content before embedding in emails
     const esc = (s: string) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 

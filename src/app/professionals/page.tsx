@@ -427,7 +427,7 @@ function ProfessionalsPageInner() {
                       {pro.name}
                     </a>
                     <div className="flex items-center gap-2 flex-wrap">
-                      {pro.verified && (
+                      {pro.verified && !pro.is_demo && (
                         <span className="relative group cursor-pointer flex items-center gap-1 text-xs text-green-600">
                           <CheckCircle className="w-3.5 h-3.5" />{tp.verified}
                           <span className="absolute bottom-full left-0 mb-1.5 w-56 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 leading-snug">
@@ -482,7 +482,7 @@ function ProfessionalsPageInner() {
                 {(pro.website || pro.wechat) && (
                   <div className="flex flex-wrap gap-3 mb-3 pb-3 border-b border-gray-100">
                     {pro.website && (
-                      <a href={`https://${pro.website}`} target="_blank" rel="noopener noreferrer"
+                      <a href={pro.website.startsWith('http') ? pro.website : `https://${pro.website}`} target="_blank" rel="noopener noreferrer"
                         className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 transition-colors">
                         <Globe className="w-3.5 h-3.5" />{pro.website}
                       </a>
@@ -518,8 +518,8 @@ function ProfessionalsPageInner() {
         {filtered.length === 0 && (
           <div className="text-center py-16 text-gray-400">
             <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-30" />
-            <p className="text-lg">No professionals found for this filter.</p>
-            <p className="text-sm mt-2">Try changing the state or category.</p>
+            <p className="text-lg">{isZh ? '未找到符合条件的专业人士。' : 'No professionals found for this filter.'}</p>
+            <p className="text-sm mt-2">{isZh ? '试试换一个州或类别。' : 'Try changing the state or category.'}</p>
           </div>
         )}
 

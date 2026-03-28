@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 
-const SECRET = process.env.ADMIN_SECRET || 'kdr-admin-2025'
+const SECRET = process.env.ADMIN_SECRET || 'MISSING_SECRET'
 
 export async function GET(req: Request) {
   if (req.headers.get('x-admin-secret') !== SECRET) {

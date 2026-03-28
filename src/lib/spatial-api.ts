@@ -30,7 +30,7 @@ export async function geocodeAddress(address: string): Promise<GeoPoint | null> 
     const q = encodeURIComponent(address + ', Australia')
     const url = `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=au`
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'KDRGuide/1.0 (kdr-guide.vercel.app)' },
+      headers: { 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com) (kdr-guide.vercel.app)' },
       signal: AbortSignal.timeout(5000),
     })
     if (!res.ok) return null
@@ -81,15 +81,15 @@ export async function getNSWZoning(lat: number, lng: number): Promise<LiveZoneDa
     // Query zone + heritage + flood + biodiversity overlays in parallel
     const [zoneRes, heritageRes, floodRes] = await Promise.allSettled([
       fetch(`${NSW_EPLAN_URL}?layers=epi&x=${lng}&y=${lat}&pageSize=1`, {
-        headers: { 'Accept': 'application/json', 'User-Agent': 'KDRGuide/1.0' },
+        headers: { 'Accept': 'application/json', 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
         signal: AbortSignal.timeout(8000),
       }),
       fetch(`${NSW_EPLAN_URL}?layers=heritagemap&x=${lng}&y=${lat}&pageSize=1`, {
-        headers: { 'Accept': 'application/json', 'User-Agent': 'KDRGuide/1.0' },
+        headers: { 'Accept': 'application/json', 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
         signal: AbortSignal.timeout(5000),
       }),
       fetch(`${NSW_EPLAN_URL}?layers=nearmap_flood&x=${lng}&y=${lat}&pageSize=1`, {
-        headers: { 'Accept': 'application/json', 'User-Agent': 'KDRGuide/1.0' },
+        headers: { 'Accept': 'application/json', 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
         signal: AbortSignal.timeout(5000),
       }),
     ])
@@ -202,11 +202,11 @@ export async function getVICZoning(lat: number, lng: number): Promise<LiveZoneDa
     // Query zone and overlays in parallel
     const [zoneRes, overlayRes] = await Promise.allSettled([
       fetch(`${VIC_ZONE_URL}?${queryParams}`, {
-        headers: { 'User-Agent': 'KDRGuide/1.0' },
+        headers: { 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
         signal: AbortSignal.timeout(8000),
       }),
       fetch(`${VIC_OVERLAY_URL}?${queryParams}`, {
-        headers: { 'User-Agent': 'KDRGuide/1.0' },
+        headers: { 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
         signal: AbortSignal.timeout(6000),
       }),
     ])
@@ -289,7 +289,7 @@ export async function getQLDZoning(lat: number, lng: number): Promise<LiveZoneDa
     const params = `geometry=${geomParam}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=false&f=json`
 
     const res = await fetch(`${QLD_ZONE_URL}?${params}`, {
-      headers: { 'User-Agent': 'KDRGuide/1.0' },
+      headers: { 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
       signal: AbortSignal.timeout(8000),
     })
     if (!res.ok) return null

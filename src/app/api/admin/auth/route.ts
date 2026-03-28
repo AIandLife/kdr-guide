@@ -10,5 +10,5 @@ export async function GET() {
     return Response.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  return Response.json({ secret: process.env.ADMIN_SECRET || 'kdr-admin-2025' })
+  return Response.json({ secret: process.env.ADMIN_SECRET || 'MISSING_SECRET' })
 }

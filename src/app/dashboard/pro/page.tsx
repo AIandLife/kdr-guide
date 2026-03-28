@@ -239,7 +239,7 @@ function ProDashboard() {
         // Fetch enquiries + application info in parallel
         Promise.all([
           supabase.from('contact_requests').select('*')
-            .eq('professional_name', prof.business_name)
+            .or(`professional_id.eq.${prof.id},professional_name.eq.${prof.business_name}`)
             .order('created_at', { ascending: false }),
           supabase.from('kdr_professional_applications')
             .select('paid_at, stripe_subscription_id')

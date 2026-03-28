@@ -8,7 +8,7 @@
 //   - getWeeklyStats(): derived from same seed → internally consistent
 //   - getRotationInterval(): time-of-day aware, consistent with weekly count
 
-export type ProjectType = 'kdr' | 'renovation' | 'extension' | 'granny-flat'
+export type ProjectType = 'kdr' | 'renovation' | 'extension' | 'granny-flat' | 'dual-occ'
 
 export interface DemandSignal {
   suburb: string
@@ -23,6 +23,7 @@ export const PROJECT_LABELS: Record<ProjectType, { en: string; zh: string; color
   'renovation':  { en: 'Major Renovation',  zh: '大型翻新',  color: 'blue'   },
   'extension':   { en: 'Extension',         zh: '扩建加建',  color: 'purple' },
   'granny-flat': { en: 'Granny Flat',       zh: 'Granny Flat', color: 'green' },
+  'dual-occ':    { en: 'Dual Occupancy',    zh: '双住宅',       color: 'purple' },
 }
 
 // ── Suburb pool ───────────────────────────────────────────────────────────────
@@ -188,7 +189,7 @@ export function getRotationInterval(now = new Date()): number {
 // ── Signal generators ─────────────────────────────────────────────────────────
 
 const PROJECT_WEIGHTS: [ProjectType, number][] = [
-  ['kdr', 0.50], ['renovation', 0.20], ['extension', 0.18], ['granny-flat', 0.12],
+  ['kdr', 0.45], ['renovation', 0.20], ['extension', 0.17], ['granny-flat', 0.11], ['dual-occ', 0.07],
 ]
 function pickProjectType(r: number): ProjectType {
   let acc = 0
