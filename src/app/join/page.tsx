@@ -756,76 +756,17 @@ export default function JoinPage() {
             </p>
           </div>
 
-          {/* Pricing */}
-          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-6 mb-4">
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
-              {isZh ? '认证套餐' : 'Verification Plan'}
-            </h2>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setSelectedPlan('annual')}
-                className={cn(
-                  'relative flex flex-col items-center gap-1 p-4 rounded-xl border-2 transition-all text-center',
-                  selectedPlan === 'annual'
-                    ? 'border-orange-400 bg-orange-50'
-                    : 'border-gray-200 bg-gray-50 hover:border-gray-300'
-                )}
-              >
-                {selectedPlan === 'annual' && (
-                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                    {isZh ? '推荐' : 'Best Value'}
-                  </span>
-                )}
-                <span className="text-2xl font-bold text-gray-900">$99</span>
-                <span className="text-xs text-gray-500">{isZh ? '/ 年（AUD）' : '/ year (AUD)'}</span>
-                <span className="text-xs text-orange-500 font-medium">
-                  {isZh ? '仅 $8.25/月' : 'Only $8.25/mo'}
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedPlan('monthly')}
-                className={cn(
-                  'flex flex-col items-center gap-1 p-4 rounded-xl border-2 transition-all text-center',
-                  selectedPlan === 'monthly'
-                    ? 'border-orange-400 bg-orange-50'
-                    : 'border-gray-200 bg-gray-50 hover:border-gray-300'
-                )}
-              >
-                <span className="text-2xl font-bold text-gray-900">$12</span>
-                <span className="text-xs text-gray-500">{isZh ? '/ 月（AUD）' : '/ month (AUD)'}</span>
-                <span className="text-xs text-gray-400">{isZh ? '随时取消' : 'Cancel anytime'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Pay button (Stripe placeholder) */}
-          <button
-            type="button"
-            onClick={() => {
-              // TODO: Stripe Checkout integration
-              setView('done')
-            }}
-            className="w-full text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 text-base mb-3"
-            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 24px rgba(249,115,22,0.3)' }}
-          >
-            <CreditCard className="w-5 h-5" />
-            {isZh
-              ? `提交并支付 ${selectedPlan === 'annual' ? 'AUD $99/年' : 'AUD $12/月'} →`
-              : `Submit & Pay ${selectedPlan === 'annual' ? 'AUD $99/yr' : 'AUD $12/mo'} →`}
-          </button>
-          <p className="text-center text-xs text-gray-400 flex items-center justify-center gap-1 mb-6">
-            <Lock className="w-3 h-3" />
-            {isZh ? '安全支付 · 由 Stripe 处理' : 'Secure payment · Powered by Stripe'}
-          </p>
           <button
             type="button"
             onClick={() => setView('done')}
-            className="w-full text-center text-sm text-gray-400 hover:text-gray-600 transition-colors"
+            className="w-full text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 text-base mb-3"
+            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 24px rgba(249,115,22,0.3)' }}
           >
-            {isZh ? '先跳过，稍后再申请认证' : 'Skip for now — I\'ll verify later'}
+            {isZh ? '提交认证申请 →' : 'Submit for Review →'}
           </button>
+          <p className="text-center text-xs text-gray-400 mb-6">
+            {isZh ? '我们会在 1–2 个工作日内与你联系。' : 'We\'ll be in touch within 1–2 business days.'}
+          </p>
         </div>
       </div>
     )

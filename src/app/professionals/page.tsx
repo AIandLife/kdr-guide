@@ -276,8 +276,7 @@ function ProfessionalsPageInner() {
   const filtered = allPros.filter(p => {
     if (activeCategory !== 'all' && p.category !== activeCategory) return false
     if (activeState !== 'all' && p.state !== activeState && !p.regions.includes('All Australia')) return false
-    // Mandarin filter: use wechat field as proxy for Mandarin-speaking
-    if (mandarinOnly && !p.wechat) return false
+    if (mandarinOnly && !(p.languages ?? []).includes('Mandarin')) return false
     return true
   })
 
@@ -335,7 +334,7 @@ function ProfessionalsPageInner() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-1">
-              {isZh ? '找建房专家' : 'Find Build Experts'}
+              {tp.h1}
             </h1>
             <p className="text-gray-500">{tp.subtitle}</p>
           </div>

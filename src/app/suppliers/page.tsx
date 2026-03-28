@@ -181,8 +181,8 @@ export default function SuppliersPage() {
               </p>
               <p className="text-xs text-gray-500 leading-relaxed">
                 {isZh
-                  ? '已提交营业资质，Google 评分 4.0 以上，获我们团队核实推荐。优先排名，获得认证徽章。'
-                  : 'Business credentials verified, Google rating 4.0+, reviewed by our team. Priority ranking and verification badge displayed.'}
+                  ? '已提交营业资质，Google 评分良好，获我们团队核实推荐。优先排名，获得认证徽章。'
+                  : 'Business credentials verified, strong Google rating, reviewed by our team. Priority ranking and verification badge displayed.'}
               </p>
             </div>
           </div>

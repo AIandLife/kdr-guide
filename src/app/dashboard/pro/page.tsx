@@ -378,7 +378,7 @@ function ProDashboard() {
               {isZh ? '你还没有创建业务主页' : 'No listing yet'}
             </h2>
             <p className="text-sm text-gray-500 mb-6">
-              {isZh ? '填写你的业务信息，免费收录进 KDR 专业人士目录。' : 'Fill in your business details to get listed in our professional directory for free.'}
+              {isZh ? '填写你的业务信息，免费收录进澳洲建房圈专业人士目录。' : 'Fill in your business details to get listed in our professional directory for free.'}
             </p>
             <Link href="/join"
               className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors">

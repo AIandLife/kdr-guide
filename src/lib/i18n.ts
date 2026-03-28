@@ -86,7 +86,7 @@ export const translations = {
       nextStepsTitle: 'Your Next Steps',
       prosTitle: 'Who Do You Need, and When?',
       ctaTitle: 'Ready to take the next step?',
-      ctaSubtitle: 'Browse verified knockdown rebuild specialists and town planners near',
+      ctaSubtitle: 'Browse verified build specialists and town planners near',
       ctaFree: 'Free consultation — no pressure.',
       ctaEmail: 'Your email address',
       ctaBtn: 'Connect Me',
@@ -96,8 +96,8 @@ export const translations = {
     },
     // Guide page
     guide: {
-      h1: 'The Complete KDR Process Guide',
-      subtitle: 'Everything you need to know about knockdown rebuild in Australia — from first question to moving in.',
+      h1: 'The Complete Build Process Guide',
+      subtitle: 'Everything you need to know about home building and renovation in Australia — from first question to moving in.',
       overviewLabel: 'Project Overview',
       ctaTitle: 'Find out what your block can do.',
       ctaSubtitle: 'Get an AI feasibility report for your suburb — zoning rules, real costs, timeline, and verified specialists ready to help.',
@@ -207,7 +207,7 @@ export const translations = {
       nextStepsTitle: '下一步行动',
       prosTitle: '全流程需要哪些专业人员？',
       ctaTitle: '准备好迈出下一步了吗？',
-      ctaSubtitle: '为你匹配当地已认证的 KDR Builder 和 Town Planner，完全免费。所在区域：',
+      ctaSubtitle: '为你匹配当地已认证的专业建筑师和 Town Planner，完全免费。所在区域：',
       ctaFree: '免费咨询，无任何压力。',
       ctaEmail: '你的邮箱地址',
       ctaBtn: '帮我联系',
@@ -217,8 +217,8 @@ export const translations = {
     },
     // Guide page
     guide: {
-      h1: '澳洲推倒重建完整流程指南',
-      subtitle: '关于澳洲推倒重建，你需要知道的一切 — 从第一个疑问到入住新家。',
+      h1: '澳洲建房改建完整流程指南',
+      subtitle: '关于澳洲房屋建造和改建，你需要知道的一切 — 从第一个疑问到入住新家。',
       overviewLabel: '项目概览',
       ctaTitle: '看看你的地块能做什么',
       ctaSubtitle: '获取 AI 可行性报告 — 分区政策、真实费用、时间线，以及我们的认证专业人士随时可以帮你。',
