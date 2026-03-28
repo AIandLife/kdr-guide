@@ -379,12 +379,14 @@ export default function HomePage() {
               : 'AusBuildCircle is part of the BossLink ecosystem — a network of platforms supporting the Chinese-Australian community.'}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <span className="inline-flex items-center gap-1.5 border border-slate-700 text-slate-600 font-semibold px-5 py-2.5 rounded-xl text-sm cursor-default">
-              {lang === 'zh' ? 'BossLink（即将上线）' : 'BossLink — Coming Soon'}
-            </span>
-            <span className="inline-flex items-center gap-1.5 border border-slate-700 text-slate-600 font-semibold px-5 py-2.5 rounded-xl text-sm cursor-default">
-              {lang === 'zh' ? '澳洲房产圈（即将上线）' : 'Aus Property Circle — Coming Soon'}
-            </span>
+            <a href="https://bosslink.ai" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 border border-orange-500/40 text-orange-400 hover:border-orange-400 hover:text-orange-300 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
+              {lang === 'zh' ? 'BossLink 澳洲创业圈 →' : 'BossLink →'}
+            </a>
+            <a href="https://www.auspropertycircle.com" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 border border-orange-500/40 text-orange-400 hover:border-orange-400 hover:text-orange-300 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
+              {lang === 'zh' ? '澳洲房产圈 →' : 'Aus Property Circle →'}
+            </a>
             <span className="inline-flex items-center gap-1.5 border border-slate-700 text-slate-600 font-semibold px-5 py-2.5 rounded-xl text-sm cursor-default">
               {lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon'}
             </span>
@@ -412,15 +414,17 @@ export default function HomePage() {
                 {lang === 'zh' ? '生态伙伴' : 'Ecosystem'}
               </p>
               <div className="space-y-2">
-                {[
-                  { label: lang === 'zh' ? 'BossLink（即将上线）' : 'BossLink — Coming Soon' },
-                  { label: lang === 'zh' ? '澳洲房产圈（即将上线）' : 'Aus Property Circle — Coming Soon' },
-                  { label: lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon' },
-                ].map(l => (
-                  <span key={l.label} className="flex items-center gap-1 text-sm text-slate-600 cursor-default">
-                    {l.label}
-                  </span>
-                ))}
+                <a href="https://bosslink.ai" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-sm text-slate-400 hover:text-orange-400 transition-colors">
+                  {lang === 'zh' ? 'BossLink 澳洲创业圈 →' : 'BossLink →'}
+                </a>
+                <a href="https://www.auspropertycircle.com" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-sm text-slate-400 hover:text-orange-400 transition-colors">
+                  {lang === 'zh' ? '澳洲房产圈 →' : 'Aus Property Circle →'}
+                </a>
+                <span className="flex items-center gap-1 text-sm text-slate-600 cursor-default">
+                  {lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon'}
+                </span>
               </div>
             </div>
           </div>
