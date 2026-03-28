@@ -12,6 +12,8 @@ export interface Professional {
   description: string
   website: string | null
   wechat: string | null
+  phone?: string | null
+  is_demo?: boolean
 }
 
 export interface Category {

@@ -235,7 +235,7 @@ function ProfessionalsPageInner() {
     // Fetch from Supabase and merge with hardcoded
     fetch('/api/professionals-list')
       .then(r => r.json())
-      .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,verified:boolean,website:string|null,wechat:string|null,phone:string|null}>) => {
+      .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,verified:boolean,website:string|null,wechat:string|null,phone:string|null,is_demo:boolean}>) => {
         const CAT_MAP: Record<string, string> = {
           'Builder': 'builder', 'Town Planner': 'planner', 'Building Designer': 'designer',
           'Demolition Contractor': 'demolition', 'Structural Engineer': 'engineer',
@@ -250,15 +250,17 @@ function ProfessionalsPageInner() {
           regions: r.regions || [],
           specialties: [],
           verified: r.verified,
-          featured: r.verified,
+          featured: r.verified && !r.is_demo,
           description: r.description || '',
           website: r.website || null,
           wechat: r.wechat || null,
           phone: r.phone || null,
+          is_demo: r.is_demo ?? false,
         }))
-        // Merge: DB pros first, then hardcoded (deduplicate by slug)
+        // Merge: DB pros first (already sorted real→demo by API), then hardcoded (all demo)
         const dbSlugs = new Set(pros.map(p => p.slug))
         const hardcodedFiltered = PROFESSIONALS.filter(p => !dbSlugs.has(p.slug))
+          .map(p => ({ ...p, is_demo: true }))
         setDbPros([...pros, ...hardcodedFiltered])
       })
       .catch(() => {/* use hardcoded only */})
@@ -411,6 +413,11 @@ function ProfessionalsPageInner() {
                 {pro.featured && (
                   <div className="text-xs text-orange-600 font-semibold mb-3 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-orange-500 rounded-full" />Featured
+                  </div>
+                )}
+                {pro.is_demo && (
+                  <div className="text-xs text-gray-400 mb-3 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-gray-300 rounded-full" />{isZh ? '示例数据' : 'Sample listing'}
                   </div>
                 )}
                 <div className="flex items-start justify-between gap-3 mb-3">
