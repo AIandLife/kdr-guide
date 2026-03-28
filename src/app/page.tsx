@@ -57,8 +57,8 @@ function MarqueeSection({ lang }: { lang: string }) {
         </h2>
         <p className="text-gray-500 text-base max-w-lg mx-auto">
           {lang === 'zh'
-            ? '查政策、估费用、找建筑商、比建材——全澳每个区都覆盖，一站搞定。'
-            : 'Check council rules, estimate costs, find builders, compare suppliers — covering every suburb across Australia.'}
+            ? '查政策、估费用、找专业人士、比建材——推倒重建、翻新、扩建全覆盖，一站搞定。'
+            : 'Check council rules, estimate costs, find professionals, compare suppliers — rebuild, renovate, extend, all in one place.'}
         </p>
       </div>
 
@@ -309,12 +309,12 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            {lang === 'zh' ? '加入澳洲建房社群' : 'Join Our Community'}
+            {lang === 'zh' ? '加入澳洲改建社群' : 'Join Our Community'}
           </h2>
           <p className="text-gray-500 text-lg max-w-2xl mx-auto">
             {lang === 'zh'
-              ? '和数千位正在规划或已完成推倒重建的澳洲业主一起交流，分享经验，互相解答。'
-              : 'Connect with thousands of Australian homeowners planning or completing a knockdown rebuild. Share experiences, ask questions, get answers.'}
+              ? '和正在规划翻新、重建或扩建的澳洲业主一起交流，分享经验，互相解答。'
+              : 'Connect with Australian homeowners planning any kind of home project — rebuild, renovate, extend. Share experiences, ask questions, get answers.'}
           </p>
         </div>
 
@@ -329,8 +329,8 @@ export default function HomePage() {
             </h3>
             <p className="text-sm text-gray-500 mb-5 leading-relaxed">
               {lang === 'zh'
-                ? '关注公众号「澳洲建房圈」，并加入建房讨论群，和业主、建筑商、设计师直接交流。'
-                : 'Follow our official account and join the build discussion group — homeowners, builders, and designers in one place.'}
+                ? '关注公众号「澳洲建房圈」，加入改建讨论群，和业主、建筑商、设计师、规划师直接交流。'
+                : 'Follow our official account and join the discussion group — homeowners, builders, designers, and planners all in one place.'}
             </p>
             <img
               src="/wechat-official.jpg"
