@@ -415,11 +415,6 @@ function ProfessionalsPageInner() {
                     <span className="w-1.5 h-1.5 bg-orange-500 rounded-full" />Featured
                   </div>
                 )}
-                {pro.is_demo && (
-                  <div className="text-xs text-gray-400 mb-3 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-gray-300 rounded-full" />{isZh ? '示例数据' : 'Sample listing'}
-                  </div>
-                )}
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex-1 min-w-0">
                     <a href={`/professionals/${pro.state.toLowerCase()}/${pro.slug}`}
