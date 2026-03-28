@@ -114,7 +114,7 @@ export default function JoinPage() {
   const [form, setForm] = useState({
     businessName: '', contactName: '', email: '', phone: '',
     state: '', category: '', regions: '', website: '', wechat: '', description: '',
-    abn: '', registrationCountry: 'australia', businessRegNumber: '', languages: 'both',
+    languages: 'both',
   })
 
   // Pre-fill email once user is known
@@ -192,9 +192,6 @@ export default function JoinPage() {
           website: website || undefined,
           regions: form.regions.split(',').map(r => r.trim()).filter(Boolean),
           wechat: form.wechat || undefined,
-          abn: form.registrationCountry === 'australia' ? (form.abn || undefined) : undefined,
-          registrationCountry: form.registrationCountry,
-          businessRegNumber: form.registrationCountry !== 'australia' ? (form.businessRegNumber || undefined) : undefined,
           // Bilingual EN fields (only if confirmed)
           businessNameEn: enConfirmed ? getEnBusinessName() : undefined,
           contactNameEn: enConfirmed ? enContactName : undefined,
@@ -296,52 +293,6 @@ export default function JoinPage() {
                     required className={inputClass}
                   />
                 </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '注册地 *' : 'Business Registration Country *'}</label>
-                  <div className="flex gap-2">
-                    {[
-                      { id: 'australia', zh: '🇦🇺 澳大利亚', en: '🇦🇺 Australia' },
-                      { id: 'china', zh: '🇨🇳 中国', en: '🇨🇳 China' },
-                      { id: 'other', zh: '🌍 其他', en: '🌍 Other' },
-                    ].map(c => (
-                      <button
-                        key={c.id} type="button"
-                        onClick={() => set('registrationCountry', c.id)}
-                        className={cn(
-                          'flex-1 py-2.5 rounded-xl text-sm font-medium border transition-all',
-                          form.registrationCountry === c.id
-                            ? 'bg-orange-50 border-orange-400 text-orange-700'
-                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300'
-                        )}
-                      >
-                        {isZh ? c.zh : c.en}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                {form.registrationCountry === 'australia' ? (
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1.5">ABN</label>
-                    <input
-                      value={form.abn} onChange={e => set('abn', e.target.value)}
-                      placeholder="XX XXX XXX XXX"
-                      className={inputClass}
-                    />
-                  </div>
-                ) : (
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1.5">
-                      {form.registrationCountry === 'china'
-                        ? (isZh ? '统一社会信用代码 / 营业执照号 *' : 'Unified Social Credit Code / Business Reg No. *')
-                        : (isZh ? '营业注册号码 *' : 'Business Registration Number *')}
-                    </label>
-                    <input
-                      value={form.businessRegNumber} onChange={e => set('businessRegNumber', e.target.value)}
-                      placeholder={form.registrationCountry === 'china' ? '91XXXXXXXXXXXXXXXXXX' : 'e.g. REG-12345'}
-                      className={inputClass}
-                    />
-                  </div>
-                )}
                 <div>
                   <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '邮箱 *' : 'Email *'}</label>
                   <input
