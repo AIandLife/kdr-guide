@@ -22,7 +22,7 @@ const SUBURB_TAGS = [
 ]
 
 const SERVICE_TAGS = [
-  { label: 'KDR Builder', zh: 'KDR 建筑商' },
+  { label: 'Home Builder', zh: '建筑商' },
   { label: 'Town Planner', zh: '城市规划师' },
   { label: 'Demolition', zh: '拆除工程' },
   { label: 'Surveyor', zh: '测量师' },
