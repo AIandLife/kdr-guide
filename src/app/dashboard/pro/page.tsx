@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   CheckCircle, Clock, MessageSquare, Shield, Edit3,
   AlertCircle, Building2, Phone, Globe, PartyPopper, Save, X, Loader2,
-  RefreshCw, TrendingUp, Mail as MailIcon
+  Mail as MailIcon
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/auth-context'
@@ -212,7 +212,6 @@ function ProDashboard() {
   const [appInfo, setAppInfo] = useState<ApplicationInfo | null>(null)
   const [fetching, setFetching] = useState(true)
   const [activeTab, setActiveTab] = useState<'enquiries' | 'profile' | 'verify'>(justPaid ? 'verify' : 'enquiries')
-  const [checkingOut, setCheckingOut] = useState(false)
   const [markingReplied, setMarkingReplied] = useState<string | null>(null)
 
   useEffect(() => {
@@ -267,18 +266,6 @@ function ProDashboard() {
         </div>
       </div>
     )
-  }
-
-  const handleCheckout = async () => {
-    setCheckingOut(true)
-    const res = await fetch('/api/stripe/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: 'annual', email: user?.email, businessName: profile?.business_name }),
-    })
-    const data = await res.json()
-    if (data.url) window.location.href = data.url
-    else setCheckingOut(false)
   }
 
   const handleMarkReplied = async (enquiryId: string) => {
@@ -355,34 +342,6 @@ function ProDashboard() {
           </div>
         )}
 
-        {/* Expiry warning banner */}
-        {profile && (isExpired || isExpiringSoon) && (
-          <div className={`mb-6 rounded-2xl border px-5 py-4 flex items-center justify-between gap-4 ${isExpired ? 'bg-red-50 border-red-200' : 'bg-orange-50 border-orange-200'}`}>
-            <div className="flex items-start gap-3">
-              <AlertCircle className={`w-5 h-5 shrink-0 mt-0.5 ${isExpired ? 'text-red-500' : 'text-orange-500'}`} />
-              <div>
-                <p className={`font-semibold text-sm ${isExpired ? 'text-red-800' : 'text-orange-800'}`}>
-                  {isExpired
-                    ? (isZh ? '认证订阅已过期' : 'Subscription expired')
-                    : (isZh ? `认证将在 ${daysUntilExpiry} 天后到期` : `Verification expires in ${daysUntilExpiry} days`)}
-                </p>
-                <p className={`text-xs mt-0.5 ${isExpired ? 'text-red-600' : 'text-orange-600'}`}>
-                  {isExpired
-                    ? (isZh ? '你的主页已失去认证徽章和优先排名。续费后立即恢复。' : 'Your listing has lost its Verified badge and priority ranking. Renew to restore.')
-                    : (isZh ? '续费以保持认证徽章和优先排名。' : 'Renew to keep your Verified badge and priority ranking.')}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={handleCheckout}
-              disabled={checkingOut}
-              className="shrink-0 flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold text-sm px-4 py-2 rounded-xl transition-colors disabled:opacity-60"
-            >
-              {checkingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-              {isZh ? '立即续费' : 'Renew Now'}
-            </button>
-          </div>
-        )}
 
         {/* Stats row (show to all professionals with a profile) */}
         {profile && enquiries.length > 0 && (
@@ -555,18 +514,6 @@ function ProDashboard() {
                         )}
                       </div>
                     </div>
-                    {isExpiringSoon && (
-                      <div className="mt-4 pt-4 border-t border-green-200 flex items-center justify-between gap-4">
-                        <p className="text-sm text-orange-700">
-                          {isZh ? `认证将在 ${daysUntilExpiry} 天后到期，续费以保持优先排名。` : `Expires in ${daysUntilExpiry} days — renew to keep priority ranking.`}
-                        </p>
-                        <button onClick={handleCheckout} disabled={checkingOut}
-                          className="shrink-0 flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold text-sm px-4 py-2 rounded-xl transition-colors disabled:opacity-60">
-                          {checkingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                          {isZh ? '续费' : 'Renew'}
-                        </button>
-                      </div>
-                    )}
                   </div>
                 ) : profile.verification_status === 'pending' ? (
                   <div className="bg-orange-50 border border-orange-200 rounded-2xl p-6 text-center">
@@ -575,50 +522,17 @@ function ProDashboard() {
                     <p className="text-sm text-gray-500">{isZh ? '我们正在核实你的资质，通常 1–2 个工作日完成。' : 'We\'re verifying your credentials. Usually takes 1–2 business days.'}</p>
                   </div>
                 ) : (
-                  <>
-                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-                      <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-orange-500" />
-                        {isZh ? '认证的好处' : 'Why get verified?'}
-                      </h3>
-                      <div className="space-y-3">
-                        {[
-                          { icon: '✅', en: 'Verified badge shown to all homeowners', zh: '向所有业主显示已认证徽章' },
-                          { icon: '⭐', en: 'Priority ranking in search results', zh: '搜索结果优先排名' },
-                          { icon: '📞', en: 'Phone, website & WeChat visible on listing', zh: '联系方式对业主可见' },
-                          { icon: '🎯', en: 'Direct enquiry emails sent to you', zh: '询盘直接发送到你的邮箱' },
-                        ].map((b, i) => (
-                          <div key={i} className="flex items-center gap-3">
-                            <span className="text-lg">{b.icon}</span>
-                            <p className="text-sm text-gray-700">{isZh ? b.zh : b.en}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl border border-orange-200 shadow-sm overflow-hidden">
-                      <div className="bg-orange-50 px-6 py-4 border-b border-orange-100">
-                        <h3 className="font-bold text-gray-900">{isZh ? '申请认证' : 'Apply for Verification'}</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">{isZh ? '付款后认证即时生效，主页立即显示认证徽章。' : 'Verification is instant after payment.'}</p>
-                      </div>
-                      <div className="px-6 py-5">
-                        <div className="rounded-xl border-2 border-orange-400 bg-orange-50 p-5 text-center mb-5">
-                          <p className="text-3xl font-bold text-gray-900">$199</p>
-                          <p className="text-sm text-gray-500 mt-1">{isZh ? '/ 年（AUD）· 仅 $16.6/月' : '/ year (AUD) · just $16.60/mo'}</p>
-                          <p className="text-xs text-orange-500 font-medium mt-1">{isZh ? '年付最优惠，随时取消续订' : 'Best value · cancel anytime'}</p>
-                        </div>
-                        <button
-                          onClick={handleCheckout}
-                          disabled={checkingOut}
-                          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-semibold text-sm transition-all disabled:opacity-60"
-                          style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
-                        >
-                          {checkingOut && <Loader2 className="w-4 h-4 animate-spin" />}
-                          {isZh ? '立即认证 · AUD $199/年 →' : 'Get Verified · AUD $199/year →'}
-                        </button>
-                      </div>
-                    </div>
-                  </>
+                  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
+                    <Shield className="w-10 h-10 text-gray-300 mx-auto mb-4" />
+                    <h3 className="font-semibold text-gray-900 mb-2">
+                      {isZh ? '你的主页已上线' : 'Your listing is live'}
+                    </h3>
+                    <p className="text-sm text-gray-500 max-w-xs mx-auto">
+                      {isZh
+                        ? '你的业务信息已收录进目录，业主可以找到你。认证功能即将开放，敬请期待。'
+                        : 'Your business is listed and visible to homeowners. Verified badges are coming soon — we\'ll be in touch.'}
+                    </p>
+                  </div>
                 )}
               </div>
             )}

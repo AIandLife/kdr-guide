@@ -8,7 +8,7 @@ export async function GET() {
 
   const { data } = await supabase
     .from('professionals')
-    .select('business_name, category, state, regions, description, verified, verification_status, website, wechat, phone, is_demo')
+    .select('business_name, category, state, regions, description, verified, verification_status, website, wechat, phone, is_demo, languages')
     .order('is_demo', { ascending: true })        // real professionals first (false < true)
     .order('verified', { ascending: false })       // then verified before unverified
     .order('created_at', { ascending: false })

@@ -114,7 +114,7 @@ export default function JoinPage() {
   const [form, setForm] = useState({
     businessName: '', contactName: '', email: '', phone: '',
     state: '', category: '', regions: '', website: '', wechat: '', description: '',
-    abn: '', registrationCountry: 'australia', businessRegNumber: '',
+    abn: '', registrationCountry: 'australia', businessRegNumber: '', languages: 'both',
   })
 
   // Pre-fill email once user is known
@@ -203,6 +203,8 @@ export default function JoinPage() {
           descriptionEn: enConfirmed ? enDescription : undefined,
           // Bind user_id at join time if already logged in
           userId: user?.id || undefined,
+          // Language selection: convert id to array
+          languages: form.languages === 'both' ? ['Mandarin','English'] : form.languages === 'zh' ? ['Mandarin'] : ['English'],
         }),
       })
       const data = await res.json()
@@ -365,6 +367,26 @@ export default function JoinPage() {
                     placeholder={isZh ? '你的微信号（可选）' : 'WeChat username (optional)'}
                     className={inputClass}
                   />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '服务语言' : 'Service Language'}</label>
+                  <div className="flex gap-2 flex-wrap">
+                    {[
+                      { id: 'en', label: isZh ? '仅英文' : 'English only', langs: ['English'] },
+                      { id: 'zh', label: isZh ? '仅中文' : 'Mandarin only', langs: ['Mandarin'] },
+                      { id: 'both', label: isZh ? '中英双语' : 'Mandarin & English', langs: ['Mandarin', 'English'] },
+                    ].map(opt => (
+                      <button key={opt.id} type="button"
+                        onClick={() => set('languages', opt.id)}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                          form.languages === opt.id
+                            ? 'bg-orange-500 text-white border-orange-500'
+                            : 'bg-gray-50 text-gray-700 border-gray-200 hover:border-orange-300'
+                        }`}>
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '网站' : 'Website'}</label>

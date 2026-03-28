@@ -235,7 +235,7 @@ function ProfessionalsPageInner() {
     // Fetch from Supabase and merge with hardcoded
     fetch('/api/professionals-list')
       .then(r => r.json())
-      .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,verified:boolean,website:string|null,wechat:string|null,phone:string|null,is_demo:boolean}>) => {
+      .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,verified:boolean,website:string|null,wechat:string|null,phone:string|null,is_demo:boolean,languages:string[]|null}>) => {
         const CAT_MAP: Record<string, string> = {
           'Builder': 'builder', 'Town Planner': 'planner', 'Building Designer': 'designer',
           'Demolition Contractor': 'demolition', 'Structural Engineer': 'engineer',
@@ -256,6 +256,7 @@ function ProfessionalsPageInner() {
           wechat: r.wechat || null,
           phone: r.phone || null,
           is_demo: r.is_demo ?? false,
+          languages: r.languages ?? ['English'],
         }))
         // Merge: DB pros first (already sorted real→demo by API), then hardcoded (all demo)
         const dbSlugs = new Set(pros.map(p => p.slug))
@@ -438,11 +439,28 @@ function ProfessionalsPageInner() {
                         </span>
                       )}
                       <span className={cn('text-xs px-2 py-0.5 rounded-full', STATE_COLORS[pro.state] || 'bg-gray-100 text-gray-500')}>{pro.state}</span>
-                      {pro.wechat && (
-                        <span className="flex items-center gap-1 text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full border border-green-200">
-                          <MessageCircle className="w-3 h-3" />普通话
-                        </span>
-                      )}
+                      {(() => {
+                        const langs = pro.languages ?? (pro.wechat ? ['Mandarin','English'] : ['English'])
+                        const isBilingual = langs.includes('Mandarin') && langs.includes('English')
+                        const isChineseOnly = langs.includes('Mandarin') && !langs.includes('English')
+                        const isEnglishOnly = !langs.includes('Mandarin')
+                        if (isBilingual) return (
+                          <span className="flex items-center gap-1 text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full border border-green-200">
+                            <MessageCircle className="w-3 h-3" />{isZh ? '中英双语' : 'Mandarin & English'}
+                          </span>
+                        )
+                        if (isChineseOnly) return (
+                          <span className="flex items-center gap-1 text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full border border-green-200">
+                            <MessageCircle className="w-3 h-3" />{isZh ? '中文' : 'Mandarin'}
+                          </span>
+                        )
+                        if (isEnglishOnly) return (
+                          <span className="flex items-center gap-1 text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full border border-blue-200">
+                            English
+                          </span>
+                        )
+                        return null
+                      })()}
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
