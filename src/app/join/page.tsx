@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {
   CheckCircle, ChevronRight, Loader2, Shield, Star, Phone,
   HardHat, FileText, Zap, Droplets, Hammer, DollarSign, Briefcase, Ruler,
-  CreditCard, Lock, PenTool, Globe, Check
+  PenTool, Globe, Check
 } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { useAuth } from '@/lib/auth-context'
@@ -124,8 +124,6 @@ export default function JoinPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [verifyDocs, setVerifyDocs] = useState<Record<string, string>>({})
-  const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly'>('annual')
-
   // Bilingual translation state
   const [translating, setTranslating] = useState(false)
   const [translation, setTranslation] = useState<TranslationResult | null>(null)
