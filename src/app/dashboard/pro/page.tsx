@@ -218,8 +218,20 @@ function ProDashboard() {
   useEffect(() => {
     if (!user) return
     const supabase = createClient()
-    supabase.from('professionals').select('*').eq('user_id', user.id).single()
-      .then(({ data: prof }) => {
+    // Try user_id match first; fallback to email (handles direct navigation bypassing /dashboard binder)
+    supabase.from('professionals').select('*').eq('user_id', user.id).maybeSingle()
+      .then(async ({ data: byId }) => {
+        if (!byId && user.email) {
+          const { data: byEmail } = await supabase.from('professionals').select('*').eq('email', user.email).maybeSingle()
+          if (byEmail) {
+            await supabase.from('professionals').update({ user_id: user.id }).eq('email', user.email)
+            return byEmail
+          }
+          return null
+        }
+        return byId
+      })
+      .then((prof) => {
         setProfile(prof ?? null)
         if (!prof?.business_name) {
           setFetching(false)
