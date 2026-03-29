@@ -56,9 +56,9 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error
 
-    const resend = new Resend(process.env.RESEND_API_KEY)
-    const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@ausbuildcircle.com'
-    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'terry@kdrguide.com.au'
+    const resend = new Resend(process.env.RESEND_API_KEY?.trim())
+    const FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || 'terry@ausbuildcircle.com'
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim() || 'terry@ausbuildcircle.com'
 
     const toAdmin = !pro?.email || pro.is_demo
     const emailHtml = `
@@ -89,12 +89,43 @@ export async function POST(req: NextRequest) {
       ? `[澳洲建房圈] 新询盘 → ${professional_name} (${homeowner_name})`
       : `新询盘：${homeowner_name} 来自 ${suburb || '未知区域'}`
     await resend.emails.send({
-      from: FROM_EMAIL,
+      from: `Terry · 澳洲建房圈 <${FROM_EMAIL}>`,
       to: toEmail,
       subject,
       html: emailHtml,
       replyTo: homeowner_email,
     }).catch(err => console.error('Contact email error:', err))
+
+    // Buyer confirmation
+    resend.emails.send({
+      from: `Terry · 澳洲建房圈 <${FROM_EMAIL}>`,
+      to: homeowner_email,
+      subject: `询盘已发送 — ${professional_name}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:560px;margin:0 auto">
+          <div style="background:#f97316;padding:20px 28px;border-radius:12px 12px 0 0">
+            <h2 style="color:white;margin:0;font-size:20px">✅ 询盘已成功发送</h2>
+          </div>
+          <div style="background:#f9fafb;padding:24px 28px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb;border-top:none">
+            <p style="color:#111827">Hi ${esc(homeowner_name)}，</p>
+            <p style="color:#374151">你对 <strong>${esc(professional_name)}</strong> 的询盘已通过澳洲建房圈发出。专业人士通常会在 1–2 个工作日内与你联系。</p>
+            <div style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:16px 0">
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#374151">询盘摘要</p>
+              ${suburb ? `<p style="margin:0;font-size:13px;color:#6b7280"><strong>地区：</strong>${esc(suburb)}</p>` : ''}
+              ${project_type ? `<p style="margin:4px 0 0;font-size:13px;color:#6b7280"><strong>项目：</strong>${esc(project_type)}</p>` : ''}
+              ${message ? `<p style="margin:4px 0 0;font-size:13px;color:#6b7280"><strong>备注：</strong>${esc(message)}</p>` : ''}
+            </div>
+            <p style="color:#374151;font-size:14px">如有疑问，直接回复本邮件即可。</p>
+            <p style="color:#374151;font-size:14px">澳洲建房圈团队</p>
+            <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0">
+            <p style="font-size:12px;color:#9ca3af">
+              <a href="https://ausbuildcircle.com/professionals" style="color:#f97316">浏览更多专业人士</a> ·
+              <a href="https://ausbuildcircle.com/suppliers" style="color:#f97316">建材目录</a>
+            </p>
+          </div>
+        </div>
+      `,
+    }).catch(err => console.error('Buyer confirmation email error:', err))
 
     return NextResponse.json({ ok: true })
   } catch (e) {

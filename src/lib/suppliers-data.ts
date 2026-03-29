@@ -35,11 +35,7 @@ export interface Supplier {
   specialties: string[]
   specialtiesZh: string[]
   featured: boolean
-  // For ranking algorithm: base score used alongside ratings
-  reliabilityScore: number   // 0–100, internal curation score
-  // Data provenance
-  seeded?: boolean           // true = real verified Australian business; false = display placeholder
-  sourceNote?: string        // e.g. 'Verified Australian business' | 'Display placeholder'
+  reliabilityScore: number
 }
 
 export const SUPPLIER_CATEGORIES: Record<SupplierCategory, { en: string; zh: string; icon: string; color: string }> = {
@@ -62,9 +58,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── WINDOWS & DOORS ──
   {
     id: 'wideline-windows',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Wideline Windows & Doors',
+        name: 'Wideline Windows & Doors',
     category: 'windows-doors',
     origin: 'local',
     description: 'Australian-made aluminium windows and doors since 1955. Popular with volume builders across NSW and QLD for their double-glazed and thermally efficient range.',
@@ -79,9 +73,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'stegbar',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Stegbar Windows & Doors',
+        name: 'Stegbar Windows & Doors',
     category: 'windows-doors',
     origin: 'local',
     description: 'Australia\'s leading manufacturer of windows and doors for over 70 years. Custom aluminium, timber, and uPVC frames with full NCC compliance.',
@@ -97,9 +89,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'corinthian-doors',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Corinthian Doors',
+        name: 'Corinthian Doors',
     category: 'windows-doors',
     origin: 'local',
     description: 'Australia\'s most popular door brand. Wide range of entry doors, internal doors, and cavity sliders. Available at leading hardware retailers.',
@@ -114,9 +104,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'unverified-windows-co',
-    seeded: false,
-    sourceNote: 'Display placeholder',
-    name: 'SydneyGlass Direct',
+        name: 'SydneyGlass Direct',
     category: 'windows-doors',
     origin: 'china',
     description: 'Importing aluminium windows and glass products direct from Guangdong factories.',
@@ -132,9 +120,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── FLOORING ──
   {
     id: 'carpet-court',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Carpet Court',
+        name: 'Carpet Court',
     category: 'flooring',
     origin: 'multi',
     description: 'Australia\'s largest flooring retailer network with 200+ stores. Full range of carpet, timber, vinyl plank, and laminate. Popular with residential builders for trade pricing.',
@@ -149,9 +135,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'floorworld',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Floorworld',
+        name: 'Floorworld',
     category: 'flooring',
     origin: 'multi',
     description: 'National flooring dealer network specialising in Australian hardwood, engineered timber, and LVP. Independent stores with expert installation teams across major cities.',
@@ -166,9 +150,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'quick-step',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Quick-Step Flooring',
+        name: 'Quick-Step Flooring',
     category: 'flooring',
     origin: 'europe',
     description: 'Premium European engineered timber and laminate flooring. 25-year residential warranty. Distributed Australia-wide through authorised retailers.',
@@ -183,9 +165,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'lvp-direct',
-    seeded: false,
-    sourceNote: 'Display placeholder',
-    name: 'FloorXpert LVP',
+        name: 'FloorXpert LVP',
     category: 'flooring',
     origin: 'multi',
     description: 'Specialist luxury vinyl plank supplier for residential KDR and renovation projects. Waterproof click-lock systems from leading Asian manufacturers.',
@@ -201,9 +181,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── TILES & STONE ──
   {
     id: 'beaumont-tiles',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Beaumont Tiles',
+        name: 'Beaumont Tiles',
     category: 'tiles',
     origin: 'multi',
     description: 'Australia\'s largest tile retailer with 125+ showrooms. Comprehensive range of floor tiles, wall tiles, and stone from global suppliers.',
@@ -219,9 +197,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'tile-cloud',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Tile Cloud',
+        name: 'Tile Cloud',
     category: 'tiles',
     origin: 'multi',
     description: 'Online tile retailer with curated collections from Europe and Asia. Competitive pricing with sample ordering and delivery Australia-wide.',
@@ -236,9 +212,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'stone-depot',
-    seeded: false,
-    sourceNote: 'Display placeholder',
-    name: 'Stone Depot Direct',
+        name: 'Stone Depot Direct',
     category: 'tiles',
     origin: 'china',
     description: 'Direct importer of natural stone and engineered quartz from Chinese quarries and processors.',
@@ -254,9 +228,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── PAINT ──
   {
     id: 'dulux',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Dulux Australia',
+        name: 'Dulux Australia',
     category: 'paint',
     origin: 'local',
     description: 'Australia\'s most trusted paint brand. Interior and exterior paints, primers, and coatings with industry-leading technical support and colour matching.',
@@ -272,9 +244,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'taubmans',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Taubmans',
+        name: 'Taubmans',
     category: 'paint',
     origin: 'local',
     description: 'Premium Australian paint brand known for durability and colour range. Popular with KDR builders for exterior weatherboard and render coatings.',
@@ -291,9 +261,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── KITCHEN & JOINERY ──
   {
     id: 'kinsman-kitchens',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Kinsman Kitchens',
+        name: 'Kinsman Kitchens',
     category: 'kitchen',
     origin: 'local',
     description: 'Australian kitchen designer and manufacturer with nationwide showrooms. Custom and semi-custom kitchens with 10-year warranty.',
@@ -310,9 +278,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── PLUMBING ──
   {
     id: 'caroma',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Caroma',
+        name: 'Caroma',
     category: 'plumbing',
     origin: 'local',
     description: 'Australia\'s premier plumbing products manufacturer. Toilets, basins, tapware, and showers designed for Australian conditions with WELS rated products.',
@@ -328,9 +294,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'reece-plumbing',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Reece Plumbing',
+        name: 'Reece Plumbing',
     category: 'plumbing',
     origin: 'local',
     description: 'Australia\'s leading plumbing merchant with 600+ branches. One-stop shop for all KDR plumbing supplies including premium fixtures from leading brands.',
@@ -346,9 +310,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'budget-plumbing-cn',
-    seeded: false,
-    sourceNote: 'Display placeholder',
-    name: 'DirectBath Imports',
+        name: 'DirectBath Imports',
     category: 'plumbing',
     origin: 'china',
     description: 'Wholesale importer of bathroom fixtures from Chinese manufacturers. Freestanding baths, vanities, and tapware.',
@@ -364,9 +326,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── ROOFING ──
   {
     id: 'colorbond',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'COLORBOND Steel Roofing',
+        name: 'COLORBOND Steel Roofing',
     category: 'roofing',
     origin: 'local',
     description: 'BlueScope Steel\'s COLORBOND is the standard for Australian steel roofing. Available in 22 colours with Bush Fire Attack Level ratings and 30-year warranty.',
@@ -381,9 +341,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'monier-rooftiles',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Monier Roof Tiles',
+        name: 'Monier Roof Tiles',
     category: 'roofing',
     origin: 'local',
     description: 'Australia\'s leading concrete and terracotta roof tile manufacturer. Wide range of styles, colours, and profiles for residential construction.',
@@ -400,9 +358,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── INSULATION ──
   {
     id: 'knauf-insulation',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Knauf Insulation',
+        name: 'Knauf Insulation',
     category: 'insulation',
     origin: 'multi',
     description: 'Global insulation manufacturer with Australian operations. Glasswool and Earthwool products for wall, ceiling, and underfloor insulation.',
@@ -421,9 +377,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── PAINT (additional) ──
   {
     id: 'haymes-paint',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Haymes Paint',
+        name: 'Haymes Paint',
     category: 'paint',
     origin: 'local',
     description: 'Australian-owned and operated paint manufacturer since 1935. Premium interior and exterior paints made in Ballarat, VIC. Popular with professional painters for coverage and durability.',
@@ -439,9 +393,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'wattyl-paint',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Wattyl Paint',
+        name: 'Wattyl Paint',
     category: 'paint',
     origin: 'local',
     description: 'Iconic Australian paint brand (Sherwin-Williams group). Known for Wattyl Solagard exterior and Wattyl I.D. interior ranges. Available at major hardware and paint stores nationwide.',
@@ -459,9 +411,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── FLOORING (additional) ──
   {
     id: 'choices-flooring',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Choices Flooring',
+        name: 'Choices Flooring',
     category: 'flooring',
     origin: 'multi',
     description: 'Australia\'s leading flooring franchise with 140+ stores. Full range of carpet, timber, laminate, vinyl, and tiles. Professional installation Australia-wide.',
@@ -481,9 +431,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── KITCHEN & JOINERY (additional) ──
   {
     id: 'polytec',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Polytec',
+        name: 'Polytec',
     category: 'kitchen',
     origin: 'local',
     description: 'Australia\'s leading manufacturer of decorative surfaces and cabinet panels. Thermolaminated and melamine board used by kitchen and joinery companies nationwide.',
@@ -499,9 +447,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'laminex',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Laminex',
+        name: 'Laminex',
     category: 'kitchen',
     origin: 'local',
     description: 'Australia\'s leading benchtop and decorative surfaces brand. Post-formed laminate benchtops, compact laminate, and timber veneer panels used in virtually every KDR kitchen.',
@@ -518,9 +464,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── WINDOWS & DOORS (additional) ──
   {
     id: 'capral-aluminium',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Capral Aluminium',
+        name: 'Capral Aluminium',
     category: 'windows-doors',
     origin: 'local',
     description: 'Australia\'s largest aluminium products manufacturer. Capral\'s Elevate window and door system is widely used by builders for NCC-compliant double-glazed aluminium frames.',
@@ -538,9 +482,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── PLUMBING (additional) ──
   {
     id: 'tradelink',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Tradelink',
+        name: 'Tradelink',
     category: 'plumbing',
     origin: 'local',
     description: 'Australia\'s second-largest plumbing merchant with 220+ branches. Comprehensive range of plumbing products for residential builders. Fletcher Building subsidiary.',
@@ -558,9 +500,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── ROOFING (additional) ──
   {
     id: 'lysaght',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Lysaght (BlueScope)',
+        name: 'Lysaght (BlueScope)',
     category: 'roofing',
     origin: 'local',
     description: 'BlueScope\'s Lysaght brand produces Australia\'s most recognised steel roofing and walling profiles including TRIMDEK, KLIP-LOK, and CUSTOM ORB corrugated iron.',
@@ -577,9 +517,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── INSULATION (additional) ──
   {
     id: 'autex-acoustics',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Autex Acoustics',
+        name: 'Autex Acoustics',
     category: 'insulation',
     origin: 'multi',
     description: 'Leading acoustic and thermal insulation manufacturer from New Zealand, widely used in Australian residential builds. GreenStuf® bulk insulation is a builder favourite for wall and ceiling applications.',
@@ -594,9 +532,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'bradford-insulation',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Bradford Insulation',
+        name: 'Bradford Insulation',
     category: 'insulation',
     origin: 'local',
     description: 'Australia\'s most widely specified insulation brand. Bradford Gold glasswool and Bradford SoundScreen acoustic batts are standard spec on KDR and new home builds.',
@@ -614,9 +550,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── LANDSCAPING (additional) ──
   {
     id: 'adbri-masonry',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Adbri Masonry',
+        name: 'Adbri Masonry',
     category: 'landscaping',
     origin: 'local',
     description: 'Australia\'s leading concrete masonry manufacturer. Pavers, retaining wall blocks, garden edging, and outdoor paving for residential projects. Available at hardware and landscape suppliers nationwide.',
@@ -631,9 +565,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'midland-brick',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Midland Brick',
+        name: 'Midland Brick',
     category: 'landscaping',
     origin: 'local',
     description: 'Western Australia\'s leading brick and paver manufacturer. Clay bricks, concrete pavers, and retaining wall blocks for new home builds, driveways, and landscaping.',
@@ -648,9 +580,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'boral-landscaping',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Boral Masonry',
+        name: 'Boral Masonry',
     category: 'landscaping',
     origin: 'local',
     description: 'Australia\'s largest building products manufacturer. Boral\'s concrete blocks, retaining wall systems, and paving products are used in residential landscaping nationwide.',
@@ -668,9 +598,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── CURTAINS & BLINDS ──
   {
     id: 'bettaview-blinds',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Bettaview Blinds & Curtains',
+        name: 'Bettaview Blinds & Curtains',
     category: 'curtains-blinds',
     origin: 'local',
     description: 'Australian-owned blinds and curtains manufacturer supplying direct to homeowners and builders. Roller blinds, Roman blinds, sheer curtains, and blockout options. Free measure and quote service.',
@@ -686,9 +614,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'spotlight-curtains',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Spotlight',
+        name: 'Spotlight',
     category: 'curtains-blinds',
     origin: 'multi',
     description: 'Australia\'s largest fabric and home décor retailer. Wide range of ready-made and made-to-measure curtains, sheers, blockout linings, and curtain tracks and rods. Stores across all states.',
@@ -703,9 +629,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'acmeda-blinds',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Acmeda',
+        name: 'Acmeda',
     category: 'curtains-blinds',
     origin: 'local',
     description: 'Australian manufacturer of roller blind systems and components. Supplies to blind makers and installers nationwide. Known for motorisation systems compatible with smart home automation.',
@@ -722,9 +646,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── CUSTOM WARDROBES ──
   {
     id: 'kinsman-wardrobes',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Kinsman Kitchens & Wardrobes',
+        name: 'Kinsman Kitchens & Wardrobes',
     category: 'custom-wardrobes',
     origin: 'local',
     description: 'Australian-designed flatpack and semi-custom wardrobes and kitchen joinery. Popular choice for KDR and renovation projects. Available through Bunnings. Wide range of finishes and configurations.',
@@ -739,9 +661,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'flexi-wardrobes',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Flexi Wardrobes',
+        name: 'Flexi Wardrobes',
     category: 'custom-wardrobes',
     origin: 'local',
     description: 'Custom wardrobe and storage specialists with showrooms across Australia. Fully measured and installed. Popular for new builds — works directly with builders and homeowners.',
@@ -756,9 +676,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'ikea-pax-wardrobes',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'IKEA PAX',
+        name: 'IKEA PAX',
     category: 'custom-wardrobes',
     origin: 'europe',
     description: 'IKEA\'s modular PAX wardrobe system is a popular budget-friendly option for KDR projects. Wide range of interiors, doors, and finishes. Self-assembly or installation services available.',
@@ -775,9 +693,7 @@ export const SUPPLIERS: Supplier[] = [
   // ── OUTDOOR & PAVING ──
   {
     id: 'adbri-masonry',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Adbri Masonry',
+        name: 'Adbri Masonry',
     category: 'outdoor-paving',
     origin: 'local',
     description: 'Australia\'s leading manufacturer of concrete pavers, retaining walls, and garden products. Wide range of styles from budget to premium. Available through Bunnings, Boral, and independent landscape suppliers.',
@@ -792,9 +708,7 @@ export const SUPPLIERS: Supplier[] = [
   },
   {
     id: 'eco-outdoor',
-    seeded: true,
-    sourceNote: 'Verified Australian business',
-    name: 'Eco Outdoor',
+        name: 'Eco Outdoor',
     category: 'outdoor-paving',
     origin: 'multi',
     description: 'Premium outdoor stone, tile, and paving specialist supplying to high-end KDR and renovation projects. Natural stone (sandstone, granite, bluestone), porcelain outdoor tiles, and timber decking.',

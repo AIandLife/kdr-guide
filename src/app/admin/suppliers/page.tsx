@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle, XCircle, Clock, Eye, EyeOff, RefreshCw, Database, Tag } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, Eye, EyeOff, RefreshCw, Database } from 'lucide-react'
 import { SUPPLIERS } from '@/lib/suppliers-data'
 
 interface SupplierRow {
@@ -140,11 +140,10 @@ export default function AdminSuppliersPage() {
             <span className="text-sm font-semibold text-white">Curated Supplier Directory</span>
             <span className="text-xs text-slate-500">(static data, not DB submissions)</span>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {[
               { label: 'Total Listings', value: SUPPLIERS.length, color: '#f97316' },
-              { label: 'Real Businesses', value: SUPPLIERS.filter(s => s.seeded === true).length, color: '#22c55e' },
-              { label: 'Placeholders', value: SUPPLIERS.filter(s => s.seeded === false).length, color: '#94a3b8' },
+              { label: 'Verified', value: SUPPLIERS.filter(s => s.verified).length, color: '#22c55e' },
               { label: 'Featured', value: SUPPLIERS.filter(s => s.featured).length, color: '#a78bfa' },
             ].map(({ label, value, color }) => (
               <div key={label} className="rounded-xl p-4 text-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
@@ -152,16 +151,6 @@ export default function AdminSuppliersPage() {
                 <div className="text-xs text-slate-400 mt-1">{label}</div>
               </div>
             ))}
-          </div>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {SUPPLIERS.filter(s => s.seeded === false).map(s => (
-              <span key={s.id} className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)' }}>
-                <Tag className="w-3 h-3" /> {s.name}
-              </span>
-            ))}
-            {SUPPLIERS.filter(s => s.seeded === false).length > 0 && (
-              <span className="text-xs text-slate-500 self-center">← placeholders to replace with real businesses</span>
-            )}
           </div>
         </div>
 

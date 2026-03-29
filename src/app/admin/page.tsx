@@ -72,7 +72,23 @@ interface Search {
   created_at: string
 }
 
-type Tab = 'forum' | 'professionals' | 'suppliers' | 'leads' | 'searches' | 'newsletter'
+interface SupplierInquiry {
+  id: string
+  supplier_name: string
+  supplier_category: string | null
+  buyer_name: string
+  buyer_email: string
+  buyer_phone: string | null
+  suburb: string | null
+  project_type: string | null
+  products_needed: string
+  quantity_estimate: string | null
+  timeline: string | null
+  message: string | null
+  created_at: string
+}
+
+type Tab = 'forum' | 'professionals' | 'suppliers' | 'leads' | 'supplier-inquiries' | 'searches' | 'newsletter'
 
 export default function AdminPage() {
   const [secret, setSecret] = useState('')
@@ -84,6 +100,7 @@ export default function AdminPage() {
   const [professionals, setProfessionals] = useState<Professional[]>([])
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [leads, setLeads] = useState<Lead[]>([])
+  const [supplierInquiries, setSupplierInquiries] = useState<SupplierInquiry[]>([])
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [searches, setSearches] = useState<Search[]>([])
   const [loading, setLoading] = useState(false)
@@ -142,19 +159,21 @@ export default function AdminPage() {
   async function loadData(s: string) {
     setLoading(true)
     const headers = { 'x-admin-secret': s }
-    const [r1, r2, r3, r4, r5] = await Promise.all([
+    const [r1, r2, r3, r4, r5, r6] = await Promise.all([
       fetch('/api/admin/forum', { headers }),
       fetch('/api/admin/professionals-list', { headers }),
       fetch('/api/admin/leads', { headers }),
       fetch('/api/admin/searches', { headers }),
       fetch('/api/admin/suppliers/list', { headers }),
+      fetch('/api/admin/supplier-inquiries', { headers }),
     ])
-    const [d1, d2, d3, d4, d5] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json(), r5.json()])
+    const [d1, d2, d3, d4, d5, d6] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json()])
     setPosts(d1.posts || [])
     setProfessionals(d2.professionals || [])
     setLeads(d3.leads || [])
     setSearches(d4.searches || [])
     setSuppliers(d5.suppliers || [])
+    setSupplierInquiries(d6.inquiries || [])
     setAuthed(true)
     setLoading(false)
   }
@@ -163,20 +182,22 @@ export default function AdminPage() {
     setLoading(true)
     setMessage('')
     const headers = { 'x-admin-secret': secret }
-    const [r1, r2, r3, r4, r5] = await Promise.all([
+    const [r1, r2, r3, r4, r5, r6] = await Promise.all([
       fetch('/api/admin/forum', { headers }),
       fetch('/api/admin/professionals-list', { headers }),
       fetch('/api/admin/leads', { headers }),
       fetch('/api/admin/searches', { headers }),
       fetch('/api/admin/suppliers/list', { headers }),
+      fetch('/api/admin/supplier-inquiries', { headers }),
     ])
     if (r1.status === 401) { setMessage('Wrong password.'); setLoading(false); return }
-    const [d1, d2, d3, d4, d5] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json(), r5.json()])
+    const [d1, d2, d3, d4, d5, d6] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json()])
     setPosts(d1.posts || [])
     setProfessionals(d2.professionals || [])
     setLeads(d3.leads || [])
     setSearches(d4.searches || [])
     setSuppliers(d5.suppliers || [])
+    setSupplierInquiries(d6.inquiries || [])
     setAuthed(true)
     setLoading(false)
   }
@@ -338,7 +359,8 @@ export default function AdminPage() {
   }
 
   const TABS: { id: Tab; label: string; count: number }[] = [
-    { id: 'leads', label: '线索', count: leads.length },
+    { id: 'leads', label: '专业人士询盘', count: leads.length },
+    { id: 'supplier-inquiries', label: '建材商询价', count: supplierInquiries.length },
     { id: 'searches', label: '查询记录', count: searches.length },
     { id: 'forum', label: '论坛帖子', count: posts.length },
     { id: 'professionals', label: '专业人士', count: professionals.length },
@@ -427,6 +449,58 @@ export default function AdminPage() {
                         <p className="text-xs text-slate-500">{lead.professional_category}</p>
                       </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── SUPPLIER INQUIRIES TAB ── */}
+        {tab === 'supplier-inquiries' && (
+          <div className="space-y-2">
+            {supplierInquiries.length === 0 && (
+              <p className="text-slate-500 text-sm text-center py-12">暂无建材商询价记录</p>
+            )}
+            {supplierInquiries.map(inq => (
+              <div key={inq.id} className="px-4 py-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                <div className="flex items-start justify-between gap-4 mb-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded px-2 py-0.5 font-medium">
+                      {inq.supplier_name}
+                    </span>
+                    {inq.suburb && (
+                      <span className="text-xs text-blue-400 bg-blue-500/10 rounded px-2 py-0.5">
+                        📍 {inq.suburb}
+                      </span>
+                    )}
+                    {inq.project_type && (
+                      <span className="text-xs text-slate-400 bg-white/5 rounded px-2 py-0.5">{inq.project_type}</span>
+                    )}
+                    <span className="text-xs text-slate-500">
+                      {new Date(inq.created_at).toLocaleString('zh-AU', { timeZone: 'Australia/Sydney', dateStyle: 'short', timeStyle: 'short' })}
+                    </span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs text-slate-500 mb-0.5">买家</p>
+                    <p className="text-sm text-white font-medium">{inq.buyer_name}</p>
+                    <a href={`mailto:${inq.buyer_email}`} className="text-xs text-orange-400 flex items-center gap-1 hover:text-orange-300">
+                      <Mail className="w-3 h-3" />{inq.buyer_email}
+                    </a>
+                    {inq.buyer_phone && (
+                      <a href={`tel:${inq.buyer_phone}`} className="text-xs text-slate-400 flex items-center gap-1 hover:text-white">
+                        <Phone className="w-3 h-3" />{inq.buyer_phone}
+                      </a>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 mb-0.5">询价内容</p>
+                    <p className="text-sm text-slate-300">{inq.products_needed}</p>
+                    {inq.quantity_estimate && <p className="text-xs text-slate-500 mt-0.5">数量：{inq.quantity_estimate}</p>}
+                    {inq.timeline && <p className="text-xs text-slate-500 mt-0.5">时间线：{inq.timeline}</p>}
+                    {inq.message && <p className="text-xs text-slate-500 mt-0.5 italic">"{inq.message}"</p>}
                   </div>
                 </div>
               </div>

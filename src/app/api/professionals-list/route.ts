@@ -8,12 +8,15 @@ export async function GET() {
 
   const { data } = await supabase
     .from('professionals')
-    .select('business_name, category, state, regions, description, verified, verification_status, website, wechat, phone, is_demo, languages')
-    .order('is_demo', { ascending: true })        // real professionals first (false < true)
-    .order('verified', { ascending: false })       // then verified before unverified
+    .select('business_name, category, state, regions, description, verified, website, wechat, phone, is_demo, languages')
+    .order('is_demo', { ascending: true })
+    .order('verified', { ascending: false })
     .order('created_at', { ascending: false })
 
-  return Response.json(data ?? [], {
+  // Strip internal fields before returning to public
+  const cleaned = (data ?? []).map(({ is_demo: _d, ...rest }) => rest)
+
+  return Response.json(cleaned, {
     headers: { 'Cache-Control': 'public, max-age=60' },
   })
 }
