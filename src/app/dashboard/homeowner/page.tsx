@@ -277,12 +277,17 @@ export default function HomeownerDashboard() {
           <div className="flex items-center gap-3">
             <HardHat className="w-5 h-5 text-gray-400 shrink-0" />
             <p className="text-sm text-gray-500">
-              {isZh ? '你是建房专业人士？免费将你的业务收录进目录。' : 'Are you a build professional? Get listed for free.'}
+              {isZh ? '你是建房专业人士或建材商？免费将你的业务收录进目录。' : 'Are you a building professional or supplier? Get listed for free.'}
             </p>
           </div>
-          <Link href="/join" className="shrink-0 flex items-center gap-1 text-gray-600 hover:text-gray-900 font-semibold text-sm whitespace-nowrap">
-            {isZh ? '申请入驻 →' : 'Get listed →'}
-          </Link>
+          <div className="shrink-0 flex items-center gap-3">
+            <Link href="/join" className="flex items-center gap-1 text-gray-600 hover:text-gray-900 font-semibold text-sm whitespace-nowrap">
+              {isZh ? '专业人士入驻 →' : 'Join as Professional →'}
+            </Link>
+            <Link href="/suppliers/register" className="flex items-center gap-1 text-orange-500 hover:text-orange-600 font-semibold text-sm whitespace-nowrap">
+              {isZh ? '建材商入驻 →' : 'List as Supplier →'}
+            </Link>
+          </div>
         </div>
       </div>
     </div>

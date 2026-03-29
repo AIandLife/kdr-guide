@@ -55,6 +55,69 @@ export async function POST(req: Request) {
   try {
     const { suburb, state, lotSize, lang = 'en', projectType = 'kdr', address, userId } = await req.json()
 
+    // ── CACHE CHECK ──────────────────────────────────────────────────────────
+    const supabaseCache = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+    const cacheKey = { suburb: suburb?.toLowerCase().trim(), state: state || null, project_type: projectType || 'kdr', lang }
+    const { data: cached } = await supabaseCache
+      .from('suburb_feasibility_cache')
+      .select('result_json, live_meta')
+      .eq('suburb', cacheKey.suburb)
+      .eq('project_type', cacheKey.project_type)
+      .eq('lang', cacheKey.lang)
+      .eq('state', cacheKey.state ?? '')
+      .gt('expires_at', new Date().toISOString())
+      .single()
+
+    if (cached?.result_json) {
+      // Patch lot-size-specific fields dynamically
+      const report = { ...cached.result_json as Record<string, unknown> }
+      if (lotSize) {
+        const sqm = Number(lotSize)
+        const ls = report.lotSizeCheck as { minRequired?: number; passed?: boolean; message?: string } | undefined
+        if (ls?.minRequired) {
+          ls.passed = sqm >= ls.minRequired
+        }
+        const ce = report.costEstimate as { demolition?: number[]; buildPerSqm?: number[]; totalEstimate?: number[] } | undefined
+        if (ce?.buildPerSqm) {
+          const [bMin, bMax] = ce.buildPerSqm
+          const [dMin, dMax] = ce.demolition ?? [0, 0]
+          ce.totalEstimate = [
+            Math.round((bMin * sqm + dMin) / 1000) * 1000,
+            Math.round((bMax * sqm + dMax) / 1000) * 1000,
+          ]
+        }
+      }
+
+      const encoder = new TextEncoder()
+      const jsonStr = JSON.stringify(report)
+      const liveMeta = cached.live_meta
+
+      // 2-second cosmetic delay so animation plays, then stream cached result
+      const readable = new ReadableStream({
+        async start(controller) {
+          await new Promise(r => setTimeout(r, 2000))
+          // Stream in chunks to trigger the frontend's streaming parser naturally
+          const chunkSize = 200
+          for (let i = 0; i < jsonStr.length; i += chunkSize) {
+            controller.enqueue(encoder.encode(jsonStr.slice(i, i + chunkSize)))
+            await new Promise(r => setTimeout(r, 10))
+          }
+          if (liveMeta) {
+            controller.enqueue(encoder.encode('\n__META__' + JSON.stringify(liveMeta)))
+          }
+          controller.close()
+        }
+      })
+
+      return new Response(readable, {
+        headers: { 'Content-Type': 'text/plain; charset=utf-8', 'X-Accel-Buffering': 'no', 'Cache-Control': 'no-cache' },
+      })
+    }
+    // ── END CACHE CHECK ──────────────────────────────────────────────────────
+
     if (!suburb) {
       return Response.json({ error: 'Suburb is required' }, { status: 400 })
     }
@@ -249,7 +312,7 @@ Generate a comprehensive, honest feasibility report tailored to the project type
     "demolition": <[min, max] in AUD — for KDR/dual-occ only; use [0,0] for renovation/extension/granny-flat>,
     "buildPerSqm": <[min, max] in AUD per sqm>,
     "totalEstimate": <if lot size given, provide [min, max] total for build + demolition, otherwise null>,
-    "totalNote": <${isZh ? '简体中文说明总费用包含内容，需特别注明：以上不含DA费、岩土检测、测量及建筑认证费（额外约$15,000–$40,000）' : 'explain what total includes; note that DA fees, soil test, surveying and certification add approx $15,000–$40,000 on top'}>
+    "totalNote": <${isZh ? '简体中文说明总费用包含内容，需特别注明：以上不含DA费、岩土检测、测量及建筑认证费（额外约$15,000–$40,000）' : 'explain what total includes; note that DA fees, soil test, surveying and certification add approx $15,000–$40,000 on top'}>,
     "additionalCosts": {
       "councilFees": <[min, max] AUD — council DA application fee for this LGA, typically $5,000–$15,000>,
       "s711Contributions": <[min, max] AUD — Section 7.11 / infrastructure contributions levied by council on new dwellings, typically $8,000–$30,000 in NSW; $0 for renovation/extension>,
@@ -311,7 +374,7 @@ CRITICAL ACCURACY RULES:
     // Stream Claude's response — returns tokens as they arrive
     const stream = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      max_tokens: 4096,
       stream: true,
       messages: [
         {
@@ -344,6 +407,19 @@ CRITICAL ACCURACY RULES:
               process.env.NEXT_PUBLIC_SUPABASE_URL!,
               process.env.SUPABASE_SERVICE_ROLE_KEY!
             )
+
+            // Save to suburb cache (upsert — overwrite if exists)
+            await supabase.from('suburb_feasibility_cache').upsert({
+              suburb: suburb?.toLowerCase().trim(),
+              state: state || null,
+              project_type: projectType || 'kdr',
+              lang,
+              result_json: parsed,
+              live_meta: liveMeta,
+              generated_at: new Date().toISOString(),
+              expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+            }, { onConflict: 'suburb,state,project_type,lang' })
+
             const dbState = state || parsed.state || null
             await supabase.from('feasibility_searches').insert({
               suburb,

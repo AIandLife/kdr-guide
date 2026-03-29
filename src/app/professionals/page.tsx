@@ -522,10 +522,14 @@ function ProfessionalsPageInner() {
         {/* Subtle B2B entry point */}
         <div className="border-t border-gray-200 pt-8 text-center">
           <p className="text-sm text-gray-400">
-            {isZh ? '你是建房专业人士？' : 'Are you a building professional?'}
+            {isZh ? '你是建房专业人士或建材商？' : 'Are you a building professional or supplier?'}
             {' '}
             <a href="/join" className="text-orange-500 hover:text-orange-600 font-medium transition-colors">
-              {isZh ? '免费收录你的业务 →' : 'List your business for free →'}
+              {isZh ? '专业人士免费入驻 →' : 'Join as Professional →'}
+            </a>
+            {' · '}
+            <a href="/suppliers/register" className="text-orange-500 hover:text-orange-600 font-medium transition-colors">
+              {isZh ? '建材商免费入驻 →' : 'List as Supplier →'}
             </a>
           </p>
         </div>
