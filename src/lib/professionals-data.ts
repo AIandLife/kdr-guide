@@ -136,6 +136,15 @@ const raw: Omit<Professional, 'slug'>[] = [
   },
   // ── TOWN PLANNERS ──
   {
+    name: 'Urban Planning Solutions',
+    category: 'planner', state: 'NSW',
+    regions: ['Sydney', 'Central Coast', 'Blue Mountains'],
+    specialties: ['DA Applications', 'Rezoning', 'Planning Permits', 'Heritage'],
+    verified: false, featured: false,
+    description: 'Sydney-based planning consultancy specialising in residential DA applications, heritage overlays, and rezoning. Strong track record with local councils across Greater Sydney.',
+    website: null, wechat: null,
+  },
+  {
     name: 'Urbis',
     category: 'planner', state: 'NSW',
     regions: ['Sydney', 'Brisbane', 'Melbourne', 'All Australia'],

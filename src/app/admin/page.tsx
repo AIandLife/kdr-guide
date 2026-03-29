@@ -92,7 +92,7 @@ export default function AdminPage() {
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user?.email === 'recommendedforterry@gmail.com') {
+      if (user?.email === 'recommendforterry@gmail.com') {
         fetchAdminSecret()
       }
     })
@@ -113,7 +113,7 @@ export default function AdminPage() {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/admin` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=/admin` },
     })
   }
 

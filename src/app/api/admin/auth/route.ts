@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 
-const ADMIN_EMAIL = 'recommendedforterry@gmail.com'
+const ADMIN_EMAIL = 'recommendforterry@gmail.com'
 
 export async function GET() {
   const supabase = await createClient()

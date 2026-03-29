@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { businessName, contactName, email, phone, state, category, regions, website, description, abn, registrationCountry, businessNameEn, contactNameEn, descriptionEn, userId, languages } = body
+    const { businessName, contactName, email, phone, state, category, regions, website, description, businessNameEn, contactNameEn, descriptionEn, userId, languages } = body
 
     if (!businessName || !contactName || !email || !state || !category) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 })
@@ -48,8 +48,6 @@ export async function POST(req: Request) {
         regions: regions || [],
         website: website || null,
         description: description || null,
-        abn: abn || null,
-        registration_country: registrationCountry || 'australia',
         business_name_en: businessNameEn || null,
         contact_name_en: contactNameEn || null,
         description_en: descriptionEn || null,
@@ -78,8 +76,6 @@ export async function POST(req: Request) {
         description: description || null,
         verified: false,
         verification_status: 'free',
-        abn: abn || null,
-        registration_country: registrationCountry || 'australia',
         business_name_en: businessNameEn || null,
         contact_name_en: contactNameEn || null,
         description_en: descriptionEn || null,
@@ -103,7 +99,6 @@ export async function POST(req: Request) {
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Category</td><td style="padding:8px">${category}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Regions</td><td style="padding:8px">${Array.isArray(regions) ? regions.join(', ') : '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Website</td><td style="padding:8px">${website || '—'}</td></tr>
-          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">ABN</td><td style="padding:8px">${abn || '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Description</td><td style="padding:8px">${description || '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">EN Business Name</td><td style="padding:8px">${businessNameEn || '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Trial Period</td><td style="padding:8px">${trialStart} → ${trialEnd}</td></tr>

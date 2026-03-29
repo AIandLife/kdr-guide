@@ -236,6 +236,7 @@ function ProfessionalsPageInner() {
     fetch('/api/professionals-list')
       .then(r => r.json())
       .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,verified:boolean,website:string|null,wechat:string|null,phone:string|null,is_demo:boolean,languages:string[]|null}>) => {
+        const VALID_CATS = new Set(['builder','designer','planner','demolition','engineer','electrician','plumber','finance','other'])
         const CAT_MAP: Record<string, string> = {
           'Builder': 'builder', 'Town Planner': 'planner', 'Building Designer': 'designer',
           'Demolition Contractor': 'demolition', 'Structural Engineer': 'engineer',
@@ -245,7 +246,7 @@ function ProfessionalsPageInner() {
         const pros: Professional[] = rows.map(r => ({
           slug: r.business_name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           name: r.business_name,
-          category: CAT_MAP[r.category] || 'other',
+          category: VALID_CATS.has(r.category) ? r.category : (CAT_MAP[r.category] || 'other'),
           state: r.state,
           regions: r.regions || [],
           specialties: [],
