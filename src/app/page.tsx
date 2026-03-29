@@ -320,27 +320,39 @@ export default function HomePage() {
 
         <div className="flex justify-center">
           {/* WeChat Official Account + Group */}
-          <div className="rounded-2xl p-8 text-center flex flex-col items-center bg-white border border-gray-100 shadow-sm max-w-sm w-full">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-2xl bg-green-50">
-              💬
+          {lang === 'zh' ? (
+            <div className="rounded-2xl p-8 text-center flex flex-col items-center bg-white border border-gray-100 shadow-sm max-w-sm w-full">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-2xl bg-green-50">
+                💬
+              </div>
+              <h3 className="font-bold text-gray-900 text-lg mb-2">关注公众号，加入微信群</h3>
+              <p className="text-sm text-gray-500 mb-5 leading-relaxed">
+                关注公众号「澳洲建房圈」，加入改建讨论群，和业主、建筑商、设计师、规划师直接交流。
+              </p>
+              <img
+                src="/wechat-official.jpg"
+                alt="澳洲建房圈公众号二维码"
+                className="w-36 h-36 rounded-xl object-cover mb-3"
+              />
+              <p className="text-xs text-gray-400">搜索公众号：澳洲建房圈</p>
             </div>
-            <h3 className="font-bold text-gray-900 text-lg mb-2">
-              {lang === 'zh' ? '关注公众号，加入微信群' : 'WeChat — Official Account & Group'}
-            </h3>
-            <p className="text-sm text-gray-500 mb-5 leading-relaxed">
-              {lang === 'zh'
-                ? '关注公众号「澳洲建房圈」，加入改建讨论群，和业主、建筑商、设计师、规划师直接交流。'
-                : 'Follow our official account and join the discussion group — homeowners, builders, designers, and planners all in one place.'}
-            </p>
-            <img
-              src="/wechat-official.jpg"
-              alt="澳洲建房圈公众号二维码"
-              className="w-36 h-36 rounded-xl object-cover mb-3"
-            />
-            <p className="text-xs text-gray-400">
-              {lang === 'zh' ? '搜索公众号：澳洲建房圈' : 'Search WeChat: AusBuildCircle'}
-            </p>
-          </div>
+          ) : (
+            <div className="rounded-2xl p-8 text-center flex flex-col items-center bg-white border border-gray-100 shadow-sm max-w-sm w-full">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-2xl bg-green-50">
+                📱
+              </div>
+              <h3 className="font-bold text-gray-900 text-lg mb-2">Join the Community on WhatsApp</h3>
+              <p className="text-sm text-gray-500 mb-5 leading-relaxed">
+                Connect directly with Terry and the AusBuildCircle community — homeowners, builders, designers, and planners all in one place.
+              </p>
+              <img
+                src="/whatsapp-qr.jpg"
+                alt="AusBuildCircle WhatsApp QR Code"
+                className="w-36 h-36 rounded-xl object-cover mb-3"
+              />
+              <p className="text-xs text-gray-400">Scan to connect on WhatsApp</p>
+            </div>
+          )}
         </div>
       </section>
 

@@ -94,28 +94,23 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
-      subject: `Your 澳洲建房圈 listing has been received — ${businessName}`,
+      subject: `入驻申请已收到 — ${businessName}`,
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto">
           <div style="background:#f97316;padding:24px;border-radius:12px 12px 0 0;text-align:center">
-            <h1 style="color:white;margin:0;font-size:22px">澳洲建房圈 — Listing Received</h1>
+            <h1 style="color:white;margin:0;font-size:22px">✅ 入驻申请已收到</h1>
           </div>
           <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
-            <p>Hi ${contactName},</p>
-            <p>Thank you for submitting <strong>${businessName}</strong> to the 澳洲建房圈 directory.</p>
-            ${status === 'unverified'
-              ? `<div style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:16px 0">
-                  <p style="margin:0 0 8px;font-weight:bold">Current status: Unverified</p>
-                  <p style="margin:0;color:#6b7280;font-size:14px">Your business name has been added to our directory. Contact details and website are not publicly shown until verified.</p>
-                  <p style="margin:12px 0 0;font-size:14px">To get verified and have your full profile displayed, reply to this email or visit <a href="https://ausbuildcircle.com/suppliers/register">ausbuildcircle.com/suppliers/register</a> to complete your verification application.</p>
-                </div>`
-              : `<div style="background:white;border:2px solid #f97316;border-radius:8px;padding:16px;margin:16px 0">
-                  <p style="margin:0 0 8px;font-weight:bold;color:#f97316">Verification application received</p>
-                  <p style="margin:0;color:#6b7280;font-size:14px">We'll review your documents and get back to you within 2 business days.</p>
-                </div>`
-            }
-            <p>Questions? Reply to this email anytime.</p>
-            <p>The 澳洲建房圈 Team</p>
+            <p style="color:#111827">Hi ${contactName}，</p>
+            <p style="color:#374151">感谢你将 <strong>${businessName}</strong> 提交至澳洲建房圈建材目录。</p>
+            <p style="color:#374151">我们会在 1–2 个工作日内完成审核，审核通过后你的商家信息将对买家和业主可见。</p>
+            <p style="color:#374151">如有问题，直接回复本邮件即可。</p>
+            <p style="color:#374151">澳洲建房圈团队</p>
+            <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0">
+            <p style="font-size:12px;color:#9ca3af">
+              <a href="https://ausbuildcircle.com/suppliers" style="color:#f97316">浏览建材目录</a> ·
+              <a href="https://ausbuildcircle.com/suppliers/account" style="color:#f97316">管理我的商家信息</a>
+            </p>
           </div>
         </div>
       `,

@@ -464,11 +464,6 @@ export default function SuppliersPage() {
                         {supplier.wechat}
                       </span>
                     )}
-                    {!supplier.verified && (
-                      <Link href="/suppliers/register" className="text-xs text-gray-400 hover:text-orange-500 transition-colors ml-auto">
-                        {isZh ? '申请认证 →' : 'Get Verified →'}
-                      </Link>
-                    )}
                   </div>
                 </div>
               </div>

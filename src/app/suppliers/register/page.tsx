@@ -520,36 +520,20 @@ export default function SupplierRegisterPage() {
               {isZh ? '提交成功！' : 'Listing submitted!'}
             </h2>
             <p className="text-gray-500 mb-6 max-w-sm mx-auto leading-relaxed">
-              {result.status === 'pending_review'
-                ? (isZh
-                    ? '我们已收到你的认证申请，将在 2 个工作日内审核并回复。'
-                    : 'Your verification application has been received. We\'ll review and respond within 2 business days.')
-                : (isZh
-                    ? '你的公司名称现已收录在建材目录中（未认证状态）。如需展示联系方式，请申请认证。'
-                    : 'Your business name is now listed in our directory (unverified). Apply for verification to show your contact details.')}
+              {isZh
+                ? '你的公司信息已收录在建材目录中，审核通过后即可展示给买家。我们已向你的邮箱发送确认邮件。'
+                : 'Your business has been submitted to the directory. Once approved, it will be visible to homeowners and buyers. A confirmation email has been sent.'}
             </p>
 
-            <div className="rounded-xl p-4 mb-6 text-left bg-white border border-gray-200 shadow-sm">
-              <p className="text-xs text-gray-400 mb-2">{isZh ? '当前状态' : 'Current status'}</p>
-              <p className="font-semibold text-gray-900">
-                {result.status === 'pending_review'
-                  ? (isZh ? '⏳ 等待审核' : '⏳ Pending review')
-                  : (isZh ? '🔍 未认证（已收录）' : '🔍 Unverified (listed)')}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                {isZh ? '我们已向你的邮箱发送确认邮件。' : 'A confirmation email has been sent to you.'}
-              </p>
-            </div>
-
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <a href="/suppliers"
+              <a href="/suppliers/account"
                 className="px-6 py-3 rounded-xl text-white font-semibold transition-all"
                 style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}>
-                {isZh ? '查看建材目录' : 'View Directory'}
+                {isZh ? '查看我的商家信息' : 'Manage My Listing'}
               </a>
-              <a href="/"
+              <a href="/suppliers"
                 className="px-6 py-3 rounded-xl text-gray-600 font-medium transition-colors bg-gray-100 hover:bg-gray-200 border border-gray-200">
-                {isZh ? '返回首页' : 'Back to Home'}
+                {isZh ? '浏览建材目录' : 'Browse Directory'}
               </a>
             </div>
           </div>
