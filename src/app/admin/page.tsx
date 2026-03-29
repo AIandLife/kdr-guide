@@ -28,6 +28,26 @@ interface Professional {
   created_at: string
 }
 
+interface Supplier {
+  id: string
+  business_name: string
+  contact_name: string
+  email: string
+  phone: string | null
+  website: string | null
+  wechat: string | null
+  category: string
+  origin: string
+  states: string[]
+  description: string | null
+  status: string
+  abn: string | null
+  google_rating: number | null
+  google_reviews: number | null
+  featured: boolean
+  created_at: string
+}
+
 interface Lead {
   id: string
   homeowner_name: string
@@ -52,7 +72,7 @@ interface Search {
   created_at: string
 }
 
-type Tab = 'forum' | 'professionals' | 'leads' | 'searches' | 'newsletter'
+type Tab = 'forum' | 'professionals' | 'suppliers' | 'leads' | 'searches' | 'newsletter'
 
 export default function AdminPage() {
   const [secret, setSecret] = useState('')
@@ -62,7 +82,9 @@ export default function AdminPage() {
   const [authError, setAuthError] = useState('')
   const [posts, setPosts] = useState<ForumPost[]>([])
   const [professionals, setProfessionals] = useState<Professional[]>([])
+  const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [leads, setLeads] = useState<Lead[]>([])
+  const [expandedId, setExpandedId] = useState<string | null>(null)
   const [searches, setSearches] = useState<Search[]>([])
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -120,17 +142,19 @@ export default function AdminPage() {
   async function loadData(s: string) {
     setLoading(true)
     const headers = { 'x-admin-secret': s }
-    const [r1, r2, r3, r4] = await Promise.all([
+    const [r1, r2, r3, r4, r5] = await Promise.all([
       fetch('/api/admin/forum', { headers }),
       fetch('/api/admin/professionals-list', { headers }),
       fetch('/api/admin/leads', { headers }),
       fetch('/api/admin/searches', { headers }),
+      fetch('/api/admin/suppliers/list', { headers }),
     ])
-    const [d1, d2, d3, d4] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json()])
+    const [d1, d2, d3, d4, d5] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json(), r5.json()])
     setPosts(d1.posts || [])
     setProfessionals(d2.professionals || [])
     setLeads(d3.leads || [])
     setSearches(d4.searches || [])
+    setSuppliers(d5.suppliers || [])
     setAuthed(true)
     setLoading(false)
   }
@@ -139,18 +163,20 @@ export default function AdminPage() {
     setLoading(true)
     setMessage('')
     const headers = { 'x-admin-secret': secret }
-    const [r1, r2, r3, r4] = await Promise.all([
+    const [r1, r2, r3, r4, r5] = await Promise.all([
       fetch('/api/admin/forum', { headers }),
       fetch('/api/admin/professionals-list', { headers }),
       fetch('/api/admin/leads', { headers }),
       fetch('/api/admin/searches', { headers }),
+      fetch('/api/admin/suppliers/list', { headers }),
     ])
     if (r1.status === 401) { setMessage('Wrong password.'); setLoading(false); return }
-    const [d1, d2, d3, d4] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json()])
+    const [d1, d2, d3, d4, d5] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json(), r5.json()])
     setPosts(d1.posts || [])
     setProfessionals(d2.professionals || [])
     setLeads(d3.leads || [])
     setSearches(d4.searches || [])
+    setSuppliers(d5.suppliers || [])
     setAuthed(true)
     setLoading(false)
   }
@@ -164,7 +190,7 @@ export default function AdminPage() {
     if (selected.size === 0) return
     if (!confirm(`Delete ${selected.size} item(s)?`)) return
     const ids = Array.from(selected)
-    const url = tab === 'forum' ? '/api/admin/forum' : '/api/admin/professionals-list'
+    const url = tab === 'forum' ? '/api/admin/forum' : tab === 'suppliers' ? '/api/admin/suppliers/list' : '/api/admin/professionals-list'
     const res = await fetch(url, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
@@ -199,7 +225,7 @@ export default function AdminPage() {
       : professionals.filter(p => p.is_demo).map(p => p.id)
     if (items.length === 0) { setMessage('No demo data to delete.'); return }
     if (!confirm(`Delete ALL ${items.length} demo items?`)) return
-    const url = tab === 'forum' ? '/api/admin/forum' : '/api/admin/professionals-list'
+    const url = tab === 'forum' ? '/api/admin/forum' : tab === 'suppliers' ? '/api/admin/suppliers/list' : '/api/admin/professionals-list'
     const res = await fetch(url, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
@@ -316,6 +342,7 @@ export default function AdminPage() {
     { id: 'searches', label: '查询记录', count: searches.length },
     { id: 'forum', label: '论坛帖子', count: posts.length },
     { id: 'professionals', label: '专业人士', count: professionals.length },
+    { id: 'suppliers', label: '建材商', count: suppliers.length },
     { id: 'newsletter', label: '发 Newsletter', count: 0 },
   ]
 
@@ -334,9 +361,6 @@ export default function AdminPage() {
             <button onClick={reload} disabled={loading} className="text-slate-400 hover:text-white transition-colors">
               <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
-            <a href="/admin/suppliers" className="text-slate-400 hover:text-white text-sm flex items-center gap-1">
-              <ExternalLink className="w-4 h-4" /> Suppliers
-            </a>
           </div>
         </div>
 
@@ -519,32 +543,109 @@ export default function AdminPage() {
             </div>
             <div className="space-y-2">
               {professionals.map(pro => (
-                <div key={pro.id} onClick={() => toggleSelect(pro.id)}
-                  className={`flex items-start gap-3 px-4 py-3 rounded-xl cursor-pointer transition-colors ${selected.has(pro.id) ? 'bg-red-500/10 border border-red-500/30' : 'border border-transparent hover:border-white/10'}`}
-                  style={{ background: selected.has(pro.id) ? undefined : 'rgba(255,255,255,0.03)' }}
+                <div key={pro.id} style={{ background: selected.has(pro.id) ? undefined : 'rgba(255,255,255,0.03)' }}
+                  className={`rounded-xl transition-colors ${selected.has(pro.id) ? 'bg-red-500/10 border border-red-500/30' : 'border border-transparent hover:border-white/10'}`}
                 >
-                  <input type="checkbox" checked={selected.has(pro.id)} onChange={() => toggleSelect(pro.id)} onClick={e => e.stopPropagation()} className="mt-1 accent-orange-500" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      {pro.is_demo && <span className="text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded px-1.5 py-0.5 font-medium">DEMO</span>}
-                      <span className="text-xs text-slate-500 bg-white/5 rounded px-1.5 py-0.5">{pro.category}</span>
-                      <span className="text-xs text-slate-500">{pro.state}</span>
-                      <span className={`text-xs rounded px-1.5 py-0.5 ${pro.verified ? 'bg-green-500/20 text-green-400' : pro.verification_status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-slate-500/20 text-slate-400'}`}>
-                        {pro.verified ? '✅ verified' : pro.verification_status}
-                      </span>
+                  <div className="flex items-start gap-3 px-4 py-3 cursor-pointer" onClick={() => setExpandedId(expandedId === pro.id ? null : pro.id)}>
+                    <input type="checkbox" checked={selected.has(pro.id)} onChange={() => toggleSelect(pro.id)} onClick={e => e.stopPropagation()} className="mt-1 accent-orange-500" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        {pro.is_demo && <span className="text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded px-1.5 py-0.5 font-medium">DEMO</span>}
+                        <span className="text-xs text-slate-500 bg-white/5 rounded px-1.5 py-0.5">{pro.category}</span>
+                        <span className="text-xs text-slate-500">{pro.state}</span>
+                        <span className={`text-xs rounded px-1.5 py-0.5 ${pro.verified ? 'bg-green-500/20 text-green-400' : pro.verification_status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-slate-500/20 text-slate-400'}`}>
+                          {pro.verified ? '✅ verified' : pro.verification_status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-white font-medium">{pro.business_name}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{pro.contact_name} · {pro.email} · {new Date(pro.created_at).toLocaleDateString()}</p>
                     </div>
-                    <p className="text-sm text-white font-medium">{pro.business_name}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{pro.contact_name} · {pro.email} · {new Date(pro.created_at).toLocaleDateString()}</p>
+                    <button
+                      onClick={e => { e.stopPropagation(); toggleVerify(pro.id, pro.verified) }}
+                      title={pro.verified ? '取消认证' : '手动认证'}
+                      className={`shrink-0 p-1.5 rounded-lg transition-colors ${pro.verified ? 'text-green-400 hover:bg-red-500/20 hover:text-red-400' : 'text-slate-500 hover:bg-green-500/20 hover:text-green-400'}`}
+                    >
+                      {pro.verified ? <BadgeCheck className="w-5 h-5" /> : <BadgeX className="w-5 h-5" />}
+                    </button>
                   </div>
-                  <button
-                    onClick={e => { e.stopPropagation(); toggleVerify(pro.id, pro.verified) }}
-                    title={pro.verified ? '取消认证' : '手动认证'}
-                    className={`shrink-0 p-1.5 rounded-lg transition-colors ${pro.verified ? 'text-green-400 hover:bg-red-500/20 hover:text-red-400' : 'text-slate-500 hover:bg-green-500/20 hover:text-green-400'}`}
-                  >
-                    {pro.verified ? <BadgeCheck className="w-5 h-5" /> : <BadgeX className="w-5 h-5" />}
-                  </button>
+                  {expandedId === pro.id && (
+                    <div className="px-4 pb-4 pt-0 border-t border-white/5 mt-1 space-y-1 text-xs text-slate-400">
+                      <p><span className="text-slate-500">Email:</span> {pro.email}</p>
+                      <p><span className="text-slate-500">State:</span> {pro.state} · <span className="text-slate-500">Category:</span> {pro.category}</p>
+                      <p><span className="text-slate-500">Status:</span> {pro.verification_status} · Verified: {pro.verified ? 'Yes' : 'No'} · Demo: {pro.is_demo ? 'Yes' : 'No'}</p>
+                      <p><span className="text-slate-500">Created:</span> {new Date(pro.created_at).toLocaleString()}</p>
+                    </div>
+                  )}
                 </div>
               ))}
+            </div>
+          </>
+        )}
+
+        {/* ── SUPPLIERS TAB ── */}
+        {tab === 'suppliers' && (
+          <>
+            <div className="flex items-center gap-3 mb-4">
+              {selected.size > 0 && (
+                <button onClick={deleteSelected} className="text-xs px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors flex items-center gap-1">
+                  <Trash2 className="w-3.5 h-3.5" /> 删除选中 ({selected.size})
+                </button>
+              )}
+            </div>
+            <div className="space-y-2">
+              {suppliers.map(sup => (
+                <div key={sup.id} style={{ background: selected.has(sup.id) ? undefined : 'rgba(255,255,255,0.03)' }}
+                  className={`rounded-xl transition-colors ${selected.has(sup.id) ? 'bg-red-500/10 border border-red-500/30' : 'border border-transparent hover:border-white/10'}`}
+                >
+                  <div className="flex items-start gap-3 px-4 py-3 cursor-pointer" onClick={() => setExpandedId(expandedId === sup.id ? null : sup.id)}>
+                    <input type="checkbox" checked={selected.has(sup.id)} onChange={() => toggleSelect(sup.id)} onClick={e => e.stopPropagation()} className="mt-1 accent-orange-500" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-xs text-slate-500 bg-white/5 rounded px-1.5 py-0.5">{sup.category}</span>
+                        <span className="text-xs text-slate-500">{sup.origin}</span>
+                        <span className={`text-xs rounded px-1.5 py-0.5 ${sup.status === 'verified' ? 'bg-green-500/20 text-green-400' : sup.status === 'unverified' ? 'bg-slate-500/20 text-slate-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                          {sup.status}
+                        </span>
+                        {sup.featured && <span className="text-xs bg-orange-500/20 text-orange-400 rounded px-1.5 py-0.5">⭐ featured</span>}
+                      </div>
+                      <p className="text-sm text-white font-medium">{sup.business_name}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{sup.contact_name} · {sup.email} · {new Date(sup.created_at).toLocaleDateString()}</p>
+                    </div>
+                    <button
+                      onClick={async e => {
+                        e.stopPropagation()
+                        const newStatus = sup.status === 'verified' ? 'unverified' : 'verified'
+                        await fetch('/api/admin/approve-supplier', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
+                          body: JSON.stringify({ id: sup.id, action: newStatus === 'verified' ? 'approve' : 'reject' }),
+                        })
+                        setSuppliers(prev => prev.map(s => s.id === sup.id ? { ...s, status: newStatus } : s))
+                        setMessage(`✅ ${sup.business_name} 状态已更新为 ${newStatus}`)
+                      }}
+                      title={sup.status === 'verified' ? '取消认证' : '手动认证'}
+                      className={`shrink-0 p-1.5 rounded-lg transition-colors ${sup.status === 'verified' ? 'text-green-400 hover:bg-red-500/20 hover:text-red-400' : 'text-slate-500 hover:bg-green-500/20 hover:text-green-400'}`}
+                    >
+                      {sup.status === 'verified' ? <BadgeCheck className="w-5 h-5" /> : <BadgeX className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  {expandedId === sup.id && (
+                    <div className="px-4 pb-4 pt-0 border-t border-white/5 mt-1 space-y-1 text-xs text-slate-400">
+                      <p><span className="text-slate-500">Phone:</span> {sup.phone || '—'}</p>
+                      <p><span className="text-slate-500">Email:</span> {sup.email}</p>
+                      <p><span className="text-slate-500">Website:</span> {sup.website || '—'}</p>
+                      <p><span className="text-slate-500">WeChat:</span> {sup.wechat || '—'}</p>
+                      <p><span className="text-slate-500">ABN:</span> {sup.abn || '—'}</p>
+                      <p><span className="text-slate-500">States:</span> {sup.states?.join(', ') || '—'}</p>
+                      <p><span className="text-slate-500">Category:</span> {sup.category} · Origin: {sup.origin}</p>
+                      {sup.google_rating && <p><span className="text-slate-500">Google:</span> {sup.google_rating}★ ({sup.google_reviews} reviews)</p>}
+                      {sup.description && <p><span className="text-slate-500">Description:</span> {sup.description}</p>}
+                      <p><span className="text-slate-500">Created:</span> {new Date(sup.created_at).toLocaleString()}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {suppliers.length === 0 && <p className="text-slate-500 text-sm text-center py-8">暂无建材商数据</p>}
             </div>
           </>
         )}
