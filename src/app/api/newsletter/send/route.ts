@@ -18,14 +18,14 @@ export async function POST(req: Request) {
   const { testEmail, ...newsletterData } = body
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM_EMAIL || 'noreply@ausbuildcircle.com'
+  const FROM = process.env.RESEND_FROM_EMAIL || 'terry@ausbuildcircle.com'
   const subject = `澳洲建房圈 Issue #${String(newsletterData.issueNumber).padStart(2, '0')} · ${newsletterData.heroTitle}`
 
   // Test mode: send to one email only
   if (testEmail) {
     const html = renderNewsletter({ ...newsletterData, unsubscribeToken: 'test' })
     const result = await resend.emails.send({
-      from: `AusBuildCircle 澳洲建房圈 <${FROM}>`,
+      from: `Terry · 澳洲建房圈 <${FROM}>`,
       to: testEmail,
       subject: `[TEST] ${subject}`,
       html,
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     await Promise.all(batch.map(async (sub) => {
       const html = renderNewsletter({ ...newsletterData, unsubscribeToken: sub.unsubscribe_token })
       const result = await resend.emails.send({
-        from: `AusBuildCircle 澳洲建房圈 <${FROM}>`,
+        from: `Terry · 澳洲建房圈 <${FROM}>`,
         to: sub.email,
         subject,
         html,
