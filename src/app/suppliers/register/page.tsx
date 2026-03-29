@@ -24,7 +24,7 @@ export default function SupplierRegisterPage() {
   const { user, loading: authLoading } = useAuth()
   const [showLoginGate, setShowLoginGate] = useState(false)
 
-  const [step, setStep] = useState(1) // 1=basic, 2=contact, 3=verify, 4=done
+  const [step, setStep] = useState(1) // 1=basic, 2=contact, 4=done  (step 3 verification reserved for future)
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<{ id: string; status: string } | null>(null)
   const [error, setError] = useState('')
@@ -142,8 +142,8 @@ export default function SupplierRegisterPage() {
           </h1>
           <p className="text-gray-500">
             {isZh
-              ? '免费收录。填写基本信息后，你的公司名称即出现在目录中。如需展示联系方式，可申请认证。'
-              : 'Free to list. Your business name appears in the directory immediately. Apply for verification to show contact details.'}
+              ? '免费收录。填写基本信息和联系方式，审核通过后即出现在建材目录中。'
+              : 'Free to list. Fill in your business info and contact details — you\'ll appear in the directory once approved.'}
           </p>
         </div>
 
@@ -153,7 +153,6 @@ export default function SupplierRegisterPage() {
             {[
               { n: 1, label: isZh ? '基本信息' : 'Business Info' },
               { n: 2, label: isZh ? '联系方式' : 'Contact' },
-              { n: 3, label: isZh ? '认证资料' : 'Verification' },
             ].map(({ n, label }, i) => (
               <div key={n} className="flex items-center flex-1">
                 <div className="flex items-center gap-2">
@@ -167,7 +166,7 @@ export default function SupplierRegisterPage() {
                   </div>
                   <span className={`text-sm hidden sm:block ${step >= n ? 'text-gray-900' : 'text-gray-400'}`}>{label}</span>
                 </div>
-                {i < 2 && <div className="flex-1 h-px mx-3" style={{ background: step > n ? '#f97316' : '#e5e7eb' }} />}
+                {i < 1 && <div className="flex-1 h-px mx-3" style={{ background: step > n ? '#f97316' : '#e5e7eb' }} />}
               </div>
             ))}
           </div>
@@ -309,26 +308,30 @@ export default function SupplierRegisterPage() {
                 className={inputClass} />
             </div>
 
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
             <div className="flex gap-3">
               <button onClick={() => setStep(1)}
                 className="flex-1 py-3 rounded-xl text-gray-600 font-medium transition-colors hover:bg-gray-200 bg-gray-100 border border-gray-200">
                 {isZh ? '上一步' : 'Back'}
               </button>
               <button
-                onClick={() => setStep(3)}
-                disabled={!form.contactName || !form.email}
-                className="flex-1 py-3 rounded-xl text-white font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                onClick={submit}
+                disabled={!form.contactName || !form.email || submitting}
+                className="flex-1 py-3.5 rounded-xl text-white font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-40"
                 style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
               >
-                {isZh ? '下一步' : 'Next'}
-                <ChevronRight className="w-4 h-4" />
+                {submitting
+                  ? (isZh ? '提交中…' : 'Submitting…')
+                  : (isZh ? '提交入驻申请' : 'Submit Listing')}
+                {!submitting && <ChevronRight className="w-4 h-4" />}
               </button>
             </div>
           </div>
         )}
 
-        {/* STEP 3 — Verification choice */}
-        {step === 3 && (
+        {/* STEP 3 — Verification choice (reserved for future paid tier — currently skipped) */}
+        {false && step === 3 && (
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-xl font-bold text-gray-900 mb-1">
