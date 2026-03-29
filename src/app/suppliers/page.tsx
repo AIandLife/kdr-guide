@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   CheckCircle, HelpCircle, Globe,
-  Mail, Phone, Star, ChevronRight, MapPin, MessageCircle
+  Mail, Phone, Star, MapPin, MessageCircle, X, Send, Loader2
 } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
@@ -101,6 +101,24 @@ function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
   )
 }
 
+interface EnquiryForm {
+  buyerName: string
+  buyerEmail: string
+  buyerPhone: string
+  suburb: string
+  projectType: string
+  productsNeeded: string
+  quantityEstimate: string
+  timeline: string
+  message: string
+}
+
+const BLANK_FORM: EnquiryForm = {
+  buyerName: '', buyerEmail: '', buyerPhone: '',
+  suburb: '', projectType: '', productsNeeded: '',
+  quantityEstimate: '', timeline: '', message: '',
+}
+
 export default function SuppliersPage() {
   const { lang } = useLang()
   const t = translations[lang]
@@ -110,6 +128,45 @@ export default function SuppliersPage() {
   const [activeOrigin, setActiveOrigin] = useState<SupplierOrigin | 'all'>('all')
   const [verifiedOnly, setVerifiedOnly] = useState(false)
   const [dbSuppliers, setDbSuppliers] = useState<Supplier[]>([])
+  const [enquiryTarget, setEnquiryTarget] = useState<Supplier | null>(null)
+  const [form, setForm] = useState<EnquiryForm>(BLANK_FORM)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+
+  function openEnquiry(supplier: Supplier) {
+    const cat = SUPPLIER_CATEGORIES[supplier.category]
+    setForm({ ...BLANK_FORM, productsNeeded: isZh ? cat.zh : cat.en })
+    setSubmitted(false)
+    setSubmitError('')
+    setEnquiryTarget(supplier)
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!enquiryTarget) return
+    setSubmitting(true)
+    setSubmitError('')
+    try {
+      const res = await fetch('/api/suppliers/enquire', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          supplierId: enquiryTarget.id,
+          supplierName: enquiryTarget.name,
+          supplierCategory: enquiryTarget.category,
+          supplierEmail: enquiryTarget.email || null,
+          ...form,
+        }),
+      })
+      const data = await res.json()
+      if (data.success) setSubmitted(true)
+      else setSubmitError(data.error || (isZh ? '提交失败，请稍后再试。' : 'Submission failed. Please try again.'))
+    } catch {
+      setSubmitError(isZh ? '网络错误，请稍后再试。' : 'Network error. Please try again.')
+    }
+    setSubmitting(false)
+  }
 
   useEffect(() => {
     fetch('/api/suppliers/list')
@@ -371,53 +428,49 @@ export default function SuppliersPage() {
                   {supplier.states.join(' · ')}
                 </div>
 
-                {/* Contact links (only for verified) */}
-                {supplier.verified ? (
-                  <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-100">
+                {/* Actions */}
+                <div className="pt-3 border-t border-gray-100 space-y-2">
+                  {/* Primary CTA: Enquire */}
+                  <button
+                    onClick={() => openEnquiry(supplier)}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-sm font-semibold transition-colors"
+                  >
+                    <Send className="w-4 h-4" />
+                    {isZh ? '发送询价' : 'Request Quote'}
+                  </button>
+
+                  {/* Secondary links */}
+                  <div className="flex flex-wrap gap-x-3 gap-y-1">
                     {supplier.website && (
                       <a
-                        href={`https://${supplier.website}`}
+                        href={supplier.website.startsWith('http') ? supplier.website : `https://${supplier.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-xs text-orange-500 hover:text-orange-600 transition-colors font-medium"
+                        className="flex items-center gap-1 text-xs text-gray-400 hover:text-orange-500 transition-colors"
                       >
-                        <Globe className="w-3.5 h-3.5" />
+                        <Globe className="w-3 h-3" />
                         {isZh ? '访问网站' : 'Website'}
                       </a>
                     )}
                     {supplier.phone && (
-                      <a
-                        href={`tel:${supplier.phone}`}
-                        className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 transition-colors"
-                      >
-                        <Phone className="w-3.5 h-3.5" />
+                      <a href={`tel:${supplier.phone}`} className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 transition-colors">
+                        <Phone className="w-3 h-3" />
                         {supplier.phone}
                       </a>
                     )}
-                    {supplier.email && (
-                      <a
-                        href={`mailto:${supplier.email}`}
-                        className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 transition-colors"
-                      >
-                        <Mail className="w-3.5 h-3.5" />
-                        {isZh ? '发送邮件' : 'Email'}
-                      </a>
-                    )}
                     {supplier.wechat && (
-                      <span className="flex items-center gap-1.5 text-xs text-green-600">
-                        <MessageCircle className="w-3.5 h-3.5" />
-                        微信: {supplier.wechat}
+                      <span className="flex items-center gap-1 text-xs text-green-600">
+                        <MessageCircle className="w-3 h-3" />
+                        {supplier.wechat}
                       </span>
                     )}
+                    {!supplier.verified && (
+                      <Link href="/suppliers/register" className="text-xs text-gray-400 hover:text-orange-500 transition-colors ml-auto">
+                        {isZh ? '申请认证 →' : 'Get Verified →'}
+                      </Link>
+                    )}
                   </div>
-                ) : (
-                  <div className="pt-3 text-xs text-gray-400 border-t border-gray-100 flex items-center justify-between gap-2">
-                    <span className="italic">{isZh ? '联系方式未经核实，请自行尽职调查。' : 'Contact details unverified. Please do your own due diligence.'}</span>
-                    <Link href="/suppliers/register" className="shrink-0 text-orange-500 hover:text-orange-600 font-medium not-italic">
-                      {isZh ? '申请认证 →' : 'Get Verified →'}
-                    </Link>
-                  </div>
-                )}
+                </div>
               </div>
             )
           })}
@@ -438,6 +491,174 @@ export default function SuppliersPage() {
           </Link>
         </div>
       </div>
+
+      {/* ── Enquiry Modal ── */}
+      {enquiryTarget && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.5)' }}
+          onClick={e => { if (e.target === e.currentTarget) setEnquiryTarget(null) }}>
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+
+            {/* Modal header */}
+            <div className="flex items-start justify-between p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
+              <div>
+                <h2 className="font-bold text-gray-900 text-lg leading-tight">
+                  {isZh ? '发送询价' : 'Request a Quote'}
+                </h2>
+                <p className="text-sm text-gray-500 mt-0.5">{enquiryTarget.name}</p>
+              </div>
+              <button onClick={() => setEnquiryTarget(null)} className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {submitted ? (
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="font-bold text-gray-900 text-xl mb-2">
+                  {isZh ? '询价已发送！' : 'Enquiry Sent!'}
+                </h3>
+                <p className="text-gray-500 text-sm mb-1">
+                  {isZh
+                    ? `你的询价已发送给 ${enquiryTarget.name}，通常 1-2 个工作日内回复。`
+                    : `Your enquiry has been sent to ${enquiryTarget.name}. Expect a reply within 1-2 business days.`}
+                </p>
+                <p className="text-gray-400 text-xs mb-6">
+                  {isZh ? '确认邮件已发送至 ' : 'A confirmation has been sent to '}{form.buyerEmail}
+                </p>
+                <button onClick={() => setEnquiryTarget(null)}
+                  className="px-6 py-2.5 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-400 transition-colors text-sm">
+                  {isZh ? '关闭' : 'Close'}
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="p-5 space-y-4">
+
+                {/* Section: Your Contact */}
+                <div>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+                    {isZh ? '你的联系方式' : 'Your Contact Details'}
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1">{isZh ? '姓名 *' : 'Name *'}</label>
+                      <input required value={form.buyerName}
+                        onChange={e => setForm(f => ({ ...f, buyerName: e.target.value }))}
+                        placeholder={isZh ? '张三' : 'John Smith'}
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1">{isZh ? '邮箱 *' : 'Email *'}</label>
+                      <input required type="email" value={form.buyerEmail}
+                        onChange={e => setForm(f => ({ ...f, buyerEmail: e.target.value }))}
+                        placeholder="you@example.com"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1">{isZh ? '电话' : 'Phone'}</label>
+                      <input value={form.buyerPhone}
+                        onChange={e => setForm(f => ({ ...f, buyerPhone: e.target.value }))}
+                        placeholder="04xx xxx xxx"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1">{isZh ? '项目地区' : 'Project Suburb'}</label>
+                      <input value={form.suburb}
+                        onChange={e => setForm(f => ({ ...f, suburb: e.target.value }))}
+                        placeholder={isZh ? '例：Parramatta NSW' : 'e.g. Parramatta NSW'}
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section: Project */}
+                <div>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+                    {isZh ? '项目信息' : 'Project Details'}
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1">{isZh ? '项目类型' : 'Project Type'}</label>
+                      <select value={form.projectType}
+                        onChange={e => setForm(f => ({ ...f, projectType: e.target.value }))}
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="">{isZh ? '请选择' : 'Select...'}</option>
+                        <option value={isZh ? '推倒重建' : 'Knockdown Rebuild'}>{isZh ? '推倒重建（KDR）' : 'Knockdown Rebuild (KDR)'}</option>
+                        <option value={isZh ? '翻新改造' : 'Renovation'}>{isZh ? '翻新改造' : 'Renovation'}</option>
+                        <option value={isZh ? '扩建' : 'Extension'}>{isZh ? '扩建' : 'Extension'}</option>
+                        <option value={isZh ? '新建' : 'New Build'}>{isZh ? '新建' : 'New Build'}</option>
+                        <option value={isZh ? '其他' : 'Other'}>{isZh ? '其他' : 'Other'}</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1">{isZh ? '计划时间线' : 'Timeline'}</label>
+                      <select value={form.timeline}
+                        onChange={e => setForm(f => ({ ...f, timeline: e.target.value }))}
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="">{isZh ? '请选择' : 'Select...'}</option>
+                        <option value={isZh ? '马上需要' : 'Ready now'}>{isZh ? '马上需要' : 'Ready now'}</option>
+                        <option value={isZh ? '1-3个月内' : '1-3 months'}>{isZh ? '1-3 个月内' : '1-3 months'}</option>
+                        <option value={isZh ? '3-6个月内' : '3-6 months'}>{isZh ? '3-6 个月内' : '3-6 months'}</option>
+                        <option value={isZh ? '6个月以上' : '6+ months'}>{isZh ? '6 个月以上' : '6+ months'}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="text-xs text-gray-500 block mb-1">{isZh ? '所需产品/规格 *' : 'Products / Specifications *'}</label>
+                    <textarea required rows={3} value={form.productsNeeded}
+                      onChange={e => setForm(f => ({ ...f, productsNeeded: e.target.value }))}
+                      placeholder={isZh
+                        ? '例：600x600 哑光瓷砖，适合客厅和走廊；需要防滑等级 P3 以上'
+                        : 'e.g. 600x600 matte porcelain tiles for living room and hallway, P3 slip rating minimum'}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">{isZh ? '数量/面积估算' : 'Quantity / Area Estimate'}</label>
+                    <input value={form.quantityEstimate}
+                      onChange={e => setForm(f => ({ ...f, quantityEstimate: e.target.value }))}
+                      placeholder={isZh ? '例：约 120 平方米' : 'e.g. approx. 120 sqm'}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                  </div>
+                </div>
+
+                {/* Additional notes */}
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">{isZh ? '其他要求（可选）' : 'Additional Notes (optional)'}</label>
+                  <textarea rows={2} value={form.message}
+                    onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                    placeholder={isZh ? '例：需要样品间参观、需要安装报价、指定品牌等' : 'e.g. need showroom visit, require installation quote, preferred brands, etc.'}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
+                </div>
+
+                {submitError && (
+                  <p className="text-red-500 text-sm">{submitError}</p>
+                )}
+
+                <div className="flex gap-3 pt-1">
+                  <button type="button" onClick={() => setEnquiryTarget(null)}
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors">
+                    {isZh ? '取消' : 'Cancel'}
+                  </button>
+                  <button type="submit" disabled={submitting}
+                    className="flex-1 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
+                    {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    {isZh ? '发送询价' : 'Send Enquiry'}
+                  </button>
+                </div>
+
+                <p className="text-xs text-gray-400 text-center">
+                  {isZh
+                    ? '提交即视为同意将你的联系方式分享给该供应商。'
+                    : 'By submitting, you agree to share your contact details with this supplier.'}
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
