@@ -265,19 +265,38 @@ function FeasibilityContent() {
         }
       }
 
-      // Parse accumulated JSON
+      // Parse accumulated JSON — with multi-pass truncation repair
       const end = accumulated.lastIndexOf('}')
       if (end === -1) throw new Error('No JSON found in response')
       let jsonStr = accumulated.slice(0, end + 1)
-      let result: Record<string, unknown>
-      try {
-        result = JSON.parse(jsonStr)
-      } catch {
-        const safeEnd = jsonStr.lastIndexOf('",\n')
-        if (safeEnd === -1) throw new Error('Response was truncated. Please try again.')
-        jsonStr = jsonStr.slice(0, safeEnd + 1) + '}'
-        result = JSON.parse(jsonStr)
+      let result: Record<string, unknown> | null = null
+
+      // Try 1: parse as-is
+      try { result = JSON.parse(jsonStr) } catch { /* fall through */ }
+
+      // Try 2: close open structure at last complete string value
+      if (!result) {
+        for (const sep of ['",\n', '",\r\n', '"\n', '" ']) {
+          const safeEnd = jsonStr.lastIndexOf(sep)
+          if (safeEnd !== -1) {
+            try {
+              result = JSON.parse(jsonStr.slice(0, safeEnd + 1) + '}')
+              break
+            } catch { /* try next */ }
+          }
+        }
       }
+
+      // Try 3: close at last complete number value
+      if (!result) {
+        const numEnd = jsonStr.search(/\d(?=\s*[\n,}])(?=[^"]*$)/)
+        if (numEnd !== -1) {
+          try { result = JSON.parse(jsonStr.slice(0, numEnd + 1) + '}') } catch { /* fall through */ }
+        }
+      }
+
+      if (!result) throw new Error('Response was truncated. Please try again.')
+
 
       if (metaStr) {
         try { result._liveZone = JSON.parse(metaStr) } catch { /* ignore */ }

@@ -58,7 +58,7 @@ STRIPE_PRICE_ANNUAL
 STRIPE_PRICE_MONTHLY
 RESEND_API_KEY
 RESEND_FROM_EMAIL          # noreply@ausbuildcircle.com
-ADMIN_EMAIL                # terry@kdrguide.com.au
+ADMIN_EMAIL                # recommendforterry@gmail.com
 ```
 
 ---

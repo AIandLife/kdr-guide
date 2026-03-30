@@ -30,7 +30,7 @@ export async function geocodeAddress(address: string): Promise<GeoPoint | null> 
     const q = encodeURIComponent(address + ', Australia')
     const url = `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=au`
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com) (kdr-guide.vercel.app)' },
+      headers: { 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
       signal: AbortSignal.timeout(5000),
     })
     if (!res.ok) return null

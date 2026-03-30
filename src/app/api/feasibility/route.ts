@@ -374,7 +374,7 @@ CRITICAL ACCURACY RULES:
     // Stream Claude's response — returns tokens as they arrive
     const stream = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 4096,
+      max_tokens: 8192,
       stream: true,
       messages: [
         {
