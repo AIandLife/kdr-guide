@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -176,6 +176,8 @@ function FeasibilityContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { lang } = useLang()
+  const langRef = useRef(lang)
+  useEffect(() => { langRef.current = lang }, [lang])
   const t = translations[lang]
   const tf = t.feasibility
 
@@ -196,7 +198,7 @@ function FeasibilityContent() {
       setSuburb(s)
       const pt = searchParams.get('projectType') || 'kdr'
       setProjectType(pt)
-      fetchFeasibility(s, searchParams.get('address') || '', searchParams.get('lotSize') || '', searchParams.get('state') || '', lang, pt)
+      fetchFeasibility(s, searchParams.get('address') || '', searchParams.get('lotSize') || '', searchParams.get('state') || '', langRef.current, pt)
       return
     }
     // Restore saved form data after login redirect
@@ -210,10 +212,11 @@ function FeasibilityContent() {
         setLotSize(f.lotSize || '')
         setState(f.state || '')
         setProjectType(f.projectType || 'kdr')
-        if (f.suburb) fetchFeasibility(f.suburb, f.address || '', f.lotSize || '', f.state || '', lang, f.projectType || 'kdr')
+        if (f.suburb) fetchFeasibility(f.suburb, f.address || '', f.lotSize || '', f.state || '', langRef.current, f.projectType || 'kdr')
       }
     } catch { /* ignore */ }
-  }, [searchParams, lang, user])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, user])
 
   const [loadingStep, setLoadingStep] = useState(0)
 
