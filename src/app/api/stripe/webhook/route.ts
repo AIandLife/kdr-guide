@@ -1,7 +1,6 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
-import { lookupAbn } from '@/lib/abn-lookup'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,95 +24,106 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session
     const email = session.customer_email
     const businessName = session.metadata?.businessName
+    const professionalId = session.metadata?.professionalId
 
-    if (email) {
-      // Fetch ABN + registration country — columns may not exist yet (added later)
-      let pro: { abn?: string | null; registration_country?: string | null } | null = null
-      try {
-        const { data } = await supabase
-          .from('professionals')
-          .select('abn, registration_country')
-          .eq('email', email)
-          .single()
-        pro = data
-      } catch { /* columns may not exist yet — fall through to auto-verify */ }
+    const resend = new Resend((process.env.RESEND_API_KEY || '').trim())
+    const FROM_EMAIL = (process.env.RESEND_FROM_EMAIL || 'terry@ausbuildcircle.com').trim()
+    const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'terry@ausbuildcircle.com').trim()
 
-      const isAustralian = !pro?.registration_country || pro.registration_country === 'australia'
-      const hasAbn = !!pro?.abn?.trim()
+    // Fetch professional by ID (reliable) or fall back to email
+    let pro: {
+      id: string; email: string; business_name: string;
+      abn?: string | null; license_type?: string | null;
+      license_number?: string | null; years_experience?: number | null;
+    } | null = null
 
-      let verified = true
-      let verifyNote = ''
+    if (professionalId) {
+      const { data } = await supabase
+        .from('professionals')
+        .select('id, email, business_name, abn, license_type, license_number, years_experience')
+        .eq('id', professionalId)
+        .single()
+      pro = data
+    } else if (email) {
+      const { data } = await supabase
+        .from('professionals')
+        .select('id, email, business_name, abn, license_type, license_number, years_experience')
+        .eq('email', email)
+        .single()
+      pro = data
+    }
 
-      if (isAustralian && hasAbn) {
-        // Verify ABN via Australian Business Register
-        const abnResult = await lookupAbn(pro!.abn!)
-        if (abnResult.isActive) {
-          verified = true
-          verifyNote = `ABN verified: ${abnResult.entityName} (${abnResult.state})`
-          console.log(`ABN verified for ${email}: ${verifyNote}`)
-        } else if (abnResult.isValid && !abnResult.isActive) {
-          // ABN exists but is cancelled — still verify for now, flag it
-          verified = true
-          verifyNote = `ABN found but inactive: ${abnResult.entityName}`
-          console.warn(`ABN inactive for ${email}: ${verifyNote}`)
-        } else {
-          // ABN not found — still set verified (paid customer), but log for review
-          verified = true
-          verifyNote = `ABN lookup failed: ${abnResult.rawMessage}`
-          console.warn(`ABN not found for ${email}: ${verifyNote}`)
-        }
-      } else if (!isAustralian) {
-        // Non-Australian business (China / Other) — auto-verify on payment
-        verified = true
-        verifyNote = `Non-Australian business (${pro?.registration_country || 'unknown'}) — auto-verified`
-      } else {
-        // No ABN provided — still verify (they paid)
-        verified = true
-        verifyNote = 'No ABN provided — auto-verified on payment'
-      }
-
+    if (pro) {
+      // Set pending — NOT verified; admin must approve
       await supabase
         .from('professionals')
-        .update({ verification_status: 'verified', verified })
-        .eq('email', email)
+        .update({ verification_status: 'pending', verification_submitted_at: new Date().toISOString() })
+        .eq('id', pro.id)
 
       await supabase
         .from('kdr_professional_applications')
         .update({
-          status: 'verified',
+          status: 'pending',
           stripe_customer_id: session.customer as string,
           stripe_subscription_id: session.subscription as string,
           paid_at: new Date().toISOString(),
         })
-        .eq('email', email)
+        .eq('email', pro.email)
 
-      // Send confirmation email
-      const resend = new Resend(process.env.RESEND_API_KEY)
-      const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@ausbuildcircle.com'
-
-      const abnLine = verifyNote ? `<p style="font-size:13px;color:#6b7280">验证备注：${verifyNote}</p>` : ''
+      // Email admin to review
+      const credLines = [
+        pro.abn ? `<li><strong>ABN：</strong>${pro.abn}</li>` : '',
+        pro.license_type ? `<li><strong>执照类型：</strong>${pro.license_type}</li>` : '',
+        pro.license_number ? `<li><strong>执照号：</strong>${pro.license_number}</li>` : '',
+        pro.years_experience ? `<li><strong>从业年限：</strong>${pro.years_experience} 年</li>` : '',
+      ].join('')
 
       await resend.emails.send({
         from: FROM_EMAIL,
-        to: email,
-        subject: '付款成功 — 认证申请已提交 | Payment Received',
+        to: ADMIN_EMAIL,
+        subject: `[审核] 新认证申请 — ${pro.business_name}`,
         html: `
           <div style="font-family:sans-serif;max-width:520px;margin:0 auto">
-            <div style="background:#f97316;padding:24px;border-radius:12px 12px 0 0;text-align:center">
-              <h1 style="color:white;margin:0;font-size:20px">✅ 付款成功</h1>
+            <div style="background:#f97316;padding:20px;border-radius:12px 12px 0 0">
+              <h2 style="color:white;margin:0;font-size:18px">新认证申请待审核</h2>
             </div>
             <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
-              <p>您好${businessName ? `，<strong>${businessName}</strong>` : ''}，</p>
-              <p>我们已收到您的付款，您的认证状态已即时生效。您的主页现在已显示认证徽章，并获得优先排名。</p>
-              ${abnLine}
-              <p>如有疑问，请直接回复此邮件。</p>
-              <p>澳洲建房圈 团队</p>
+              <p><strong>公司：</strong>${pro.business_name}</p>
+              <p><strong>邮箱：</strong>${pro.email}</p>
+              <p><strong>ID：</strong>${pro.id}</p>
+              ${credLines ? `<p><strong>提交资质：</strong></p><ul>${credLines}</ul>` : '<p>未提交资质信息</p>'}
+              <p>付款已确认，请登录后台审核并一键批准或拒绝。</p>
+              <a href="https://ausbuildcircle.com/admin" style="display:inline-block;background:#f97316;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600">前往后台审核 →</a>
             </div>
           </div>
         `,
-      }).catch(err => console.error('Webhook email error:', err))
+      }).catch(err => console.error('Admin email error:', err))
 
-      console.log(`Payment received: ${businessName || email} — ${verifyNote}`)
+      // Email professional: payment received, under review
+      const proEmail = pro.email || email
+      if (proEmail) {
+        await resend.emails.send({
+          from: FROM_EMAIL,
+          to: proEmail,
+          subject: '付款成功 — 认证申请审核中 | Application Under Review',
+          html: `
+            <div style="font-family:sans-serif;max-width:520px;margin:0 auto">
+              <div style="background:#f97316;padding:24px;border-radius:12px 12px 0 0;text-align:center">
+                <h1 style="color:white;margin:0;font-size:20px">✅ 付款成功</h1>
+              </div>
+              <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
+                <p>您好${businessName ? `，<strong>${businessName}</strong>` : ''}，</p>
+                <p>我们已收到您的认证申请及付款。您的资质正在审核中，通常 <strong>1–2 个工作日</strong>内完成。</p>
+                <p>审核通过后，您将收到确认邮件，您的主页将自动显示认证徽章。</p>
+                <p>如有疑问，请直接回复此邮件。</p>
+                <p>澳洲建房圈 团队</p>
+              </div>
+            </div>
+          `,
+        }).catch(err => console.error('Pro email error:', err))
+      }
+
+      console.log(`Payment received (pending review): ${pro.business_name} — ${pro.email}`)
     }
   }
 

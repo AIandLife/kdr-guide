@@ -26,6 +26,11 @@ interface Professional {
   verification_status: string
   is_demo: boolean
   created_at: string
+  abn: string | null
+  license_type: string | null
+  license_number: string | null
+  years_experience: number | null
+  verification_submitted_at: string | null
 }
 
 interface Supplier {
@@ -240,6 +245,24 @@ export default function AdminPage() {
     }
   }
 
+  async function approveRejectPro(id: string, action: 'approve' | 'reject', adminNote?: string) {
+    const res = await fetch('/api/admin/professionals-list', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
+      body: JSON.stringify({ id, action, adminNote: adminNote || '' }),
+    })
+    const data = await res.json()
+    if (data.success) {
+      setProfessionals(prev => prev.map(p => p.id === id
+        ? { ...p, verified: action === 'approve', verification_status: action === 'approve' ? 'verified' : 'free' }
+        : p
+      ))
+      setMessage(`✅ ${action === 'approve' ? 'Approved — email sent to professional.' : 'Rejected — email sent.'}`)
+    } else {
+      setMessage(`Error: ${data.error}`)
+    }
+  }
+
   async function deleteAllDemo() {
     const items = tab === 'forum'
       ? posts.filter(p => p.is_demo).map(p => p.id)
@@ -358,12 +381,14 @@ export default function AdminPage() {
     setNlSending(false)
   }
 
-  const TABS: { id: Tab; label: string; count: number }[] = [
+  const pendingPros = professionals.filter(p => p.verification_status === 'pending').length
+
+  const TABS: { id: Tab; label: string; count: number; alert?: boolean }[] = [
     { id: 'leads', label: '专业人士询盘', count: leads.length },
     { id: 'supplier-inquiries', label: '建材商询价', count: supplierInquiries.length },
     { id: 'searches', label: '查询记录', count: searches.length },
     { id: 'forum', label: '论坛帖子', count: posts.length },
-    { id: 'professionals', label: '专业人士', count: professionals.length },
+    { id: 'professionals', label: '专业人士', count: professionals.length, alert: pendingPros > 0 },
     { id: 'suppliers', label: '建材商', count: suppliers.length },
     { id: 'newsletter', label: '发 Newsletter', count: 0 },
   ]
@@ -392,11 +417,14 @@ export default function AdminPage() {
             <button
               key={t.id}
               onClick={() => { setTab(t.id); setSelected(new Set()) }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 tab === t.id ? 'bg-orange-500 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
               {t.label} ({t.count})
+              {t.alert && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-yellow-400 rounded-full border border-[#0d1117]" />
+              )}
             </button>
           ))}
         </div>
@@ -643,11 +671,40 @@ export default function AdminPage() {
                     </button>
                   </div>
                   {expandedId === pro.id && (
-                    <div className="px-4 pb-4 pt-0 border-t border-white/5 mt-1 space-y-1 text-xs text-slate-400">
+                    <div className="px-4 pb-4 pt-0 border-t border-white/5 mt-1 space-y-2 text-xs text-slate-400">
                       <p><span className="text-slate-500">Email:</span> {pro.email}</p>
                       <p><span className="text-slate-500">State:</span> {pro.state} · <span className="text-slate-500">Category:</span> {pro.category}</p>
                       <p><span className="text-slate-500">Status:</span> {pro.verification_status} · Verified: {pro.verified ? 'Yes' : 'No'} · Demo: {pro.is_demo ? 'Yes' : 'No'}</p>
                       <p><span className="text-slate-500">Created:</span> {new Date(pro.created_at).toLocaleString()}</p>
+                      {pro.verification_status === 'pending' && (
+                        <div className="rounded-xl p-3 mt-2 space-y-1.5" style={{ background: 'rgba(234,179,8,0.08)', border: '1px solid rgba(234,179,8,0.2)' }}>
+                          <p className="text-yellow-400 font-semibold text-xs">📋 提交的认证资质</p>
+                          {pro.abn && <p><span className="text-slate-500">ABN：</span>{pro.abn}</p>}
+                          {pro.license_type && <p><span className="text-slate-500">执照类型：</span>{pro.license_type}</p>}
+                          {pro.license_number && <p><span className="text-slate-500">执照号：</span>{pro.license_number}</p>}
+                          {pro.years_experience && <p><span className="text-slate-500">从业年限：</span>{pro.years_experience} 年</p>}
+                          {pro.verification_submitted_at && <p><span className="text-slate-500">提交时间：</span>{new Date(pro.verification_submitted_at).toLocaleString()}</p>}
+                          <div className="flex items-center gap-2 pt-2">
+                            <button
+                              onClick={() => approveRejectPro(pro.id, 'approve')}
+                              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                              style={{ background: 'rgba(34,197,94,0.15)', color: '#22c55e' }}
+                            >
+                              <BadgeCheck className="w-3.5 h-3.5" /> 批准认证
+                            </button>
+                            <button
+                              onClick={() => {
+                                const reason = prompt('拒绝原因（可选，会发给专业人士）：') ?? undefined
+                                approveRejectPro(pro.id, 'reject', reason)
+                              }}
+                              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                              style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}
+                            >
+                              <BadgeX className="w-3.5 h-3.5" /> 拒绝
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

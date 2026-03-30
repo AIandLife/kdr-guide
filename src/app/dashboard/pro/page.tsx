@@ -200,6 +200,203 @@ function InfoRow({ label, value, icon }: { label: string; value: string; icon?: 
   )
 }
 
+// ── Verify Tab Component ─────────────────────────────────────────────────
+function VerifyTab({
+  profile,
+  isZh,
+  justPaid,
+  subscriptionExpiry,
+  formatDate,
+}: {
+  profile: ProProfile
+  isZh: boolean
+  justPaid: boolean
+  subscriptionExpiry: Date | null
+  formatDate: (iso: string) => string
+}) {
+  const [form, setForm] = useState({
+    abn: '',
+    licenseType: '',
+    licenseNumber: '',
+    yearsExperience: '',
+  })
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+
+  const handleSubmit = async () => {
+    setSubmitting(true)
+    setSubmitError('')
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: 'annual',
+          email: profile.email,
+          businessName: profile.business_name,
+          professionalId: profile.id,
+          abn: form.abn.trim(),
+          licenseType: form.licenseType,
+          licenseNumber: form.licenseNumber.trim(),
+          yearsExperience: form.yearsExperience,
+        }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        setSubmitError(data.error || '发生错误，请重试')
+        setSubmitting(false)
+      }
+    } catch {
+      setSubmitError('网络错误，请重试')
+      setSubmitting(false)
+    }
+  }
+
+  if (profile.verification_status === 'verified') {
+    return (
+      <div className="bg-green-50 border border-green-200 rounded-2xl p-6">
+        <div className="flex items-start gap-4">
+          <CheckCircle className="w-10 h-10 text-green-500 shrink-0 mt-1" />
+          <div className="flex-1">
+            <h3 className="font-bold text-gray-900 mb-1">{isZh ? '已认证' : "You're Verified!"}</h3>
+            <p className="text-sm text-gray-500 mb-3">{isZh ? '你的主页已显示认证徽章，搜索结果优先排名。' : 'Your listing shows a Verified badge and ranks above unverified profiles.'}</p>
+            {subscriptionExpiry && (
+              <div className="flex items-center gap-2 text-sm">
+                <Clock className="w-4 h-4 text-gray-400" />
+                <span className="text-gray-600">
+                  {isZh ? '认证有效期至：' : 'Verified until: '}
+                  <strong>{formatDate(subscriptionExpiry.toISOString())}</strong>
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (profile.verification_status === 'pending') {
+    return (
+      <div className="bg-orange-50 border border-orange-200 rounded-2xl p-6 text-center">
+        <Clock className="w-10 h-10 text-orange-400 mx-auto mb-3" />
+        <h3 className="font-bold text-gray-900 mb-1">{isZh ? '认证审核中' : 'Verification in progress'}</h3>
+        <p className="text-sm text-gray-500">
+          {isZh
+            ? justPaid
+              ? '我们已收到你的付款。资质核实中，通常 1–2 个工作日完成，请耐心等待。'
+              : '你的认证申请正在审核中，通常 1–2 个工作日完成。'
+            : 'We\'re verifying your credentials. Usually takes 1–2 business days.'}
+        </p>
+      </div>
+    )
+  }
+
+  // Free — show the verification form
+  return (
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="px-6 py-5 border-b border-gray-100 bg-gray-50">
+        <div className="flex items-center gap-3 mb-1">
+          <Shield className="w-5 h-5 text-orange-400" />
+          <h3 className="font-semibold text-gray-900">{isZh ? '申请认证徽章' : 'Apply for Verified Badge'}</h3>
+        </div>
+        <p className="text-xs text-gray-400 ml-8">
+          {isZh
+            ? '认证后你的主页优先展示，获得认证徽章，建立更强的信任感。'
+            : 'Get a verified badge and rank higher in search results.'}
+        </p>
+      </div>
+
+      <div className="px-6 py-5 space-y-4">
+        {/* Benefits */}
+        <div className="bg-orange-50 rounded-xl p-4">
+          <p className="text-xs font-semibold text-orange-700 mb-2">{isZh ? '认证专业人士享受：' : 'Verified members get:'}</p>
+          <ul className="space-y-1">
+            {(isZh
+              ? ['✅ 搜索结果优先排名', '✅ 主页显示认证徽章', '✅ 增加业主信任度', '✅ 更多询盘机会']
+              : ['✅ Priority ranking in search', '✅ Verified badge on your listing', '✅ More enquiries from homeowners']
+            ).map((item, i) => (
+              <li key={i} className="text-xs text-orange-800">{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Form */}
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">{isZh ? 'ABN（澳大利亚商业号码）' : 'ABN (Australian Business Number)'}</label>
+          <input
+            type="text"
+            value={form.abn}
+            onChange={e => setForm(f => ({ ...f, abn: e.target.value }))}
+            placeholder="12 345 678 901"
+            className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:outline-none focus:border-orange-400"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">{isZh ? '执照类型' : 'License Type'}</label>
+          <select
+            value={form.licenseType}
+            onChange={e => setForm(f => ({ ...f, licenseType: e.target.value }))}
+            className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:outline-none focus:border-orange-400"
+          >
+            <option value="">{isZh ? '请选择' : 'Select type'}</option>
+            <option value="builder">Builder / 建筑商</option>
+            <option value="architect">Architect / 建筑师</option>
+            <option value="town_planner">Town Planner / 规划师</option>
+            <option value="engineer">Engineer / 工程师</option>
+            <option value="designer">Designer / 设计师</option>
+            <option value="other">Other / 其他</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">{isZh ? '执照号 / 注册号' : 'License / Registration Number'}</label>
+          <input
+            type="text"
+            value={form.licenseNumber}
+            onChange={e => setForm(f => ({ ...f, licenseNumber: e.target.value }))}
+            placeholder={isZh ? '如：BL-123456' : 'e.g. BL-123456'}
+            className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:outline-none focus:border-orange-400"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">{isZh ? '从业年限' : 'Years of Experience'}</label>
+          <select
+            value={form.yearsExperience}
+            onChange={e => setForm(f => ({ ...f, yearsExperience: e.target.value }))}
+            className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:outline-none focus:border-orange-400"
+          >
+            <option value="">{isZh ? '请选择' : 'Select'}</option>
+            <option value="1">1–2 年</option>
+            <option value="3">3–5 年</option>
+            <option value="6">6–10 年</option>
+            <option value="11">10+ 年</option>
+          </select>
+        </div>
+
+        {submitError && <p className="text-xs text-red-500">{submitError}</p>}
+
+        <div className="pt-2">
+          <button
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 disabled:opacity-50 text-white font-semibold text-sm py-3 rounded-xl transition-colors"
+          >
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
+            {isZh ? '提交认证申请 →' : 'Submit & Pay →'}
+          </button>
+          <p className="text-xs text-gray-400 text-center mt-2">
+            {isZh ? '付款后进入人工审核，1–2 个工作日出结果' : 'Payment required — reviewed within 1–2 business days'}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Main Dashboard ────────────────────────────────────────────────────────
 function ProDashboard() {
   const { user, loading } = useAuth()
@@ -329,14 +526,14 @@ function ProDashboard() {
 
         {/* Payment success banner */}
         {justPaid && (
-          <div className="mb-6 rounded-2xl bg-green-50 border border-green-200 px-5 py-4 flex items-center gap-3">
-            <PartyPopper className="w-5 h-5 text-green-600 shrink-0" />
+          <div className="mb-6 rounded-2xl bg-orange-50 border border-orange-200 px-5 py-4 flex items-center gap-3">
+            <PartyPopper className="w-5 h-5 text-orange-500 shrink-0" />
             <div>
-              <p className="font-semibold text-green-800 text-sm">
-                {isZh ? '🎉 支付成功！认证已即时生效。' : '🎉 Payment received! You are now verified.'}
+              <p className="font-semibold text-orange-800 text-sm">
+                {isZh ? '🎉 付款成功！认证申请审核中。' : '🎉 Payment received! Your application is under review.'}
               </p>
-              <p className="text-xs text-green-600 mt-0.5">
-                {isZh ? '你的主页现已显示认证徽章，并获得优先排名。' : 'Your listing now shows a Verified badge and ranks above others.'}
+              <p className="text-xs text-orange-600 mt-0.5">
+                {isZh ? '我们正在核实你的资质，1–2 个工作日内完成审核并通知你。' : 'We\'ll verify your credentials within 1–2 business days and notify you by email.'}
               </p>
             </div>
           </div>
@@ -495,46 +692,7 @@ function ProDashboard() {
 
             {/* ── Verification Tab ── */}
             {activeTab === 'verify' && (
-              <div className="space-y-4">
-                {profile.verification_status === 'verified' && !isExpired ? (
-                  <div className="bg-green-50 border border-green-200 rounded-2xl p-6">
-                    <div className="flex items-start gap-4">
-                      <CheckCircle className="w-10 h-10 text-green-500 shrink-0 mt-1" />
-                      <div className="flex-1">
-                        <h3 className="font-bold text-gray-900 mb-1">{isZh ? '已认证' : 'You\'re Verified!'}</h3>
-                        <p className="text-sm text-gray-500 mb-3">{isZh ? '你的主页已显示认证徽章，搜索结果优先排名。' : 'Your listing shows a Verified badge and ranks above unverified profiles.'}</p>
-                        {subscriptionExpiry && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <Clock className="w-4 h-4 text-gray-400" />
-                            <span className="text-gray-600">
-                              {isZh ? `认证有效期至：` : 'Verified until: '}
-                              <strong>{formatDate(subscriptionExpiry.toISOString())}</strong>
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ) : profile.verification_status === 'pending' ? (
-                  <div className="bg-orange-50 border border-orange-200 rounded-2xl p-6 text-center">
-                    <Clock className="w-10 h-10 text-orange-400 mx-auto mb-3" />
-                    <h3 className="font-bold text-gray-900 mb-1">{isZh ? '认证审核中' : 'Verification in progress'}</h3>
-                    <p className="text-sm text-gray-500">{isZh ? '我们正在核实你的资质，通常 1–2 个工作日完成。' : 'We\'re verifying your credentials. Usually takes 1–2 business days.'}</p>
-                  </div>
-                ) : (
-                  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
-                    <Shield className="w-10 h-10 text-gray-300 mx-auto mb-4" />
-                    <h3 className="font-semibold text-gray-900 mb-2">
-                      {isZh ? '你的主页已上线' : 'Your listing is live'}
-                    </h3>
-                    <p className="text-sm text-gray-500 max-w-xs mx-auto">
-                      {isZh
-                        ? '你的业务信息已收录进目录，业主可以找到你。认证功能即将开放，敬请期待。'
-                        : 'Your business is listed and visible to homeowners. Verified badges are coming soon — we\'ll be in touch.'}
-                    </p>
-                  </div>
-                )}
-              </div>
+              <VerifyTab profile={profile} isZh={isZh} justPaid={justPaid} subscriptionExpiry={subscriptionExpiry} formatDate={formatDate} />
             )}
           </>
         )}

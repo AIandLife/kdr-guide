@@ -1,4 +1,5 @@
 import Stripe from 'stripe'
+import { createClient } from '@supabase/supabase-js'
 
 export async function POST(req: Request) {
   // Pre-validate env vars
@@ -8,7 +9,24 @@ export async function POST(req: Request) {
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY.trim())
   try {
-    const { plan, email, businessName } = await req.json()
+    const { plan, email, businessName, professionalId, abn, licenseType, licenseNumber, yearsExperience } = await req.json()
+
+    // Save credentials to DB before creating Stripe session
+    if (professionalId) {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      )
+      await supabase
+        .from('professionals')
+        .update({
+          ...(abn ? { abn } : {}),
+          ...(licenseType ? { license_type: licenseType } : {}),
+          ...(licenseNumber ? { license_number: licenseNumber } : {}),
+          ...(yearsExperience ? { years_experience: parseInt(yearsExperience) } : {}),
+        })
+        .eq('id', professionalId)
+    }
 
     const priceId = (plan === 'annual'
       ? process.env.STRIPE_PRICE_ANNUAL
@@ -19,7 +37,10 @@ export async function POST(req: Request) {
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: email || undefined,
-      metadata: { businessName: businessName || '' },
+      metadata: {
+        businessName: businessName || '',
+        professionalId: professionalId || '',
+      },
       success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ausbuildcircle.com'}/dashboard/pro?verified=1`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ausbuildcircle.com'}/dashboard/pro?cancelled=1`,
     })
