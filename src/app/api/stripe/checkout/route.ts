@@ -9,14 +9,17 @@ export async function POST(req: Request) {
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY.trim())
   try {
-    const { plan, email, businessName, professionalId, abn, licenseType, licenseNumber, yearsExperience } = await req.json()
+    const { plan, email, businessName, professionalId, supplierId, entityType,
+            abn, licenseType, licenseNumber, yearsExperience,
+            regType, licenseNumberSupplier, notes } = await req.json()
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
 
     // Save credentials to DB before creating Stripe session
     if (professionalId) {
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-      )
       await supabase
         .from('professionals')
         .update({
@@ -28,10 +31,25 @@ export async function POST(req: Request) {
         .eq('id', professionalId)
     }
 
+    if (supplierId) {
+      await supabase
+        .from('supplier_listings')
+        .update({
+          ...(abn ? { abn } : {}),
+          ...(licenseNumberSupplier ? { asic_number: licenseNumberSupplier } : {}),
+          ...(regType ? { business_license_note: regType } : {}),
+          ...(notes ? { verification_note: notes } : {}),
+        })
+        .eq('id', supplierId)
+    }
+
     const priceId = (plan === 'annual'
       ? process.env.STRIPE_PRICE_ANNUAL
       : process.env.STRIPE_PRICE_MONTHLY
     )?.trim()
+
+    const isSupplier = entityType === 'supplier'
+    const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://ausbuildcircle.com'
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
@@ -40,9 +58,15 @@ export async function POST(req: Request) {
       metadata: {
         businessName: businessName || '',
         professionalId: professionalId || '',
+        supplierId: supplierId || '',
+        entityType: entityType || 'professional',
       },
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ausbuildcircle.com'}/dashboard/pro?verified=1`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ausbuildcircle.com'}/dashboard/pro?cancelled=1`,
+      success_url: isSupplier
+        ? `${SITE}/suppliers/account?verified=1`
+        : `${SITE}/dashboard/pro?verified=1`,
+      cancel_url: isSupplier
+        ? `${SITE}/suppliers/account?cancelled=1`
+        : `${SITE}/dashboard/pro?cancelled=1`,
     })
 
     return Response.json({ url: session.url })

@@ -14,6 +14,7 @@ export async function POST(req: Request) {
     const body = await req.json()
     const {
       supplierId, supplierName, supplierCategory, supplierEmail,
+      homeownerId,
       buyerName, buyerEmail, buyerPhone,
       suburb, projectType, productsNeeded, quantityEstimate, timeline, message,
     } = body
@@ -38,6 +39,7 @@ export async function POST(req: Request) {
       supplier_id: supplierId || null,
       supplier_name: supplierName,
       supplier_category: supplierCategory || null,
+      homeowner_id: homeownerId || null,
       buyer_name: buyerName,
       buyer_email: buyerEmail,
       buyer_phone: buyerPhone || null,

@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { CheckCircle, BadgeCheck, ChevronDown, ChevronUp, Upload, ExternalLink } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { useAuth } from '@/lib/auth-context'
@@ -23,10 +25,13 @@ interface SupplierListing {
   created_at: string
 }
 
-export default function SupplierAccountPage() {
+function SupplierAccountPageInner() {
   const { lang } = useLang()
   const isZh = lang === 'zh'
   const { user, loading: authLoading } = useAuth()
+  const searchParams = useSearchParams()
+  const justPaid = searchParams.get('verified') === '1'
+  const justCancelled = searchParams.get('cancelled') === '1'
 
   const [listing, setListing] = useState<SupplierListing | null>(null)
   const [loadingListing, setLoadingListing] = useState(true)
@@ -58,27 +63,29 @@ export default function SupplierAccountPage() {
     setSubmitting(true)
     setVerifyError('')
     try {
-      const res = await fetch('/api/suppliers/verify-request', {
+      const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          listingId: listing.id,
-          businessName: listing.business_name,
-          contactName: listing.contact_name,
+          plan: 'annual',
           email: listing.email,
-          regType,
+          businessName: listing.business_name,
+          supplierId: listing.id,
+          entityType: 'supplier',
           abn: regType === 'au' ? abn : undefined,
-          licenseNumber: regType === 'cn' ? licenseNumber : undefined,
+          licenseNumberSupplier: regType === 'cn' ? licenseNumber : undefined,
+          regType,
           notes,
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Submission failed')
-      setSubmitted(true)
-      setListing(prev => prev ? { ...prev, status: 'pending_review' } : prev)
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        throw new Error(data.error || 'Checkout failed')
+      }
     } catch (e: unknown) {
       setVerifyError(e instanceof Error ? e.message : 'Submission failed')
-    } finally {
       setSubmitting(false)
     }
   }
@@ -223,6 +230,36 @@ export default function SupplierAccountPage() {
           )}
         </div>
 
+        {/* Payment just completed — show immediately (before webhook fires) */}
+        {justPaid && !isVerified && !isPendingReview && (
+          <div className="bg-orange-50 border border-orange-200 rounded-2xl p-6 flex items-center gap-4 mb-5">
+            <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center shrink-0 text-2xl">⏳</div>
+            <div>
+              <p className="font-bold text-orange-800">{isZh ? '付款成功，认证申请审核中' : 'Payment received — Verification in progress'}</p>
+              <p className="text-sm text-orange-700 mt-0.5">
+                {isZh
+                  ? '我们已收到你的付款，资质核实中，通常 1–2 个工作日完成，请耐心等待。'
+                  : 'We\'ve received your payment. We\'re verifying your credentials — usually within 1–2 business days.'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Payment cancelled */}
+        {justCancelled && (
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 flex items-center gap-4 mb-5">
+            <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center shrink-0 text-2xl">ℹ️</div>
+            <div>
+              <p className="font-bold text-gray-700">{isZh ? '付款已取消' : 'Payment cancelled'}</p>
+              <p className="text-sm text-gray-500 mt-0.5">
+                {isZh
+                  ? '你随时可以在下方重新发起认证申请。'
+                  : 'You can apply for verification again using the section below.'}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Verified badge section */}
         {isVerified && (
           <div className="bg-green-50 border border-green-200 rounded-2xl p-6 flex items-center gap-4">
@@ -249,32 +286,35 @@ export default function SupplierAccountPage() {
               <p className="font-bold text-orange-800">{isZh ? '认证申请审核中' : 'Verification in review'}</p>
               <p className="text-sm text-orange-700 mt-0.5">
                 {isZh
-                  ? '我们正在处理你的申请，通常 1–2 个工作日内完成。'
-                  : 'We\'re reviewing your application — usually 1–2 business days.'}
+                  ? justPaid
+                    ? '我们已收到你的付款。资质核实中，通常 1–2 个工作日完成，请耐心等待。'
+                    : '我们正在处理你的申请，通常 1–2 个工作日内完成。'
+                  : justPaid
+                    ? 'Payment received. We\'re verifying your credentials — usually 1–2 business days.'
+                    : 'We\'re reviewing your application — usually 1–2 business days.'}
               </p>
             </div>
           </div>
         )}
 
-        {/* Get Verified — shown for non-verified, non-pending */}
-        {isApproved && !submitted && (
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+
+        {/* Trust credentials — shown for unverified, non-pending, not just-paid */}
+        {isApproved && !submitted && !justPaid && (
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-5">
             <button
               onClick={() => setVerifyOpen(v => !v)}
               className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-                  <BadgeCheck className="w-5 h-5 text-orange-500" />
-                </div>
+                <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center shrink-0 text-lg">🔒</div>
                 <div>
                   <p className="font-semibold text-gray-900 text-sm">
-                    {isZh ? '申请认证徽章' : 'Apply for Verified Badge'}
+                    {isZh ? '增加商家可信度' : 'Add trust credentials'}
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5">
                     {isZh
-                      ? '提交资料后，认证徽章将显示在你的商家档案上'
-                      : 'Submit your details and we\'ll add a verified badge to your profile'}
+                      ? '提供 ABN 或营业执照，帮助买家了解你的业务背景'
+                      : 'Provide your ABN or business licence to build buyer confidence'}
                   </p>
                 </div>
               </div>
@@ -285,6 +325,12 @@ export default function SupplierAccountPage() {
 
             {verifyOpen && (
               <div className="px-6 pb-6 pt-2 space-y-5 border-t border-gray-100">
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {isZh
+                    ? '通过认证的商家在目录中会显示认证徽章，联系方式对所有买家完整可见，搜索排名也会更靠前。'
+                    : 'Verified businesses display a badge in the directory, show full contact details to all buyers, and rank higher in search.'}
+                </p>
+
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">
                     {isZh ? '企业注册地' : 'Business registration'}
@@ -312,7 +358,7 @@ export default function SupplierAccountPage() {
                     <label className="block text-sm text-gray-600 mb-2">ABN</label>
                     <input value={abn} onChange={e => setAbn(e.target.value)}
                       placeholder="XX XXX XXX XXX"
-                      className={inputClass} />
+                      className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none bg-gray-50 border border-gray-200 focus:border-orange-400" />
                   </div>
                 )}
 
@@ -323,7 +369,7 @@ export default function SupplierAccountPage() {
                     </label>
                     <input value={licenseNumber} onChange={e => setLicenseNumber(e.target.value)}
                       placeholder="91XXXXXXXXXXXXXXXXXX"
-                      className={inputClass} />
+                      className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none bg-gray-50 border border-gray-200 focus:border-orange-400" />
                   </div>
                 )}
 
@@ -340,6 +386,14 @@ export default function SupplierAccountPage() {
                     className="w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none resize-none bg-gray-50 border border-gray-200 focus:border-orange-400" />
                 </div>
 
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">{isZh ? '认证费用' : 'Verification fee'}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{isZh ? '认证有效期 12 个月' : '12-month verified status'}</p>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">AUD $199<span className="text-sm font-normal text-gray-500">/yr</span></p>
+                </div>
+
                 {verifyError && <p className="text-red-500 text-sm">{verifyError}</p>}
 
                 <button
@@ -350,13 +404,13 @@ export default function SupplierAccountPage() {
                 >
                   <BadgeCheck className="w-4 h-4" />
                   {submitting
-                    ? (isZh ? '提交中…' : 'Submitting…')
-                    : (isZh ? '提交认证申请' : 'Submit Verification Request')}
+                    ? (isZh ? '跳转中…' : 'Redirecting…')
+                    : (isZh ? '申请认证 · AUD $199/年' : 'Apply for Verification · AUD $199/yr')}
                 </button>
                 <p className="text-xs text-gray-400 text-center">
                   {isZh
-                    ? '提交后我们会审核资料并联系你，通常 1–2 个工作日内。'
-                    : 'We\'ll review your details and follow up — usually within 1–2 business days.'}
+                    ? '付款后进入人工审核，1–2 个工作日出结果'
+                    : 'Payment required — reviewed within 1–2 business days'}
                 </p>
               </div>
             )}
@@ -385,5 +439,13 @@ export default function SupplierAccountPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SupplierAccountPage() {
+  return (
+    <Suspense>
+      <SupplierAccountPageInner />
+    </Suspense>
   )
 }

@@ -24,7 +24,7 @@ export default function SupplierRegisterPage() {
   const { user, loading: authLoading } = useAuth()
   const [showLoginGate, setShowLoginGate] = useState(false)
 
-  const [step, setStep] = useState(1) // 1=basic, 2=contact, 4=done  (step 3 verification reserved for future)
+  const [step, setStep] = useState(1)
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<{ id: string; status: string } | null>(null)
   const [error, setError] = useState('')
@@ -60,39 +60,77 @@ export default function SupplierRegisterPage() {
 
   const categories = Object.entries(SUPPLIER_CATEGORIES)
 
+  async function registerListing() {
+    const res = await fetch('/api/suppliers/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        businessName: form.businessName,
+        contactName: form.contactName,
+        email: form.email,
+        phone: form.phone || undefined,
+        website: form.website || undefined,
+        wechat: form.wechat || undefined,
+        abn: form.abn || undefined,
+        asicNumber: form.asicNumber || undefined,
+        businessLicenseNote: form.businessLicenseNote || undefined,
+        verificationNote: form.verificationNote || undefined,
+        category: form.category,
+        origin: form.origin,
+        description: form.description || undefined,
+        states: form.states,
+        specialties: form.specialties.split(',').map(s => s.trim()).filter(Boolean),
+        wantsVerification: false,
+      }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || 'Submission failed')
+    return data as { id: string; status: string }
+  }
+
   async function submit() {
     setSubmitting(true)
     setError('')
     try {
-      const res = await fetch('/api/suppliers/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          businessName: form.businessName,
-          contactName: form.contactName,
-          email: form.email,
-          phone: form.phone || undefined,
-          website: form.website || undefined,
-          wechat: form.wechat || undefined,
-          abn: form.abn || undefined,
-          asicNumber: form.asicNumber || undefined,
-          businessLicenseNote: form.businessLicenseNote || undefined,
-          verificationNote: form.verificationNote || undefined,
-          category: form.category,
-          origin: form.origin,
-          description: form.description || undefined,
-          states: form.states,
-          specialties: form.specialties.split(',').map(s => s.trim()).filter(Boolean),
-          wantsVerification: form.wantsVerification,
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Submission failed')
+      const data = await registerListing()
       setResult(data)
       setStep(4)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Submission failed')
     } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function submitWithVerify() {
+    setSubmitting(true)
+    setError('')
+    try {
+      const data = await registerListing()
+      // Registered — now redirect to Stripe with the new listing ID
+      const checkoutRes = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: 'annual',
+          email: form.email,
+          businessName: form.businessName,
+          supplierId: data.id,
+          entityType: 'supplier',
+          abn: form.abn || undefined,
+          licenseNumberSupplier: form.asicNumber || undefined,
+          regType: form.businessLicenseNote || 'au',
+          notes: form.verificationNote || undefined,
+        }),
+      })
+      const checkoutData = await checkoutRes.json()
+      if (checkoutData.url) {
+        window.location.href = checkoutData.url
+      } else {
+        throw new Error(checkoutData.error || 'Checkout failed')
+      }
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Submission failed')
       setSubmitting(false)
     }
   }
@@ -317,21 +355,19 @@ export default function SupplierRegisterPage() {
               </button>
               <button
                 onClick={submit}
-                disabled={!form.contactName || !form.email || submitting}
+                disabled={submitting || !form.contactName || !form.email}
                 className="flex-1 py-3.5 rounded-xl text-white font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-40"
                 style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
               >
-                {submitting
-                  ? (isZh ? '提交中…' : 'Submitting…')
-                  : (isZh ? '提交入驻申请' : 'Submit Listing')}
+                {submitting ? (isZh ? '提交中…' : 'Submitting…') : (isZh ? '提交入驻' : 'Submit Listing')}
                 {!submitting && <ChevronRight className="w-4 h-4" />}
               </button>
             </div>
           </div>
         )}
 
-        {/* STEP 3 — Verification choice (reserved for future paid tier — currently skipped) */}
-        {false && step === 3 && (
+        {/* STEP 3 — Verification choice */}
+        {step === 3 && (
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-xl font-bold text-gray-900 mb-1">
@@ -485,18 +521,18 @@ export default function SupplierRegisterPage() {
                 {error && <p className="text-red-500 text-sm">{error}</p>}
 
                 <button
-                  onClick={submit}
+                  onClick={submitWithVerify}
                   disabled={submitting}
                   className="w-full py-3.5 rounded-xl text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
                   style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
                 >
                   <BadgeCheck className="w-4 h-4" />
                   {submitting
-                    ? (isZh ? '提交中…' : 'Submitting…')
-                    : (isZh ? '提交认证申请 · AUD $199/年' : 'Submit & Verify · AUD $199/yr')}
+                    ? (isZh ? '跳转中…' : 'Redirecting…')
+                    : (isZh ? '入驻并认证 · AUD $199/年' : 'List & Verify · AUD $199/yr')}
                 </button>
                 <p className="text-xs text-gray-400 text-center">
-                  {isZh ? '提交后我们将联系你完成支付和审核，通常 1–2 个工作日。' : 'We\'ll contact you to complete payment and review — usually within 1–2 business days.'}
+                  {isZh ? '付款后进入人工审核，1–2 个工作日出结果' : 'Payment required — reviewed within 1–2 business days'}
                 </p>
               </div>
             )}
@@ -521,19 +557,19 @@ export default function SupplierRegisterPage() {
             </h2>
             <p className="text-gray-500 mb-6 max-w-sm mx-auto leading-relaxed">
               {isZh
-                ? '你的公司信息已收录在建材目录中，审核通过后即可展示给买家。我们已向你的邮箱发送确认邮件。'
-                : 'Your business has been submitted to the directory. Once approved, it will be visible to homeowners and buyers. A confirmation email has been sent.'}
+                ? '你的公司信息已收录到建材目录中，买家和业主现在可以找到你了。'
+                : 'Your business is now listed in the supplier directory — homeowners and buyers can find you.'}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <a href="/suppliers/account"
+              <a href="/suppliers"
                 className="px-6 py-3 rounded-xl text-white font-semibold transition-all"
                 style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}>
-                {isZh ? '查看我的商家信息' : 'Manage My Listing'}
+                {isZh ? '浏览建材目录' : 'Browse Supplier Directory'}
               </a>
-              <a href="/suppliers"
+              <a href="/professionals"
                 className="px-6 py-3 rounded-xl text-gray-600 font-medium transition-colors bg-gray-100 hover:bg-gray-200 border border-gray-200">
-                {isZh ? '浏览建材目录' : 'Browse Directory'}
+                {isZh ? '浏览专业人士目录' : 'Browse Professionals'}
               </a>
             </div>
           </div>

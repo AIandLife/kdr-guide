@@ -211,6 +211,7 @@ function ProfessionalsPageInner() {
   })
   const [mandarinOnly, setMandarinOnly] = useState(false)
   const [loginGatePro, setLoginGatePro] = useState<Professional | null>(null)
+  const [pendingContactSlug, setPendingContactSlug] = useState<string | null>(null)
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     if (typeof window === 'undefined') return new Set()
     try { return new Set(JSON.parse(localStorage.getItem('kdr_favorites') || '[]')) } catch { return new Set() }
@@ -281,8 +282,24 @@ function ProfessionalsPageInner() {
     return true
   })
 
+  // Auto-open contact modal after login redirect (?contact=slug)
+  useEffect(() => {
+    const contactSlug = searchParams.get('contact')
+    if (!contactSlug || !user || allPros.length === 0) return
+    const pro = allPros.find(p => p.slug === contactSlug)
+    if (!pro) return
+    setModal({ pro, step: 1, submitting: false, error: '' })
+    setForm({ userName: '', userEmail: user.email ?? '', userPhone: '', suburb: '', projectType: '', timeline: '', message: '' })
+    // Clean URL param
+    const url = new URL(window.location.href)
+    url.searchParams.delete('contact')
+    window.history.replaceState({}, '', url.toString())
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, allPros.length])
+
   function openModal(pro: Professional) {
     if (!user) {
+      setPendingContactSlug(pro.slug)
       setLoginGatePro(pro)
       return
     }
@@ -541,8 +558,8 @@ function ProfessionalsPageInner() {
       {/* ── Login Gate Modal ── */}
       {loginGatePro && (
         <LoginGateModal
-          onClose={() => setLoginGatePro(null)}
-          redirectAfter="/professionals"
+          onClose={() => { setLoginGatePro(null); setPendingContactSlug(null) }}
+          redirectAfter={pendingContactSlug ? `/professionals?contact=${pendingContactSlug}` : '/professionals'}
         />
       )}
 

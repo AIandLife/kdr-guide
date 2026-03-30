@@ -31,12 +31,23 @@ interface SavedReport {
   created_at: string
 }
 
+interface SupplierEnquiry {
+  id: string
+  supplier_name: string
+  supplier_category: string | null
+  products_needed: string
+  suburb: string | null
+  project_type: string | null
+  created_at: string
+}
+
 export default function HomeownerDashboard() {
   const { user, loading } = useAuth()
   const { lang } = useLang()
   const isZh = lang === 'zh'
   const [contacts, setContacts] = useState<ContactRecord[]>([])
   const [reports, setReports] = useState<SavedReport[]>([])
+  const [supplierEnquiries, setSupplierEnquiries] = useState<SupplierEnquiry[]>([])
   const [fetching, setFetching] = useState(true)
 
   useEffect(() => {
@@ -54,9 +65,16 @@ export default function HomeownerDashboard() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(10),
-    ]).then(([{ data: contactData }, { data: reportData }]) => {
+      supabase
+        .from('supplier_inquiries')
+        .select('id, supplier_name, supplier_category, products_needed, suburb, project_type, created_at')
+        .eq('homeowner_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10),
+    ]).then(([{ data: contactData }, { data: reportData }, { data: supplierData }]) => {
       setContacts(contactData ?? [])
       setReports(reportData ?? [])
+      setSupplierEnquiries(supplierData ?? [])
       setFetching(false)
     })
   }, [user])
@@ -282,6 +300,50 @@ export default function HomeownerDashboard() {
                 </div>
               )}
             </section>
+
+            {/* Supplier Enquiries */}
+            {supplierEnquiries.length > 0 && (
+              <section className="mt-8">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4 text-orange-400" />
+                    {isZh ? '我发出的建材询价' : 'Supplier Enquiries Sent'}
+                  </h2>
+                  <Link href="/suppliers" className="text-xs text-orange-500 hover:text-orange-600 font-medium">
+                    {isZh ? '浏览建材商 →' : 'Browse suppliers →'}
+                  </Link>
+                </div>
+                <div className="space-y-3">
+                  {supplierEnquiries.map(e => (
+                    <div key={e.id} className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
+                          <div className="w-9 h-9 bg-orange-100 rounded-xl flex items-center justify-center shrink-0">
+                            <Building2 className="w-4 h-4 text-orange-500" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-900 text-sm">{e.supplier_name}</p>
+                            <div className="flex flex-wrap items-center gap-2 mt-1">
+                              {e.supplier_category && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 capitalize">{e.supplier_category}</span>
+                              )}
+                              {e.suburb && <span className="text-xs text-gray-400">{e.suburb}</span>}
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1 line-clamp-1">{e.products_needed}</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                          <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-500">
+                            {isZh ? '已发送' : 'Sent'}
+                          </span>
+                          <span className="text-xs text-gray-400">{formatDate(e.created_at)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
           </>
         )}
 

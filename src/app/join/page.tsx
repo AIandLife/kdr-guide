@@ -597,17 +597,25 @@ export default function JoinPage() {
           </h1>
           <p className="text-gray-500 leading-relaxed mb-8">
             {isZh
-              ? `${form.businessName} 已加入我们的专业人士目录，业主搜索时可以看到你的信息。`
-              : `${form.businessName} is now in our professional directory. Homeowners searching in your area can find you.`}
+              ? `${form.businessName} 已加入我们的专业人士目录，业主搜索时可以看到你的信息。申请认证后可获得优先排名和认证徽章。`
+              : `${form.businessName} is now in our professional directory. Get a verified badge and priority ranking by completing verification.`}
           </p>
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-xl"
-            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
-          >
-            <ChevronRight className="w-5 h-5" />
-            {isZh ? '进入我的个人中心 →' : 'Go to my account →'}
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center gap-2 text-white font-semibold px-6 py-3 rounded-xl"
+              style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
+            >
+              <ChevronRight className="w-5 h-5" />
+              {isZh ? '进入个人中心' : 'Go to my account'}
+            </Link>
+            <Link
+              href="/dashboard/pro?tab=verify"
+              className="inline-flex items-center justify-center gap-2 text-gray-700 font-semibold px-6 py-3 rounded-xl bg-white border border-gray-200 hover:border-orange-300 transition-colors"
+            >
+              {isZh ? '申请认证徽章 →' : 'Apply for verification →'}
+            </Link>
+          </div>
         </div>
       </div>
     )

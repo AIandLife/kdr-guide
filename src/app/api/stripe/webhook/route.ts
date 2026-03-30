@@ -25,11 +25,76 @@ export async function POST(req: Request) {
     const email = session.customer_email
     const businessName = session.metadata?.businessName
     const professionalId = session.metadata?.professionalId
+    const supplierId = session.metadata?.supplierId
+    const entityType = session.metadata?.entityType || 'professional'
 
     const resend = new Resend((process.env.RESEND_API_KEY || '').trim())
     const FROM_EMAIL = (process.env.RESEND_FROM_EMAIL || 'terry@ausbuildcircle.com').trim()
     const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'terry@ausbuildcircle.com').trim()
 
+    // ── Supplier payment ──────────────────────────────────────────────────
+    if (entityType === 'supplier' && supplierId) {
+      const { data: supplier } = await supabase
+        .from('supplier_listings')
+        .select('id, email, business_name, abn, asic_number, business_license_note, verification_note')
+        .eq('id', supplierId)
+        .single()
+
+      if (supplier) {
+        await supabase
+          .from('supplier_listings')
+          .update({ status: 'pending_review', paid_at: new Date().toISOString() })
+          .eq('id', supplierId)
+
+        // Email admin
+        resend.emails.send({
+          from: FROM_EMAIL,
+          to: ADMIN_EMAIL,
+          subject: `[建材商认证] ${supplier.business_name}`,
+          html: `
+            <div style="font-family:sans-serif;max-width:520px;margin:0 auto">
+              <div style="background:#f97316;padding:20px;border-radius:12px 12px 0 0">
+                <h2 style="color:white;margin:0;font-size:18px">新建材商认证申请</h2>
+              </div>
+              <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
+                <p><strong>公司：</strong>${supplier.business_name}</p>
+                <p><strong>邮箱：</strong>${supplier.email}</p>
+                <p><strong>ID：</strong>${supplier.id}</p>
+                ${supplier.abn ? `<p><strong>ABN：</strong>${supplier.abn}</p>` : ''}
+                ${supplier.asic_number ? `<p><strong>营业执照号：</strong>${supplier.asic_number}</p>` : ''}
+                ${supplier.verification_note ? `<p><strong>补充说明：</strong>${supplier.verification_note}</p>` : ''}
+                <p>付款已确认，请登录后台审核。</p>
+                <a href="https://ausbuildcircle.com/admin/suppliers" style="display:inline-block;background:#f97316;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600">前往后台审核 →</a>
+              </div>
+            </div>
+          `,
+        }).catch(err => console.error('Supplier admin email error:', err))
+
+        // Email supplier
+        resend.emails.send({
+          from: FROM_EMAIL,
+          to: supplier.email,
+          subject: '付款成功 — 认证申请审核中',
+          html: `
+            <div style="font-family:sans-serif;max-width:520px;margin:0 auto">
+              <div style="background:#f97316;padding:24px;border-radius:12px 12px 0 0;text-align:center">
+                <h1 style="color:white;margin:0;font-size:20px">✅ 付款成功</h1>
+              </div>
+              <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
+                <p>您好，<strong>${supplier.business_name}</strong>，</p>
+                <p>我们已收到您的认证申请及付款。您的资质正在审核中，通常 <strong>1–2 个工作日</strong>内完成。</p>
+                <p>审核通过后，您将收到确认邮件，您的主页将自动显示认证徽章。</p>
+                <p>澳洲建房圈 团队</p>
+              </div>
+            </div>
+          `,
+        }).catch(err => console.error('Supplier email error:', err))
+
+        console.log(`Supplier payment received (pending review): ${supplier.business_name}`)
+      }
+    }
+
+    // ── Professional payment ───────────────────────────────────────────────
     // Fetch professional by ID (reliable) or fall back to email
     let pro: {
       id: string; email: string; business_name: string;
@@ -37,20 +102,22 @@ export async function POST(req: Request) {
       license_number?: string | null; years_experience?: number | null;
     } | null = null
 
-    if (professionalId) {
-      const { data } = await supabase
-        .from('professionals')
-        .select('id, email, business_name, abn, license_type, license_number, years_experience')
-        .eq('id', professionalId)
-        .single()
-      pro = data
-    } else if (email) {
-      const { data } = await supabase
-        .from('professionals')
-        .select('id, email, business_name, abn, license_type, license_number, years_experience')
-        .eq('email', email)
-        .single()
-      pro = data
+    if (entityType !== 'supplier') {
+      if (professionalId) {
+        const { data } = await supabase
+          .from('professionals')
+          .select('id, email, business_name, abn, license_type, license_number, years_experience')
+          .eq('id', professionalId)
+          .single()
+        pro = data
+      } else if (email) {
+        const { data } = await supabase
+          .from('professionals')
+          .select('id, email, business_name, abn, license_type, license_number, years_experience')
+          .eq('email', email)
+          .single()
+        pro = data
+      }
     }
 
     if (pro) {

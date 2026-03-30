@@ -373,7 +373,10 @@ function ProDashboard() {
   const [sentEnquiries, setSentEnquiries] = useState<Enquiry[]>([])
   const [appInfo, setAppInfo] = useState<ApplicationInfo | null>(null)
   const [fetching, setFetching] = useState(true)
-  const [activeTab, setActiveTab] = useState<'enquiries' | 'sent' | 'profile' | 'verify'>(justPaid ? 'verify' : 'enquiries')
+  const tabParam = searchParams.get('tab') as 'enquiries' | 'sent' | 'profile' | 'verify' | null
+  const [activeTab, setActiveTab] = useState<'enquiries' | 'sent' | 'profile' | 'verify'>(
+    justPaid ? 'verify' : (tabParam || 'enquiries')
+  )
   const [markingReplied, setMarkingReplied] = useState<string | null>(null)
 
   useEffect(() => {

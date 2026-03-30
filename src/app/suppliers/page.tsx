@@ -26,9 +26,8 @@ interface DbSupplier {
   description: string | null
   states: string[]
   specialties: string[]
-  status: string
+  verified: boolean
   featured: boolean
-  reliability_score: number
   website: string | null
   phone: string | null
   wechat: string | null
@@ -48,15 +47,15 @@ function dbToSupplier(d: DbSupplier): Supplier {
     states: d.states || [],
     specialties: d.specialties || [],
     specialtiesZh: d.specialties || [],
-    verified: d.status === 'verified',
-    verifiedNote: d.status === 'verified' ? 'Self-verified via AusBuildCircle' : undefined,
+    verified: d.verified,
+    verifiedNote: d.verified ? 'Self-verified via AusBuildCircle' : undefined,
     googleRating: d.google_rating ?? undefined,
     googleReviews: d.google_reviews ?? undefined,
     website: d.website ?? undefined,
     phone: d.phone ?? undefined,
     email: d.email ?? undefined,
     featured: d.featured,
-    reliabilityScore: d.reliability_score ?? 50,
+    reliabilityScore: 50,
   }
 }
 
@@ -175,6 +174,7 @@ function SuppliersPageInner() {
           supplierName: enquiryTarget.name,
           supplierCategory: enquiryTarget.category,
           supplierEmail: enquiryTarget.email || null,
+          homeownerId: user?.id || null,
           ...form,
         }),
       })
