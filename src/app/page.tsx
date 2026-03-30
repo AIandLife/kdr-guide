@@ -392,8 +392,9 @@ export default function HomePage() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <a href="https://bosslink.ai" target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 border border-orange-500/40 text-orange-400 hover:border-orange-400 hover:text-orange-300 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
-              {lang === 'zh' ? 'BossLink 澳洲创业圈 →' : 'BossLink →'}
+              className="inline-flex flex-col items-center border border-orange-500/40 text-orange-400 hover:border-orange-400 hover:text-orange-300 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
+              <span>BossLink →</span>
+              <span className="text-xs font-normal text-orange-400/70 mt-0.5">{lang === 'zh' ? '商业资源库' : 'Business Hub'}</span>
             </a>
             <a href="https://www.auspropertycircle.com" target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 border border-orange-500/40 text-orange-400 hover:border-orange-400 hover:text-orange-300 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
