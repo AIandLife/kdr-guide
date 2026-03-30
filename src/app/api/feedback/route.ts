@@ -6,11 +6,11 @@ export async function POST(req: Request) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
-  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'terry@kdrguide.com.au'
-  const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@ausbuildcircle.com'
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim() || 'recommendforterry@gmail.com'
+  const FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || 'noreply@ausbuildcircle.com'
 
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY)
+    const resend = new Resend((process.env.RESEND_API_KEY || "").trim())
     const { type, message, page, email } = await req.json()
     if (!message?.trim()) return Response.json({ error: 'Message required' }, { status: 400 })
 

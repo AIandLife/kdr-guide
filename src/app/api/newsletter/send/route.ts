@@ -17,8 +17,8 @@ export async function POST(req: Request) {
   const body = await req.json() as Omit<NewsletterData, 'unsubscribeToken'> & { testEmail?: string }
   const { testEmail, ...newsletterData } = body
 
-  const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM_EMAIL || 'terry@ausbuildcircle.com'
+  const resend = new Resend((process.env.RESEND_API_KEY || "").trim())
+  const FROM = process.env.RESEND_FROM_EMAIL?.trim() || 'noreply@ausbuildcircle.com'
   const subject = `澳洲建房圈 Issue #${String(newsletterData.issueNumber).padStart(2, '0')} · ${newsletterData.heroTitle}`
 
   // Test mode: send to one email only

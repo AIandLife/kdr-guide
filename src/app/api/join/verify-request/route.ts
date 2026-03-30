@@ -7,9 +7,9 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Missing fields' }, { status: 400 })
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY)
-    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'terry@ausbuildcircle.com'
-    const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@ausbuildcircle.com'
+    const resend = new Resend((process.env.RESEND_API_KEY || "").trim())
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim() || 'recommendforterry@gmail.com'
+    const FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || 'noreply@ausbuildcircle.com'
 
     const docRows = Object.entries(verifyDocs ?? {})
       .map(([label, val]) => `<tr><td style="padding:6px 10px;font-weight:600;background:#f9fafb;width:160px">${label}</td><td style="padding:6px 10px">${val || '—'}</td></tr>`)

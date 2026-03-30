@@ -11,8 +11,8 @@ export async function POST(req: Request) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
-  const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@ausbuildcircle.com'
+  const resend = new Resend((process.env.RESEND_API_KEY || "").trim())
+  const FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || 'noreply@ausbuildcircle.com'
 
   try {
     const { id, action, adminNotes } = await req.json()

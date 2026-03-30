@@ -5,8 +5,8 @@ export async function POST(req: Request) {
     const { email, suburb, state, lang } = await req.json()
     if (!email || !suburb) return Response.json({ error: 'Missing fields' }, { status: 400 })
 
-    const resend = new Resend(process.env.RESEND_API_KEY)
-    const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@ausbuildcircle.com'
+    const resend = new Resend((process.env.RESEND_API_KEY || "").trim())
+    const FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || 'noreply@ausbuildcircle.com'
     const isZh = lang === 'zh'
 
     const reportUrl = `https://ausbuildcircle.com/feasibility?suburb=${encodeURIComponent(suburb)}${state ? `&state=${state}` : ''}`
