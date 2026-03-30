@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
-  CheckCircle, ChevronRight, Loader2, Shield, Star, Phone,
+  CheckCircle, ChevronRight, Loader2, Globe, Check,
   HardHat, FileText, Zap, Droplets, Hammer, DollarSign, Briefcase, Ruler,
-  PenTool, Globe, Check
+  PenTool
 } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { useAuth } from '@/lib/auth-context'
@@ -123,7 +123,7 @@ export default function JoinPage() {
   }, [user])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const [verifyDocs, setVerifyDocs] = useState<Record<string, string>>({})
+  const [professionalId, setProfessionalId] = useState<string | null>(null)
   // Bilingual translation state
   const [translating, setTranslating] = useState(false)
   const [translation, setTranslation] = useState<TranslationResult | null>(null)
@@ -204,18 +204,13 @@ export default function JoinPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
+      if (data.professionalId) setProfessionalId(data.professionalId)
       setView('listed')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Submission failed')
     } finally {
       setSubmitting(false)
     }
-  }
-
-  const handleRequestVerify = async () => {
-    // Mark as pending verification in DB via the same join API
-    // For now, just transition the view — admin will follow up
-    setView('verify_requested')
   }
 
   const inputClass = 'w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400'
@@ -422,16 +417,23 @@ export default function JoinPage() {
               {(form.businessName || form.description) && (
                 <div className="mt-4">
                   {!showTranslationPanel ? (
-                    <button
-                      type="button"
-                      onClick={handleGenerateTranslation}
-                      disabled={translating}
-                      className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl px-4 py-2.5 transition-all disabled:opacity-60"
-                    >
-                      {translating
-                        ? <><Loader2 className="w-4 h-4 animate-spin" /> {isZh ? '生成中...' : 'Generating...'}</>
-                        : <><Globe className="w-4 h-4" /> {isZh ? '一键生成英文版本' : 'Generate English Version'}</>}
-                    </button>
+                    <div>
+                      <p className="text-xs text-gray-400 mb-2 leading-relaxed">
+                        {isZh
+                          ? '💡 我们平台上有本地澳洲用户（非华人），提供英文版本能让更多业主找到你、联系你。'
+                          : '💡 Our platform has local Australian users too. Adding an English version helps more homeowners find and contact you.'}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleGenerateTranslation}
+                        disabled={translating}
+                        className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl px-4 py-2.5 transition-all disabled:opacity-60"
+                      >
+                        {translating
+                          ? <><Loader2 className="w-4 h-4 animate-spin" /> {isZh ? '生成中...' : 'Generating...'}</>
+                          : <><Globe className="w-4 h-4" /> {isZh ? '一键生成英文版本' : 'Generate English Version'}</>}
+                      </button>
+                    </div>
                   ) : (
                     <div className="border border-blue-200 rounded-2xl overflow-hidden bg-blue-50/30">
                       <div className="flex items-center justify-between px-4 py-3 bg-blue-50 border-b border-blue-100">
@@ -580,176 +582,37 @@ export default function JoinPage() {
     )
   }
 
-  // ── Step 2: Listed — free confirmation + verification upsell ──────────────
+  // ── Step 2: Listed ────────────────────────────────────────────────────────
   if (view === 'listed') {
-    const benefits = isZh ? VERIFY_BENEFITS_ZH : VERIFY_BENEFITS_EN
     return (
       <div className="min-h-screen bg-gray-50">
         <SiteNav backHref="/professionals" backLabel={isZh ? '返回' : 'Back'} currentPath="/join" />
 
-        <div className="max-w-xl mx-auto px-4 sm:px-6 py-16">
-          {/* Confirmation */}
-          <div className="text-center mb-10">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
-              <CheckCircle className="w-10 h-10 text-green-600" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {isZh ? '🎉 已免费收录！' : '🎉 You\'re Listed — Free!'}
-            </h1>
-            <p className="text-gray-500 leading-relaxed">
-              {isZh
-                ? `${form.businessName} 已经加入我们的专业人士目录。业主搜索时可以看到你的公司信息。`
-                : `${form.businessName} is now in our professional directory. Homeowners searching in your area can find you.`}
-            </p>
+        <div className="max-w-md mx-auto px-4 sm:px-6 py-20 text-center">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+            <CheckCircle className="w-10 h-10 text-green-600" />
           </div>
-
-          {/* Verification upsell */}
-          <div className="rounded-2xl bg-white border border-orange-200 shadow-sm overflow-hidden mb-6">
-            <div className="px-6 py-5 border-b border-orange-100 bg-orange-50">
-              <div className="flex items-center gap-3">
-                <Shield className="w-6 h-6 text-orange-500 shrink-0" />
-                <div>
-                  <h2 className="font-bold text-gray-900">
-                    {isZh ? '需要认证徽章吗？' : 'Want a Verified badge?'}
-                  </h2>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {isZh
-                      ? '认证让你的公司出现在搜索结果的最前面，联系方式对业主可见。'
-                      : 'Verification puts you at the top of search results and shows your contact details to homeowners.'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="px-6 py-5 space-y-4">
-              {benefits.map((b, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <span className="text-xl shrink-0">{b.icon}</span>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{b.title}</p>
-                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{b.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="px-6 pb-6 pt-2 space-y-3">
-              <button
-                onClick={handleRequestVerify}
-                className="w-full text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
-                style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
-              >
-                <Star className="w-4 h-4" />
-                {isZh ? '申请认证 →' : 'Apply for Verification →'}
-              </button>
-              <button
-                onClick={() => setView('done')}
-                className="w-full py-3 rounded-xl text-sm text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {isZh ? '不用了，免费版就好' : 'No thanks, free listing is fine'}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // ── Step 3a: Verification — show docs required + pricing ─────────────────
-  if (view === 'verify_requested') {
-    const docs = VERIFY_DOCS[form.category] ?? VERIFY_DOCS['Other']
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <SiteNav backHref="/professionals" backLabel={isZh ? '返回' : 'Back'} currentPath="/join" />
-
-        <div className="max-w-xl mx-auto px-4 sm:px-6 py-12">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 mb-4 text-xs font-semibold text-orange-600 bg-orange-100 border border-orange-200">
-              <Shield className="w-3.5 h-3.5" />
-              {isZh ? '认证申请' : 'Verification'}
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {isZh ? '提交认证所需材料' : 'Submit Verification Documents'}
-            </h1>
-            <p className="text-sm text-gray-500">
-              {isZh
-                ? '认证后你的主页会显示已认证徽章，搜索结果优先排名，联系方式对业主可见。'
-                : 'Once verified, your listing shows a Verified badge, ranks above unverified profiles, and reveals your contact details.'}
-            </p>
-          </div>
-
-          {/* Documents required */}
-          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-6 mb-4">
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
-              {isZh ? '所需材料' : 'Required Documents'}
-            </h2>
-            <div className="space-y-4">
-              {docs.map((doc, i) => (
-                <div key={i}>
-                  <label className="block text-xs text-gray-500 mb-1.5">
-                    {isZh ? doc.labelZh : doc.label} *
-                  </label>
-                  <input
-                    value={verifyDocs[doc.label] ?? ''}
-                    onChange={e => setVerifyDocs(prev => ({ ...prev, [doc.label]: e.target.value }))}
-                    placeholder={doc.placeholder}
-                    className="w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400"
-                  />
-                </div>
-              ))}
-            </div>
-            <p className="text-xs text-gray-400 mt-4 leading-relaxed">
-              {isZh
-                ? '我们会通过 ASIC / 各州注册机构核实上述信息，通常在 1–2 个工作日内完成。'
-                : 'We verify details via ASIC and state licensing bodies. This typically takes 1–2 business days.'}
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={async () => {
-              await fetch('/api/join/verify-request', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: form.email, businessName: form.businessName, category: form.category, verifyDocs }),
-              }).catch(() => {})
-              setView('done')
-            }}
-            className="w-full text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 text-base mb-3"
-            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 24px rgba(249,115,22,0.3)' }}
-          >
-            {isZh ? '提交认证申请 →' : 'Submit for Review →'}
-          </button>
-          <p className="text-center text-xs text-gray-400 mb-6">
-            {isZh ? '我们会在 1–2 个工作日内与你联系。' : 'We\'ll be in touch within 1–2 business days.'}
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+            {isZh ? '🎉 收录成功！' : '🎉 You\'re Listed!'}
+          </h1>
+          <p className="text-gray-500 leading-relaxed mb-8">
+            {isZh
+              ? `${form.businessName} 已加入我们的专业人士目录，业主搜索时可以看到你的信息。`
+              : `${form.businessName} is now in our professional directory. Homeowners searching in your area can find you.`}
           </p>
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-xl"
+            style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
+          >
+            <ChevronRight className="w-5 h-5" />
+            {isZh ? '进入我的个人中心 →' : 'Go to my account →'}
+          </Link>
         </div>
       </div>
     )
   }
 
-  // ── Step 3b: Done (chose free) ────────────────────────────────────────────
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <SiteNav backHref="/professionals" backLabel={isZh ? '返回' : 'Back'} currentPath="/join" />
-
-      <div className="max-w-md mx-auto px-4 sm:px-6 py-20 text-center">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
-          <CheckCircle className="w-10 h-10 text-green-600" />
-        </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">
-          {isZh ? '收录成功，感谢你的加入！' : 'You\'re all set — welcome aboard!'}
-        </h1>
-        <p className="text-gray-500 leading-relaxed mb-8">
-          {isZh
-            ? `${form.businessName} 已收录在我们的目录中。如果你以后想申请认证，随时可以再回来。`
-            : `${form.businessName} is in our directory. If you ever want to get verified, you can always come back and apply.`}
-        </p>
-        <Link href="/" className="inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-xl"
-          style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}>
-          {isZh ? '返回首页' : 'Back to Home'}
-        </Link>
-      </div>
-    </div>
-  )
+  // Fallback (should not reach here)
+  return null
 }

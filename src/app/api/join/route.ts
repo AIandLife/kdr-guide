@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     }
 
     // Also create/update in professionals table so dashboard works
-    await supabase
+    const { data: profRow } = await supabase
       .from('professionals')
       .upsert({
         business_name: businessName,
@@ -82,6 +82,9 @@ export async function POST(req: Request) {
         ...(userId ? { user_id: userId } : {}),
         languages: languages || ['English'],
       }, { onConflict: 'email' })
+      .select('id')
+      .single()
+    const professionalId = profRow?.id ?? null
 
     // Emails — fire-and-forget, failures don't affect the response
     resend.emails.send({
@@ -139,7 +142,7 @@ export async function POST(req: Request) {
       `,
     }).catch(err => console.error('Confirmation email failed:', err))
 
-    return Response.json({ success: true, trialEnd })
+    return Response.json({ success: true, trialEnd, professionalId })
 
   } catch (error) {
     console.error('Join API error:', error)

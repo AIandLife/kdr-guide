@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { MessageSquare, Clock, Building2, ChevronRight, HardHat, FileText, MapPin, Plus } from 'lucide-react'
+import { MessageSquare, Clock, Building2, ChevronRight, HardHat, FileText, MapPin, Plus, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/auth-context'
 import { SiteNav } from '@/components/SiteNav'
@@ -91,13 +91,26 @@ export default function HomeownerDashboard() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
 
         {/* Greeting */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">
-            {isZh ? '我的后台' : 'My Dashboard'}
-          </h1>
-          <p className="text-gray-500 text-sm">
-            {isZh ? `欢迎回来，${user.email}` : `Welcome back, ${user.email}`}
-          </p>
+        <div className="flex items-start justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">
+              {isZh ? '个人中心' : 'My Account'}
+            </h1>
+            <p className="text-gray-500 text-sm">
+              {isZh ? `欢迎回来，${user.email}` : `Welcome back, ${user.email}`}
+            </p>
+          </div>
+          <button
+            onClick={async () => {
+              const supabase = createClient()
+              await supabase.auth.signOut()
+              window.location.href = '/'
+            }}
+            className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-red-500 transition-colors px-2 py-1.5 shrink-0"
+          >
+            <LogOut className="w-4 h-4" />
+            {isZh ? '退出' : 'Sign out'}
+          </button>
         </div>
 
         {/* Quick actions */}

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import {
   CheckCircle, HelpCircle, Globe,
   Mail, Phone, Star, MapPin, MessageCircle, X, Send, Loader2
@@ -9,6 +10,8 @@ import {
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
+import { LoginGateModal } from '@/components/LoginGateModal'
+import { useAuth } from '@/lib/auth-context'
 import {
   SUPPLIERS, SUPPLIER_CATEGORIES, rankSuppliers,
   type SupplierCategory, type SupplierOrigin, type Supplier
@@ -119,10 +122,12 @@ const BLANK_FORM: EnquiryForm = {
   quantityEstimate: '', timeline: '', message: '',
 }
 
-export default function SuppliersPage() {
+function SuppliersPageInner() {
   const { lang } = useLang()
   const t = translations[lang]
   const isZh = lang === 'zh'
+  const { user } = useAuth()
+  const searchParams = useSearchParams()
 
   const [activeCategory, setActiveCategory] = useState<SupplierCategory | 'all'>('all')
   const [activeOrigin, setActiveOrigin] = useState<SupplierOrigin | 'all'>('all')
@@ -133,10 +138,24 @@ export default function SuppliersPage() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [showLoginGate, setShowLoginGate] = useState(false)
+  const [pendingSupplierId, setPendingSupplierId] = useState<string | null>(null)
+
+  // Auto-fill email when user logs in
+  useEffect(() => {
+    if (user?.email) {
+      setForm(f => ({ ...f, buyerEmail: f.buyerEmail || user.email! }))
+    }
+  }, [user])
 
   function openEnquiry(supplier: Supplier) {
+    if (!user) {
+      setPendingSupplierId(supplier.id)
+      setShowLoginGate(true)
+      return
+    }
     const cat = SUPPLIER_CATEGORIES[supplier.category]
-    setForm({ ...BLANK_FORM, productsNeeded: isZh ? cat.zh : cat.en })
+    setForm({ ...BLANK_FORM, productsNeeded: isZh ? cat.zh : cat.en, buyerEmail: user.email || '' })
     setSubmitted(false)
     setSubmitError('')
     setEnquiryTarget(supplier)
@@ -176,6 +195,23 @@ export default function SuppliersPage() {
       })
       .catch(() => {/* non-fatal, fall back to static only */})
   }, [])
+
+  // After login redirect back with ?enquire=id — auto-open modal
+  useEffect(() => {
+    const enquireId = searchParams.get('enquire')
+    if (!enquireId || !user) return
+    const staticNames = new Set(SUPPLIERS.map(s => s.name.toLowerCase()))
+    const all = [...SUPPLIERS, ...dbSuppliers.filter(s => !staticNames.has(s.name.toLowerCase()))]
+    const supplier = all.find(s => s.id === enquireId)
+    if (supplier) {
+      openEnquiry(supplier)
+      // Clean up URL param without page reload
+      const url = new URL(window.location.href)
+      url.searchParams.delete('enquire')
+      window.history.replaceState({}, '', url.toString())
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, user, dbSuppliers])
 
   // Merge: static curated + DB-submitted (deduplicate by name)
   const staticNames = new Set(SUPPLIERS.map(s => s.name.toLowerCase()))
@@ -654,6 +690,26 @@ export default function SuppliersPage() {
           </div>
         </div>
       )}
+
+      {/* ── Login Gate ── */}
+      {showLoginGate && (
+        <LoginGateModal
+          onClose={() => { setShowLoginGate(false); setPendingSupplierId(null) }}
+          redirectAfter={`/suppliers${pendingSupplierId ? `?enquire=${pendingSupplierId}` : ''}`}
+          subtitle={{
+            zh: '登录后即可发送询价，邮箱将自动填入，方便供应商回复你。',
+            en: 'Sign in to send your enquiry. Your email will be pre-filled so the supplier can reply.',
+          }}
+        />
+      )}
     </div>
+  )
+}
+
+export default function SuppliersPage() {
+  return (
+    <Suspense>
+      <SuppliersPageInner />
+    </Suspense>
   )
 }

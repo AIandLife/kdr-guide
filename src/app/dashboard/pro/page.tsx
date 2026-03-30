@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   CheckCircle, Clock, MessageSquare, Shield, Edit3,
   AlertCircle, Building2, Phone, Globe, PartyPopper, Save, X, Loader2,
-  Mail as MailIcon
+  Mail as MailIcon, LogOut
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/auth-context'
@@ -216,9 +216,7 @@ function VerifyTab({
 }) {
   const [form, setForm] = useState({
     abn: '',
-    licenseType: '',
     licenseNumber: '',
-    yearsExperience: '',
   })
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
@@ -236,9 +234,7 @@ function VerifyTab({
           businessName: profile.business_name,
           professionalId: profile.id,
           abn: form.abn.trim(),
-          licenseType: form.licenseType,
           licenseNumber: form.licenseNumber.trim(),
-          yearsExperience: form.yearsExperience,
         }),
       })
       const data = await res.json()
@@ -335,46 +331,14 @@ function VerifyTab({
         </div>
 
         <div>
-          <label className="block text-xs text-gray-500 mb-1">{isZh ? '执照类型' : 'License Type'}</label>
-          <select
-            value={form.licenseType}
-            onChange={e => setForm(f => ({ ...f, licenseType: e.target.value }))}
-            className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:outline-none focus:border-orange-400"
-          >
-            <option value="">{isZh ? '请选择' : 'Select type'}</option>
-            <option value="builder">Builder / 建筑商</option>
-            <option value="architect">Architect / 建筑师</option>
-            <option value="town_planner">Town Planner / 规划师</option>
-            <option value="engineer">Engineer / 工程师</option>
-            <option value="designer">Designer / 设计师</option>
-            <option value="other">Other / 其他</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-xs text-gray-500 mb-1">{isZh ? '执照号 / 注册号' : 'License / Registration Number'}</label>
+          <label className="block text-xs text-gray-500 mb-1">{isZh ? '执照号 / 注册号' : 'Licence / Registration Number'}</label>
           <input
             type="text"
             value={form.licenseNumber}
             onChange={e => setForm(f => ({ ...f, licenseNumber: e.target.value }))}
-            placeholder={isZh ? '如：BL-123456' : 'e.g. BL-123456'}
+            placeholder="e.g. BLD123456"
             className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:outline-none focus:border-orange-400"
           />
-        </div>
-
-        <div>
-          <label className="block text-xs text-gray-500 mb-1">{isZh ? '从业年限' : 'Years of Experience'}</label>
-          <select
-            value={form.yearsExperience}
-            onChange={e => setForm(f => ({ ...f, yearsExperience: e.target.value }))}
-            className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:outline-none focus:border-orange-400"
-          >
-            <option value="">{isZh ? '请选择' : 'Select'}</option>
-            <option value="1">1–2 年</option>
-            <option value="3">3–5 年</option>
-            <option value="6">6–10 年</option>
-            <option value="11">10+ 年</option>
-          </select>
         </div>
 
         {submitError && <p className="text-xs text-red-500">{submitError}</p>}
@@ -406,9 +370,10 @@ function ProDashboard() {
   const justPaid = searchParams.get('verified') === '1'
   const [profile, setProfile] = useState<ProProfile | null>(null)
   const [enquiries, setEnquiries] = useState<Enquiry[]>([])
+  const [sentEnquiries, setSentEnquiries] = useState<Enquiry[]>([])
   const [appInfo, setAppInfo] = useState<ApplicationInfo | null>(null)
   const [fetching, setFetching] = useState(true)
-  const [activeTab, setActiveTab] = useState<'enquiries' | 'profile' | 'verify'>(justPaid ? 'verify' : 'enquiries')
+  const [activeTab, setActiveTab] = useState<'enquiries' | 'sent' | 'profile' | 'verify'>(justPaid ? 'verify' : 'enquiries')
   const [markingReplied, setMarkingReplied] = useState<string | null>(null)
 
   useEffect(() => {
@@ -433,10 +398,13 @@ function ProDashboard() {
           setFetching(false)
           return
         }
-        // Fetch enquiries + application info in parallel
+        // Fetch received enquiries + sent enquiries + application info in parallel
         Promise.all([
           supabase.from('contact_requests').select('*')
             .or(`professional_id.eq.${prof.id},professional_name.eq.${prof.business_name}`)
+            .order('created_at', { ascending: false }),
+          supabase.from('contact_requests').select('*')
+            .eq('homeowner_id', user.id)
             .order('created_at', { ascending: false }),
           supabase.from('kdr_professional_applications')
             .select('paid_at, stripe_subscription_id')
@@ -444,8 +412,9 @@ function ProDashboard() {
             .order('paid_at', { ascending: false })
             .limit(1)
             .single(),
-        ]).then(([{ data: enqs }, { data: app }]) => {
+        ]).then(([{ data: enqs }, { data: sent }, { data: app }]) => {
           setEnquiries(enqs ?? [])
+          setSentEnquiries(sent ?? [])
           setAppInfo(app ?? null)
           setFetching(false)
         })
@@ -507,7 +476,7 @@ function ProDashboard() {
         <div className="flex items-start justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-1">
-              {profile ? profile.business_name : (isZh ? '我的后台' : 'My Dashboard')}
+              {profile ? profile.business_name : (isZh ? '个人中心' : 'My Account')}
             </h1>
             <div className="flex items-center gap-2">
               {profile ? statusBadge(profile.verification_status) : (
@@ -515,13 +484,26 @@ function ProDashboard() {
               )}
             </div>
           </div>
-          {!profile && (
-            <Link href="/join"
-              className="shrink-0 inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
-              <Building2 className="w-4 h-4" />
-              {isZh ? '创建我的主页' : 'Create my listing'}
-            </Link>
-          )}
+          <div className="flex items-center gap-2 shrink-0">
+            {!profile && (
+              <Link href="/join"
+                className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
+                <Building2 className="w-4 h-4" />
+                {isZh ? '创建我的主页' : 'Create my listing'}
+              </Link>
+            )}
+            <button
+              onClick={async () => {
+                const supabase = createClient()
+                await supabase.auth.signOut()
+                window.location.href = '/'
+              }}
+              className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-red-500 transition-colors px-2 py-1.5"
+            >
+              <LogOut className="w-4 h-4" />
+              {isZh ? '退出' : 'Sign out'}
+            </button>
+          </div>
         </div>
 
         {/* Payment success banner */}
@@ -587,15 +569,16 @@ function ProDashboard() {
         {/* Tabs (only if profile exists) */}
         {profile && (
           <>
-            <div className="flex gap-1 bg-white border border-gray-200 rounded-xl p-1 mb-6 shadow-sm w-fit">
+            <div className="flex flex-wrap gap-1 bg-white border border-gray-200 rounded-xl p-1 mb-6 shadow-sm w-fit">
               {([
                 ['enquiries', isZh ? '收到的询盘' : 'Enquiries', MessageSquare],
+                ...(sentEnquiries.length > 0 ? [['sent', isZh ? '发出的咨询' : 'Sent', MessageSquare]] as const : []),
                 ['profile',   isZh ? '编辑资料' : 'My Profile', Edit3],
                 ['verify',    isZh ? '认证' : 'Verification', Shield],
               ] as const).map(([key, label, Icon]) => (
                 <button
                   key={key}
-                  onClick={() => setActiveTab(key)}
+                  onClick={() => setActiveTab(key as typeof activeTab)}
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     activeTab === key ? 'bg-orange-500 text-white' : 'text-gray-600 hover:text-gray-900'
                   }`}
@@ -618,12 +601,7 @@ function ProDashboard() {
                   <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center shadow-sm">
                     <MessageSquare className="w-10 h-10 mx-auto text-gray-200 mb-3" />
                     <p className="text-gray-400 text-sm">{isZh ? '还没有收到询盘' : 'No enquiries yet'}</p>
-                    <p className="text-xs text-gray-400 mt-1 mb-4">{isZh ? '认证后你的主页会优先展示，吸引更多业主联系你。' : 'Get verified to rank higher and attract more homeowners.'}</p>
-                    {profile?.verification_status !== 'verified' && (
-                      <button onClick={() => setActiveTab('verify')} className="text-sm text-orange-500 hover:text-orange-600 font-medium border border-orange-200 rounded-xl px-4 py-2 hover:bg-orange-50 transition-colors">
-                        {isZh ? '立即申请认证 →' : 'Get Verified →'}
-                      </button>
-                    )}
+                    <p className="text-xs text-gray-400 mt-1">{isZh ? '业主在目录里找到你后可以直接发询盘给你。' : 'Homeowners who find you in the directory can send you a quote request.'}</p>
                   </div>
                 ) : (
                   enquiries.map(e => (
@@ -674,6 +652,43 @@ function ProDashboard() {
                             </button>
                           )}
                         </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {/* ── Sent Enquiries Tab ── */}
+            {activeTab === 'sent' && (
+              <div className="space-y-3">
+                {sentEnquiries.length === 0 ? (
+                  <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center shadow-sm">
+                    <MessageSquare className="w-10 h-10 mx-auto text-gray-200 mb-3" />
+                    <p className="text-gray-400 text-sm">{isZh ? '还没有发出过询盘' : 'No sent enquiries yet'}</p>
+                  </div>
+                ) : (
+                  sentEnquiries.map(e => (
+                    <div key={e.id} className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs text-gray-400">{formatDate(e.created_at)}</span>
+                            {e.suburb && <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">{e.suburb}</span>}
+                            {e.project_type && <span className="text-xs px-2 py-0.5 rounded-full bg-orange-50 text-orange-600">{e.project_type}</span>}
+                          </div>
+                          <p className="text-sm font-medium text-gray-900 mb-1">{e.professional_name}</p>
+                          {e.message && <p className="text-sm text-gray-600 mt-1 line-clamp-2">{e.message}</p>}
+                        </div>
+                        <span className={`text-xs px-2 py-1 rounded-lg font-medium shrink-0 ${
+                          e.status === 'replied' ? 'bg-green-100 text-green-600' :
+                          e.status === 'read' ? 'bg-blue-100 text-blue-600' :
+                          'bg-gray-100 text-gray-500'
+                        }`}>
+                          {e.status === 'replied' ? (isZh ? '已回复' : 'Replied') :
+                           e.status === 'read' ? (isZh ? '已查看' : 'Read') :
+                           (isZh ? '已发送' : 'Sent')}
+                        </span>
                       </div>
                     </div>
                   ))

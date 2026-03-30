@@ -107,13 +107,8 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                       <LayoutDashboard className="w-4 h-4" />
-                      {isZh ? '我的后台' : 'My Dashboard'}
+                      {isZh ? '个人中心' : 'My Account'}
                     </Link>
-                    <button onClick={handleSignOut}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors">
-                      <LogOut className="w-4 h-4" />
-                      {isZh ? '退出登录' : 'Sign out'}
-                    </button>
                   </div>
                 )}
               </div>
@@ -155,7 +150,7 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
             {user ? (
               <Link href="/dashboard"
                 className="block w-full text-center border border-gray-200 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
-                {isZh ? '我的后台' : 'My Dashboard'}
+                {isZh ? '个人中心' : 'My Account'}
               </Link>
             ) : (
               <Link href="/login"
