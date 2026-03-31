@@ -27,8 +27,9 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
   const links = [
     { href: '/guide',         label: t.nav.guide },
     { href: '/articles',      label: t.nav.articles },
-    { href: '/directory',      label: t.nav.directory },
-    { href: '/tenders',      label: t.nav.tenders },
+    { href: '/directory?tab=professionals', label: t.nav.professionals },
+    { href: '/directory?tab=suppliers',     label: t.nav.suppliers },
+    { href: '/tenders',       label: t.nav.tenders },
     { href: '/forum',         label: t.nav.forum },
   ]
 
@@ -65,7 +66,7 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
         {/* Centre: desktop nav links */}
         <div className="hidden md:flex items-center gap-1 flex-1 justify-center">
           {links.map(link => {
-            const active = currentPath === link.href
+            const active = currentPath === link.href || (currentPath && link.href.startsWith(currentPath + '?'))
             return (
               <Link key={link.href} href={link.href}
                 className="px-3 py-2 rounded-lg text-sm font-medium transition-colors"

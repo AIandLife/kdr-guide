@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { ExternalLink, Search, Landmark, Calendar } from 'lucide-react'
+import Link from 'next/link'
+import { Search, Landmark, Calendar, Clock, HardHat, ChevronRight } from 'lucide-react'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
@@ -17,38 +18,90 @@ interface Tender {
   link: string
   is_construction: boolean
   published_at: string | null
+  close_date: string | null
+  source: string
 }
 
-type FilterTab = 'all' | 'construction' | 'other'
+type FilterTab = string // 'all' | 'construction' | category names
 
-function formatDate(dateStr: string | null, isZh: boolean): string {
+const CATEGORY_COLORS: Record<string, string> = {
+  Construction: 'bg-orange-100 text-orange-700 border-orange-200',
+  'IT Services': 'bg-blue-100 text-blue-700 border-blue-200',
+  Health: 'bg-green-100 text-green-700 border-green-200',
+  Education: 'bg-purple-100 text-purple-700 border-purple-200',
+  Defence: 'bg-red-100 text-red-700 border-red-200',
+  Transport: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+  Environment: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  'Professional Services': 'bg-indigo-100 text-indigo-700 border-indigo-200',
+}
+
+function getCategoryColor(category: string): string {
+  // Check exact match first
+  if (CATEGORY_COLORS[category]) return CATEGORY_COLORS[category]
+  // Check partial match
+  for (const [key, val] of Object.entries(CATEGORY_COLORS)) {
+    if (category.toLowerCase().includes(key.toLowerCase())) return val
+  }
+  return 'bg-gray-100 text-gray-600 border-gray-200'
+}
+
+// Professional tags for construction tenders
+const CONSTRUCTION_PRO_TAGS_ZH = ['建筑商', '工程师', '设计师']
+const CONSTRUCTION_PRO_TAGS_EN = ['Builders', 'Engineers', 'Designers']
+
+function getRelativeDate(dateStr: string | null, isZh: boolean): string {
   if (!dateStr) return ''
   try {
     const d = new Date(dateStr)
     if (isNaN(d.getTime())) return ''
-    return d.toLocaleDateString(isZh ? 'zh-CN' : 'en-AU', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
+    const now = new Date()
+    const diffMs = now.getTime() - d.getTime()
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    if (diffDays === 0) return isZh ? '今天' : 'Today'
+    if (diffDays < 30) return isZh ? `${diffDays}天前` : `${diffDays}d ago`
+    const diffMonths = Math.floor(diffDays / 30)
+    return isZh ? `${diffMonths}个月前` : `${diffMonths}mo ago`
   } catch {
     return ''
   }
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  Construction: 'bg-orange-100 text-orange-700',
-  'IT Services': 'bg-blue-100 text-blue-700',
-  Health: 'bg-green-100 text-green-700',
-  Education: 'bg-purple-100 text-purple-700',
-  Defence: 'bg-red-100 text-red-700',
-  Transport: 'bg-yellow-100 text-yellow-700',
-  Environment: 'bg-emerald-100 text-emerald-700',
-  'Professional Services': 'bg-indigo-100 text-indigo-700',
-}
-
-function getCategoryColor(category: string): string {
-  return CATEGORY_COLORS[category] || 'bg-gray-100 text-gray-600'
+function getCloseDateInfo(
+  dateStr: string | null,
+  isZh: boolean
+): { label: string; color: string } | null {
+  if (!dateStr) return null
+  try {
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return null
+    const now = new Date()
+    const diffMs = d.getTime() - now.getTime()
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+    if (diffDays < 0) {
+      return {
+        label: isZh ? '已截止' : 'Closed',
+        color: 'bg-gray-100 text-gray-500 border-gray-200',
+      }
+    }
+    if (diffDays <= 3) {
+      return {
+        label: isZh ? `${diffDays}天后截止` : `${diffDays}d left`,
+        color: 'bg-red-100 text-red-700 border-red-200',
+      }
+    }
+    if (diffDays <= 7) {
+      return {
+        label: isZh ? `${diffDays}天后截止` : `${diffDays}d left`,
+        color: 'bg-orange-100 text-orange-700 border-orange-200',
+      }
+    }
+    return {
+      label: isZh ? `${diffDays}天后截止` : `${diffDays}d left`,
+      color: 'bg-gray-100 text-gray-600 border-gray-200',
+    }
+  } catch {
+    return null
+  }
 }
 
 export default function TendersPage() {
@@ -67,7 +120,7 @@ export default function TendersPage() {
       const { data, error } = await supabase
         .from('government_tenders')
         .select(
-          'id, atm_id, title, category_name, description_en, description_zh, link, is_construction, published_at'
+          'id, atm_id, title, category_name, description_en, description_zh, link, is_construction, published_at, close_date, source'
         )
         .order('published_at', { ascending: false })
         .limit(200)
@@ -80,31 +133,53 @@ export default function TendersPage() {
     fetchTenders()
   }, [])
 
+  // Dynamic category tabs from data
+  const categoryTabs = useMemo(() => {
+    const counts: Record<string, number> = {}
+    let constructionCount = 0
+    for (const t of tenders) {
+      const cat = t.category_name || 'Other'
+      counts[cat] = (counts[cat] || 0) + 1
+      if (t.is_construction) constructionCount++
+    }
+    const tabs: { key: string; label: string; count: number }[] = [
+      { key: 'all', label: isZh ? '全部' : 'All', count: tenders.length },
+      { key: 'construction', label: isZh ? '建设工程' : 'Construction', count: constructionCount },
+    ]
+    // Add top categories sorted by count
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1])
+    for (const [cat, count] of sorted) {
+      if (cat === 'Construction') continue // already in 建设工程 tab
+      tabs.push({ key: `cat:${cat}`, label: cat, count })
+    }
+    return tabs
+  }, [tenders, isZh])
+
   const filtered = useMemo(() => {
     let list = tenders
     if (filter === 'construction') {
       list = list.filter((t) => t.is_construction)
-    } else if (filter === 'other') {
-      list = list.filter((t) => !t.is_construction)
+    } else if (filter.startsWith('cat:')) {
+      const cat = filter.slice(4)
+      list = list.filter((t) => t.category_name === cat)
     }
     if (search.trim()) {
       const q = search.toLowerCase()
       list = list.filter(
         (t) =>
           t.title.toLowerCase().includes(q) ||
-          t.description_zh.toLowerCase().includes(q) ||
-          t.description_en.toLowerCase().includes(q) ||
-          t.category_name.toLowerCase().includes(q)
+          (t.description_zh || '').toLowerCase().includes(q) ||
+          (t.description_en || '').toLowerCase().includes(q) ||
+          (t.category_name || '').toLowerCase().includes(q)
       )
     }
     return list
   }, [tenders, filter, search])
 
-  const tabs: { key: FilterTab; label: string }[] = [
-    { key: 'all', label: t.tenders.filterAll },
-    { key: 'construction', label: t.tenders.filterConstruction },
-    { key: 'other', label: t.tenders.filterOther },
-  ]
+  const constructionCount = useMemo(
+    () => tenders.filter((t) => t.is_construction).length,
+    [tenders]
+  )
 
   return (
     <>
@@ -129,18 +204,19 @@ export default function TendersPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             {/* Tabs */}
-            <div className="flex gap-1 bg-white rounded-xl border border-gray-200 p-1">
-              {tabs.map((tab) => (
+            <div className="flex gap-1 flex-wrap bg-white rounded-xl border border-gray-200 p-1">
+              {categoryTabs.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setFilter(tab.key)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
                     filter === tab.key
                       ? 'bg-orange-500 text-white shadow-sm'
                       : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
                   {tab.label}
+                  <span className="ml-1 opacity-70">({tab.count})</span>
                 </button>
               ))}
             </div>
@@ -157,18 +233,28 @@ export default function TendersPage() {
               />
             </div>
           </div>
+
+          {/* Total count */}
+          {!loading && tenders.length > 0 && (
+            <div className="mt-3 text-sm text-gray-500">
+              {isZh
+                ? `共 ${filtered.length} ${t.tenders.totalCount}${constructionCount > 0 ? ` (其中 ${constructionCount} ${t.tenders.constructionCount})` : ''}`
+                : `${filtered.length} ${t.tenders.totalCount}${constructionCount > 0 ? ` (${constructionCount} ${t.tenders.constructionCount})` : ''}`}
+            </div>
+          )}
         </div>
 
         {/* Tender List */}
         <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
           {loading ? (
-            <div className="grid gap-4">
-              {[1, 2, 3, 4, 5].map((i) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
                   className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse"
                 >
-                  <div className="h-5 bg-gray-200 rounded w-3/4 mb-3" />
+                  <div className="h-5 bg-gray-200 rounded w-1/3 mb-3" />
+                  <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
                   <div className="h-4 bg-gray-100 rounded w-full mb-2" />
                   <div className="h-4 bg-gray-100 rounded w-2/3" />
                 </div>
@@ -185,61 +271,105 @@ export default function TendersPage() {
               <p className="text-gray-500 text-lg">{t.tenders.noResults}</p>
             </div>
           ) : (
-            <div className="grid gap-4">
-              {filtered.map((tender) => (
-                <div
-                  key={tender.id}
-                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow"
-                >
-                  {/* Badges row */}
-                  <div className="flex flex-wrap items-center gap-2 mb-2.5">
-                    {tender.is_construction && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
-                        {t.tenders.construction}
-                      </span>
-                    )}
-                    {tender.category_name && (
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(tender.category_name)}`}
-                      >
-                        {tender.category_name}
-                      </span>
-                    )}
-                    {tender.published_at && (
-                      <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-                        <Calendar className="w-3 h-3" />
-                        {t.tenders.published}{' '}
-                        {formatDate(tender.published_at, isZh)}
-                      </span>
-                    )}
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filtered.map((tender) => {
+                const closeInfo = getCloseDateInfo(tender.close_date, isZh)
+                const relDate = getRelativeDate(tender.published_at, isZh)
+                const proTags = isZh
+                  ? CONSTRUCTION_PRO_TAGS_ZH
+                  : CONSTRUCTION_PRO_TAGS_EN
 
-                  {/* Chinese summary (primary) */}
-                  {tender.description_zh && (
-                    <p className="text-gray-900 text-sm sm:text-base leading-relaxed mb-1.5">
-                      {tender.description_zh}
+                return (
+                  <Link
+                    key={tender.id}
+                    href={`/tenders/${tender.id}`}
+                    className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md hover:border-orange-200 transition-all flex flex-col group"
+                  >
+                    {/* Top: badges row */}
+                    <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                      {tender.category_name && (
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border ${getCategoryColor(tender.category_name)}`}
+                        >
+                          {tender.category_name}
+                        </span>
+                      )}
+                      {tender.is_construction && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-orange-50 text-orange-600 border border-orange-200">
+                          <HardHat className="w-3 h-3" />
+                          {t.tenders.construction}
+                        </span>
+                      )}
+                      {closeInfo && (
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border ${closeInfo.color}`}
+                        >
+                          <Clock className="w-3 h-3" />
+                          {closeInfo.label}
+                        </span>
+                      )}
+                      {tender.source && tender.source !== 'austender' && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-purple-50 text-purple-600 border border-purple-200">
+                          {tender.source === 'nsw'
+                            ? 'NSW'
+                            : tender.source === 'vic'
+                              ? 'VIC'
+                              : tender.source === 'qld'
+                                ? 'QLD'
+                                : tender.source === 'council'
+                                  ? 'Council'
+                                  : tender.source === 'school'
+                                    ? 'School'
+                                    : tender.source.toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Chinese summary as main title */}
+                    {tender.description_zh && (
+                      <h3 className="text-gray-900 text-sm sm:text-[15px] font-semibold leading-snug mb-1.5 line-clamp-3 group-hover:text-orange-700 transition-colors">
+                        {tender.description_zh}
+                      </h3>
+                    )}
+
+                    {/* English title */}
+                    <p className="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">
+                      {tender.title}
                     </p>
-                  )}
 
-                  {/* English title (secondary) */}
-                  <p className="text-gray-500 text-sm leading-relaxed mb-3">
-                    {tender.title}
-                  </p>
+                    {/* Professional tags for construction */}
+                    {tender.is_construction && (
+                      <div className="flex flex-wrap items-center gap-1 mb-3">
+                        <span className="text-[11px] text-gray-400">
+                          {t.tenders.suitableFor}
+                        </span>
+                        {proTags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[11px] px-1.5 py-0.5 bg-orange-50 text-orange-600 rounded"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
-                  {/* Link */}
-                  {tender.link && (
-                    <a
-                      href={tender.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm text-orange-600 hover:text-orange-500 font-medium transition-colors"
-                    >
-                      {t.tenders.viewOnAusTender}
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                </div>
-              ))}
+                    {/* Bottom: date + action */}
+                    <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-100">
+                      {relDate && (
+                        <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+                          <Calendar className="w-3 h-3" />
+                          {relDate}
+                        </span>
+                      )}
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-orange-600 group-hover:text-orange-700 transition-colors ml-auto">
+                        {t.tenders.viewDetail}
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+                  </Link>
+                )
+              })}
             </div>
           )}
         </div>

@@ -16,5 +16,5 @@ CREATE TABLE IF NOT EXISTS government_tenders (
   created_at timestamptz DEFAULT now()
 );
 
-CREATE INDEX idx_tenders_construction ON government_tenders(is_construction);
-CREATE INDEX idx_tenders_published ON government_tenders(published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_tenders_construction ON government_tenders(is_construction);
+CREATE INDEX IF NOT EXISTS idx_tenders_published ON government_tenders(published_at DESC);

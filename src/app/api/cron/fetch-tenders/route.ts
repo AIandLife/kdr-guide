@@ -259,6 +259,7 @@ export async function GET(req: Request) {
               guid: item.guid,
               is_construction: analysis.isConstruction,
               published_at: parseDate(item.pubDate),
+              source: 'austender',
             },
             { onConflict: 'guid' }
           )

@@ -93,7 +93,19 @@ interface SupplierInquiry {
   created_at: string
 }
 
-type Tab = 'forum' | 'professionals' | 'suppliers' | 'leads' | 'supplier-inquiries' | 'searches' | 'newsletter'
+interface AdminTender {
+  id: string
+  title: string
+  description_zh: string
+  category_name: string
+  source: string
+  is_construction: boolean
+  published_at: string | null
+  link: string
+  guid: string
+}
+
+type Tab = 'forum' | 'professionals' | 'suppliers' | 'leads' | 'supplier-inquiries' | 'searches' | 'tenders' | 'newsletter'
 
 export default function AdminPage() {
   const [secret, setSecret] = useState('')
@@ -108,6 +120,21 @@ export default function AdminPage() {
   const [supplierInquiries, setSupplierInquiries] = useState<SupplierInquiry[]>([])
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [searches, setSearches] = useState<Search[]>([])
+  const [adminTenders, setAdminTenders] = useState<AdminTender[]>([])
+  const [showAddTender, setShowAddTender] = useState(false)
+  const [tenderForm, setTenderForm] = useState({
+    title: '',
+    description_en: '',
+    description_zh: '',
+    category_name: 'Construction',
+    source: 'nsw',
+    agency: '',
+    location: '',
+    link: '',
+    close_date: '',
+    is_construction: true,
+  })
+  const [tenderSaving, setTenderSaving] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -164,21 +191,23 @@ export default function AdminPage() {
   async function loadData(s: string) {
     setLoading(true)
     const headers = { 'x-admin-secret': s }
-    const [r1, r2, r3, r4, r5, r6] = await Promise.all([
+    const [r1, r2, r3, r4, r5, r6, r7] = await Promise.all([
       fetch('/api/admin/forum', { headers }),
       fetch('/api/admin/professionals-list', { headers }),
       fetch('/api/admin/leads', { headers }),
       fetch('/api/admin/searches', { headers }),
       fetch('/api/admin/suppliers/list', { headers }),
       fetch('/api/admin/supplier-inquiries', { headers }),
+      fetch('/api/admin/tenders', { headers }),
     ])
-    const [d1, d2, d3, d4, d5, d6] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json()])
+    const [d1, d2, d3, d4, d5, d6, d7] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(), r7.json()])
     setPosts(d1.posts || [])
     setProfessionals(d2.professionals || [])
     setLeads(d3.leads || [])
     setSearches(d4.searches || [])
     setSuppliers(d5.suppliers || [])
     setSupplierInquiries(d6.inquiries || [])
+    setAdminTenders(d7.tenders || [])
     setAuthed(true)
     setLoading(false)
   }
@@ -187,24 +216,52 @@ export default function AdminPage() {
     setLoading(true)
     setMessage('')
     const headers = { 'x-admin-secret': secret }
-    const [r1, r2, r3, r4, r5, r6] = await Promise.all([
+    const [r1, r2, r3, r4, r5, r6, r7] = await Promise.all([
       fetch('/api/admin/forum', { headers }),
       fetch('/api/admin/professionals-list', { headers }),
       fetch('/api/admin/leads', { headers }),
       fetch('/api/admin/searches', { headers }),
       fetch('/api/admin/suppliers/list', { headers }),
       fetch('/api/admin/supplier-inquiries', { headers }),
+      fetch('/api/admin/tenders', { headers }),
     ])
     if (r1.status === 401) { setMessage('Wrong password.'); setLoading(false); return }
-    const [d1, d2, d3, d4, d5, d6] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json()])
+    const [d1, d2, d3, d4, d5, d6, d7] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(), r7.json()])
     setPosts(d1.posts || [])
     setProfessionals(d2.professionals || [])
     setLeads(d3.leads || [])
     setSearches(d4.searches || [])
     setSuppliers(d5.suppliers || [])
     setSupplierInquiries(d6.inquiries || [])
+    setAdminTenders(d7.tenders || [])
     setAuthed(true)
     setLoading(false)
+  }
+
+  async function saveTender() {
+    setTenderSaving(true)
+    try {
+      const res = await fetch('/api/admin/tenders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
+        body: JSON.stringify(tenderForm),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setMessage('Tender added successfully')
+        setShowAddTender(false)
+        setTenderForm({
+          title: '', description_en: '', description_zh: '', category_name: 'Construction',
+          source: 'nsw', agency: '', location: '', link: '', close_date: '', is_construction: true,
+        })
+        await reload()
+      } else {
+        setMessage(`Error: ${data.error}`)
+      }
+    } catch (err) {
+      setMessage(`Error: ${String(err)}`)
+    }
+    setTenderSaving(false)
   }
 
   async function reload() {
@@ -216,14 +273,14 @@ export default function AdminPage() {
     if (selected.size === 0) return
     if (!confirm(`Delete ${selected.size} item(s)?`)) return
     const ids = Array.from(selected)
-    const url = tab === 'forum' ? '/api/admin/forum' : tab === 'suppliers' ? '/api/admin/suppliers/list' : '/api/admin/professionals-list'
+    const url = tab === 'forum' ? '/api/admin/forum' : tab === 'suppliers' ? '/api/admin/suppliers/list' : tab === 'tenders' ? '/api/admin/tenders' : '/api/admin/professionals-list'
     const res = await fetch(url, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
       body: JSON.stringify({ ids }),
     })
     const data = await res.json()
-    if (data.success) { setMessage(`✅ Deleted ${ids.length} item(s).`); await reload() }
+    if (data.success || data.deleted) { setMessage(`Deleted ${ids.length} item(s).`); await reload() }
     else setMessage(`Error: ${data.error}`)
   }
 
@@ -390,6 +447,7 @@ export default function AdminPage() {
     { id: 'forum', label: '论坛帖子', count: posts.length },
     { id: 'professionals', label: '专业人士', count: professionals.length, alert: pendingPros > 0 },
     { id: 'suppliers', label: '建材商', count: suppliers.length },
+    { id: 'tenders', label: '招标管理', count: adminTenders.length },
     { id: 'newsletter', label: '发 Newsletter', count: 0 },
   ]
 
@@ -779,6 +837,213 @@ export default function AdminPage() {
               {suppliers.length === 0 && <p className="text-slate-500 text-sm text-center py-8">暂无建材商数据</p>}
             </div>
           </>
+        )}
+
+        {/* ── TENDERS TAB ── */}
+        {tab === 'tenders' && (
+          <div className="space-y-4">
+            {/* Add Tender Button */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowAddTender(!showAddTender)}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-orange-500 text-white hover:bg-orange-600 transition-colors"
+                >
+                  {showAddTender ? 'Cancel' : '+ Add Tender'}
+                </button>
+                {selected.size > 0 && (
+                  <button onClick={deleteSelected} className="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors">
+                    Delete ({selected.size})
+                  </button>
+                )}
+              </div>
+              <span className="text-slate-400 text-sm">
+                Total: {adminTenders.length} | Manual: {adminTenders.filter(t => t.source === 'manual' || !['austender'].includes(t.source)).length}
+              </span>
+            </div>
+
+            {/* Add Tender Form */}
+            {showAddTender && (
+              <div className="rounded-xl p-5 space-y-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <h3 className="text-white font-bold">Add Tender</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="sm:col-span-2">
+                    <label className="text-slate-400 text-xs mb-1 block">Title (English) *</label>
+                    <input
+                      value={tenderForm.title}
+                      onChange={e => setTenderForm(prev => ({ ...prev, title: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-lg text-sm text-white"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                      placeholder="e.g. School Building Renovation - Parramatta"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-slate-400 text-xs mb-1 block">Description (Chinese)</label>
+                    <textarea
+                      value={tenderForm.description_zh}
+                      onChange={e => setTenderForm(prev => ({ ...prev, description_zh: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-lg text-sm text-white"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                      rows={3}
+                      placeholder="Chinese summary for the listing"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-slate-400 text-xs mb-1 block">Description (English)</label>
+                    <textarea
+                      value={tenderForm.description_en}
+                      onChange={e => setTenderForm(prev => ({ ...prev, description_en: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-lg text-sm text-white"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                      rows={2}
+                      placeholder="Optional English description"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-400 text-xs mb-1 block">Source</label>
+                    <select
+                      value={tenderForm.source}
+                      onChange={e => setTenderForm(prev => ({ ...prev, source: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-lg text-sm text-white"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    >
+                      <option value="nsw">NSW eTendering</option>
+                      <option value="vic">VIC Buying</option>
+                      <option value="qld">QLD QTenders</option>
+                      <option value="council">Council</option>
+                      <option value="school">School</option>
+                      <option value="manual">Other / Manual</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-slate-400 text-xs mb-1 block">Category</label>
+                    <select
+                      value={tenderForm.category_name}
+                      onChange={e => setTenderForm(prev => ({ ...prev, category_name: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-lg text-sm text-white"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    >
+                      <option value="Construction">Construction</option>
+                      <option value="IT Services">IT Services</option>
+                      <option value="Health">Health</option>
+                      <option value="Education">Education</option>
+                      <option value="Defence">Defence</option>
+                      <option value="Transport">Transport</option>
+                      <option value="Environment">Environment</option>
+                      <option value="Professional Services">Professional Services</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-slate-400 text-xs mb-1 block">Agency</label>
+                    <input
+                      value={tenderForm.agency}
+                      onChange={e => setTenderForm(prev => ({ ...prev, agency: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-lg text-sm text-white"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                      placeholder="e.g. NSW Education"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-400 text-xs mb-1 block">Location</label>
+                    <input
+                      value={tenderForm.location}
+                      onChange={e => setTenderForm(prev => ({ ...prev, location: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-lg text-sm text-white"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                      placeholder="e.g. Sydney, NSW"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-400 text-xs mb-1 block">Link</label>
+                    <input
+                      value={tenderForm.link}
+                      onChange={e => setTenderForm(prev => ({ ...prev, link: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-lg text-sm text-white"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-400 text-xs mb-1 block">Close Date</label>
+                    <input
+                      type="date"
+                      value={tenderForm.close_date}
+                      onChange={e => setTenderForm(prev => ({ ...prev, close_date: e.target.value }))}
+                      className="w-full px-3 py-2 rounded-lg text-sm text-white"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 pt-5">
+                    <input
+                      type="checkbox"
+                      checked={tenderForm.is_construction}
+                      onChange={e => setTenderForm(prev => ({ ...prev, is_construction: e.target.checked }))}
+                      className="w-4 h-4"
+                    />
+                    <label className="text-slate-300 text-sm">Construction related</label>
+                  </div>
+                </div>
+                <button
+                  onClick={saveTender}
+                  disabled={tenderSaving || !tenderForm.title}
+                  className="px-5 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50"
+                >
+                  {tenderSaving ? 'Saving...' : 'Save Tender'}
+                </button>
+              </div>
+            )}
+
+            {/* Tender List */}
+            {adminTenders.length === 0 && (
+              <p className="text-slate-500 text-sm text-center py-12">No tenders yet</p>
+            )}
+            {adminTenders.map(tender => (
+              <div
+                key={tender.id}
+                className="rounded-xl p-4 flex items-start gap-3"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selected.has(tender.id)}
+                  onChange={() => toggleSelect(tender.id)}
+                  className="mt-1 w-4 h-4"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                      tender.source === 'austender' ? 'bg-blue-900 text-blue-300' :
+                      tender.source === 'nsw' ? 'bg-purple-900 text-purple-300' :
+                      tender.source === 'council' ? 'bg-green-900 text-green-300' :
+                      tender.source === 'school' ? 'bg-yellow-900 text-yellow-300' :
+                      'bg-slate-700 text-slate-300'
+                    }`}>
+                      {tender.source}
+                    </span>
+                    {tender.is_construction && (
+                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-orange-900 text-orange-300">construction</span>
+                    )}
+                    {tender.category_name && (
+                      <span className="text-slate-500 text-xs">{tender.category_name}</span>
+                    )}
+                    {tender.published_at && (
+                      <span className="text-slate-600 text-xs">{new Date(tender.published_at).toLocaleDateString('en-AU')}</span>
+                    )}
+                  </div>
+                  {tender.description_zh && (
+                    <p className="text-slate-200 text-sm mb-1">{tender.description_zh}</p>
+                  )}
+                  <p className="text-slate-400 text-xs truncate">{tender.title}</p>
+                  {tender.link && (
+                    <a href={tender.link} target="_blank" rel="noopener noreferrer" className="text-orange-400 text-xs hover:underline mt-1 inline-block">
+                      View source
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
         {/* ── Newsletter Tab ── */}
