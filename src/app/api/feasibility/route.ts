@@ -92,7 +92,10 @@ export async function POST(req: Request) {
       }
 
       const encoder = new TextEncoder()
-      const jsonStr = JSON.stringify(report)
+      const fullJson = JSON.stringify(report)
+      // Skip the leading '{' — the frontend prepends '{' itself (matching the AI streaming format
+      // where the assistant prefill is '{' and the stream continues after it)
+      const streamStr = fullJson.slice(1)
       const liveMeta = cached.live_meta
 
       // 2-second cosmetic delay so animation plays, then stream cached result
@@ -101,8 +104,8 @@ export async function POST(req: Request) {
           await new Promise(r => setTimeout(r, 2000))
           // Stream in chunks to trigger the frontend's streaming parser naturally
           const chunkSize = 200
-          for (let i = 0; i < jsonStr.length; i += chunkSize) {
-            controller.enqueue(encoder.encode(jsonStr.slice(i, i + chunkSize)))
+          for (let i = 0; i < streamStr.length; i += chunkSize) {
+            controller.enqueue(encoder.encode(streamStr.slice(i, i + chunkSize)))
             await new Promise(r => setTimeout(r, 10))
           }
           if (liveMeta) {
@@ -365,7 +368,7 @@ CRITICAL ACCURACY RULES:
     // Stream Claude's response — returns tokens as they arrive
     const stream = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1800,
+      max_tokens: 2500,
       stream: true,
       messages: [
         {
