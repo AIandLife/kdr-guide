@@ -1,101 +1,161 @@
-# 澳洲建房圈 (AusBuildCircle) — 项目快速上手
+# 澳洲建房圈 (AusBuildCircle) — 项目交接文档
+> 最后更新：2026-03-31，由 Claude Sonnet 4.6 移交给下一个模型
 
-## 这是什么
-面向澳洲华人的推倒重建(KDR)/翻新改造平台。核心功能：AI 可行性报告、专业人士目录、论坛社区。
+---
+
+## 一、项目基本信息
 
 - **线上地址**: https://ausbuildcircle.com
 - **GitHub**: https://github.com/AIandLife/kdr-guide
-- **技术栈**: Next.js 15 · Tailwind CSS · Supabase · Claude Haiku API · Stripe · Resend
+- **本地路径**: /Users/tianyuma/kdr-guide
+- **技术栈**: Next.js 15 App Router · Tailwind CSS · Supabase · Claude Haiku API · Stripe (LIVE) · Resend
+- **Supabase 项目 ref**: `nojfkmxcpdqzyrayvujv`
+- **部署**: Vercel（自动部署，push main 即触发）
+- **管理员邮箱**: recommendforterry@gmail.com
 
 ---
 
-## 关键业务逻辑
+## 二、产品定位
 
-### 专业人士双表写入
-`/api/join` 注册时必须同时写入：
-1. `kdr_professional_applications`（申请记录）
-2. `professionals`（展示用主表）
+面向澳洲华人的推倒重建(KDR)/翻新改造平台。三大核心功能：
 
-Stripe 支付成功后，`/api/stripe/webhook` 把 `verified: true` + `verification_status: 'verified'` 写入 professionals 表，**即时生效，无需手动审核**。
-
-### 询盘必须包含业主联系方式
-`contact_requests` 表含 `homeowner_name`、`homeowner_email`、`homeowner_phone`。
-`/api/contact` 会把业主联系方式发邮件给专业人士，确保对方能回复。
-
-### 论坛翻译
-帖子写入时用中文，切换到英文时 `/api/forum/translate` 后台翻译，写回 `title_en` / `body_en`。
+1. **AI 可行性报告** — 输入地区/地块大小，生成 KDR/翻新可行性分析
+2. **专业人士目录** — 建筑商、Town Planner、设计师等，可联系询盘
+3. **建材供应商目录** — 建材商入驻、认证体系
+4. 论坛社区（已上线，次要功能）
 
 ---
 
-## 数据库主要表
+## 三、当前项目状态（2026-03-31）
+
+### 已完成并上线
+- AI 可行性报告（Edge Runtime 流式输出，带缓存）
+- 专业人士目录 + 入驻流程 + Stripe 付款认证
+- 建材供应商目录 + 入驻流程（2步，无强推销）
+- 供应商后台 `/suppliers/account`（含隐藏的"增加商家可信度"认证入口）
+- 业主后台 `/dashboard/homeowner`（显示联系过的专业人士+建材商）
+- 专业人士后台 `/dashboard/pro`（含认证流程）
+- 管理员后台 `/admin`（审核专业人士/供应商）
+- 论坛（发帖/回复/举报/双语翻译）
+- 安全 headers（X-Frame-Options, X-Content-Type-Options, Referrer-Policy）
+- Sydney 39家建筑商 outreach 邮件已发送（2026-03-31）
+
+### 最近一批修改（本次会话）
+1. 删除测试垃圾数据 `naaticclcom` from `supplier_listings`
+2. `/api/suppliers/list` 改为只返回 `unverified/verified`，不暴露 `status`/`reliability_score` 内部字段
+3. `/suppliers/account` 加了 middleware 服务端保护（之前只有 client-side auth）
+4. `next.config.ts` 加安全 headers
+5. 供应商注册改为 2 步（去掉 Step 3 认证推销）
+6. 注册成功页改为引导去建材目录/专业人士目录（不再引导去后台）
+7. 供应商后台认证入口改为低调的"增加商家可信度"（不强推）
+8. **AI 可行性报告截断 bug 修复**：`max_tokens: 8192 → 1800`，删除 `additionalCosts` 字段
+
+---
+
+## 四、关键业务逻辑
+
+### 专业人士流程
+- 入驻：`/join` → `/api/join` → 写入 `kdr_professional_applications` + `professionals` 两张表
+- 认证：`/dashboard/pro` → Stripe 付款 → webhook 自动设 `verified: true`（无需人工审核）
+- 管理员也可手动 PATCH `/api/admin/professionals-list` 审核
+
+### 供应商流程
+- 入驻：`/suppliers/register`（2步）→ `/api/suppliers/register` → `supplier_listings` 表，status=`unverified`
+- 注册完成后引导去目录，让他们"自然发现"别人有认证而自己没有
+- 认证：进后台 `/suppliers/account` → 展开"增加商家可信度" → Stripe 付款 → webhook 设 `status=pending_review` + `paid_at` → Terry 后台点"通过" → `status=verified`
+- **认证的设计哲学**：不主动推销，让用户在目录里看到对比后自己来问，Terry 再引导
+
+### 业主流程
+- 不需注册可浏览，联系专业人士/供应商需登录
+- 未登录点联系 → 弹登录框 → 登录后通过 `?contact=slug` 或 `?enquire=supplierId` 自动回到原来的操作
+- 联系记录保存 `homeowner_id`，显示在 `/dashboard/homeowner`
+
+### Dashboard 路由逻辑
+- 登录后检查邮箱是否在 `professionals` 表 → 是则跳 `/dashboard/pro`，否则跳 `/dashboard/homeowner`
+
+---
+
+## 五、数据库表
 
 | 表 | 说明 |
 |----|------|
-| `professionals` | 专业人士展示主表（页面直接读这张） |
+| `professionals` | 专业人士展示主表（is_demo=true 的8条示范数据） |
 | `kdr_professional_applications` | 入驻申请记录 |
-| `contact_requests` | 询盘（含业主姓名/邮箱/电话） |
-| `forum_posts` | 论坛帖子（image_url, title_en, body_en） |
+| `contact_requests` | 业主→专业人士询盘（含 homeowner_id） |
+| `supplier_listings` | 供应商主表（status: unverified/pending_review/verified；paid_at, verified_at, admin_notes 字段） |
+| `supplier_inquiries` | 业主→供应商询价（含 homeowner_id） |
+| `forum_posts` | 论坛帖子 |
 | `forum_replies` | 论坛回复 |
-| `forum_reports` | 举报记录 |
-| `site_feedback` | 全站反馈（feedback/bug/partnership） |
-| `feasibility_interests` | 可行性邮件订阅 |
-| `feasibility_reports` | AI 生成报告 |
-
-Supabase Storage: `forum-images` bucket（公开，5MB 限制）
+| `suburb_feasibility_cache` | AI 报告缓存（90天有效期） |
+| `feasibility_searches` | 搜索记录（无PII） |
+| `feasibility_reports` | 已登录用户的完整报告 |
+| `site_feedback` | 全站反馈 |
 
 ---
 
-## 环境变量（Vercel 已配置，本地需 .env.local）
+## 六、已知问题 & 待验证
 
-```
-NEXT_PUBLIC_SUPABASE_URL
-SUPABASE_SERVICE_ROLE_KEY
-NEXT_PUBLIC_SUPABASE_ANON_KEY
-ANTHROPIC_API_KEY
-STRIPE_SECRET_KEY
-STRIPE_WEBHOOK_SECRET
-STRIPE_PRICE_ANNUAL
-STRIPE_PRICE_MONTHLY
-RESEND_API_KEY
-RESEND_FROM_EMAIL          # noreply@ausbuildcircle.com
-ADMIN_EMAIL                # recommendforterry@gmail.com
-```
+### 刚修的 bug（需要验证是否真的好了）
+- **AI 可行性报告截断**：刚把 max_tokens 从 8192 改到 1800，删了 additionalCosts。需要在生产环境实测几次确认不再出现 "Response was truncated"
+
+### 待办
+- [ ] 专业人士个人资料编辑页（`/dashboard/pro` 目前只能看，不能编辑）
+- [ ] Melbourne/Brisbane 建筑商 outreach 名单（Sydney 39家已发，等 Terry 决定时机）
+- [ ] GoDaddy DNS：SPF + DMARC 记录（手动配置，需 Terry 操作）
+- [ ] Stripe webhook 端到端测试（生产环境付款全流程）
 
 ---
 
-## 目录结构要点
+## 七、Sonnet 犯过的错误（后继模型不要重犯）
 
-```
-src/
-  app/
-    api/               # 所有后端接口
-    forum/             # 论坛页面 + NewPostModal
-    professionals/     # 专业人士目录
-    dashboard/pro      # 专业人士后台
-    dashboard/homeowner
-  components/
-    FeedbackWidget.tsx # 全站右下角反馈悬浮按钮
-    SiteNav.tsx
-  lib/
-    council-data.ts    # 全澳45+个council政策数据（核心数据）
-    professionals-data.ts  # 静态备份专业人士数据
-    supabase/          # client.ts + server.ts
-    language-context.tsx
-    auth-context.tsx
-```
+### 1. AI 报告截断反复出现（最严重）
+**错误**：多次"修复"但问题反复出现。根本原因一直没找准——每次只加 JSON repair 逻辑，没有解决响应太长超时的根本问题。后来还自作主张加了 `additionalCosts`（7个子字段），让响应更长、问题更严重。
+**教训**：Edge Runtime 有 25秒限制。AI 生成的 token 数直接决定耗时。不要在 prompt 里加大段新字段，要先估算 token 数。
 
----
+### 2. 功能过度（Over-engineering）
+**错误**：用户没要求的情况下，自己加了 `additionalCosts` 细项、在注册流程加了第3步认证推销、在成功页加了多余按钮。
+**教训**：严格按用户要求做，不要"顺手"加觉得有用的功能。每加一个字段都要考虑对系统的影响。
 
-## 已知注意事项
-- Vercel 免费套餐每天限100次部署，超了等UTC 00:00（AEDT 11:00）重置
-- `professionals` 表有 `is_demo: true` 的8条示范数据，真实认证用户会排在前面
-- 论坛城市筛选、分类标签、双语切换都在 `forum/page.tsx` 顶部常量定义
-- Stripe key 曾因含不可见字符导致 ERR_INVALID_CHAR，已于2026-03-25换新key
+### 3. 没有真正理解用户意图就动手
+**错误**：用户说"认证应该是被发现的过程"，Sonnet 理解后把认证模块整个删掉了，然后用户说"不对，要保留但要低调"——来回改了两次。
+**教训**：用户讲产品逻辑时，先完整确认理解再动手。
+
+### 4. 部署前未做端到端验证
+**错误**：多次部署后才发现问题（数据库缺列、API filter 逻辑错误、前端字段不匹配）。
+**教训**：每次修改 API 的输出字段，必须同时检查所有消费方（前端 interface、其他 API）。
+
+### 5. 数据库列缺失问题
+**错误**：admin approve supplier 接口返回错误，原因是 `admin_notes` 和 `verified_at` 列不存在。这本来应该在开发时就建好。
+**教训**：新功能涉及 DB 写入时，先确认所有字段都已建好。
 
 ---
 
-## 待办（截至2026-03-25）
-- [ ] 专业人士个人资料编辑页
-- [ ] 免费试用期到期 cron job
-- [ ] GoDaddy DNS：SPF + DMARC 记录（手动配置）
-- [ ] 端到端测试 Stripe 支付 + Resend 邮件
+## 八、环境变量
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://nojfkmxcpdqzyrayvujv.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=（见 .env.local）
+NEXT_PUBLIC_SUPABASE_ANON_KEY=（见 .env.local）
+ANTHROPIC_API_KEY=（见 .env.local）
+STRIPE_SECRET_KEY=（LIVE key，见 .env.local）
+STRIPE_WEBHOOK_SECRET=（见 .env.local）
+STRIPE_PRICE_ANNUAL=（见 .env.local）
+RESEND_API_KEY=re_4sLEuiVf_6tJF1PAZzyoC2ng1WPwauQTM
+RESEND_FROM_EMAIL=noreply@ausbuildcircle.com
+ADMIN_EMAIL=recommendforterry@gmail.com
+```
+
+所有 key 读取时必须 `.trim()`（Vercel env var 可能含 `\n`）。
+
+---
+
+## 九、注意事项
+
+- Vercel 免费套餐每天限 100 次部署，超了等 AEDT 11:00 重置
+- Stripe 是 LIVE 模式，不是 test 模式，真实收费
+- `professionals` 表有 `is_demo: true` 的 8 条示范数据
+- 静态专业人士数据备份在 `src/lib/professionals-data.ts`
+- outreach 脚本在 `outreach/send-outreach.js`，log 在 `outreach/outreach-log.csv`
+- 微信内置浏览器不支持 Google OAuth，已有检测提示
+- 每次改文件前必须先 Read，Grep 全局确认所有引用位置
+- 始终用中文回复 Terry
