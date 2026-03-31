@@ -312,16 +312,7 @@ Generate a comprehensive, honest feasibility report tailored to the project type
     "demolition": <[min, max] in AUD — for KDR/dual-occ only; use [0,0] for renovation/extension/granny-flat>,
     "buildPerSqm": <[min, max] in AUD per sqm>,
     "totalEstimate": <if lot size given, provide [min, max] total for build + demolition, otherwise null>,
-    "totalNote": <${isZh ? '简体中文说明总费用包含内容，需特别注明：以上不含DA费、岩土检测、测量及建筑认证费（额外约$15,000–$40,000）' : 'explain what total includes; note that DA fees, soil test, surveying and certification add approx $15,000–$40,000 on top'}>,
-    "additionalCosts": {
-      "councilFees": <[min, max] AUD — council DA application fee for this LGA, typically $5,000–$15,000>,
-      "s711Contributions": <[min, max] AUD — Section 7.11 / infrastructure contributions levied by council on new dwellings, typically $8,000–$30,000 in NSW; $0 for renovation/extension>,
-      "soilTest": <[min, max] AUD — geotechnical/soil test, typically $3,000–$8,000>,
-      "surveying": <[min, max] AUD — title re-establishment + feature/contour survey, typically $2,000–$5,000>,
-      "certification": <[min, max] AUD — building certification (CC + OC), typically $3,000–$8,000>,
-      "stormwaterOSD": <[min, max] AUD — on-site stormwater detention tank if required by council, typically $8,000–$15,000; $0 if not required>,
-      "asbestos": <[min, max] AUD — asbestos survey + removal for pre-1987 homes, typically $5,000–$25,000; $0 for post-1990 homes>
-    }
+    "totalNote": <${isZh ? '简体中文说明总费用包含内容，需特别注明：以上不含DA费、岩土检测、测量及建筑认证费（额外约$15,000–$40,000）' : 'explain what total includes; note that DA fees, soil test, surveying and certification add approx $15,000–$40,000 on top'}>
   },
   "timeline": {
     "totalWeeks": <[min, max]>,
@@ -374,7 +365,7 @@ CRITICAL ACCURACY RULES:
     // Stream Claude's response — returns tokens as they arrive
     const stream = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 8192,
+      max_tokens: 1800,
       stream: true,
       messages: [
         {

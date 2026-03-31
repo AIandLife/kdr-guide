@@ -47,12 +47,6 @@ interface FeasibilityResult {
     buildPerSqm: [number, number]
     totalEstimate: [number, number] | null
     totalNote: string
-    additionalCosts?: {
-      councilFees: [number, number]
-      soilTest: [number, number]
-      surveying: [number, number]
-      certification: [number, number]
-    }
   }
   timeline: { totalWeeks: [number, number]; phases: { phase: string; weeks: string }[] }
   nextSteps: { step: number; title: string; detail: string; urgency: string }[]
@@ -670,24 +664,6 @@ function FeasibilityContent() {
                       ${result.costEstimate.buildPerSqm[0].toLocaleString()} – ${result.costEstimate.buildPerSqm[1].toLocaleString()}
                     </span>
                   </div>
-                  {result.costEstimate.additionalCosts && (
-                    <>
-                      <div className="border-t border-dashed border-gray-100 pt-3 mt-1">
-                        <p className="text-xs font-medium text-gray-400 mb-2">{lang === 'zh' ? '额外费用（常被低估）' : 'Additional costs (often overlooked)'}</p>
-                        {[
-                          { label: lang === 'zh' ? 'DA 申请费' : 'DA Application Fee', val: result.costEstimate.additionalCosts.councilFees },
-                          { label: lang === 'zh' ? '岩土检测' : 'Soil / Geotech Test', val: result.costEstimate.additionalCosts.soilTest },
-                          { label: lang === 'zh' ? '土地测量' : 'Surveying', val: result.costEstimate.additionalCosts.surveying },
-                          { label: lang === 'zh' ? '建筑认证 CC/OC' : 'Building Certification', val: result.costEstimate.additionalCosts.certification },
-                        ].map(item => (
-                          <div key={item.label} className="flex items-center justify-between text-xs mb-1">
-                            <span className="text-gray-500">{item.label}</span>
-                            <span className="text-gray-600 font-medium">${item.val[0].toLocaleString()}–${item.val[1].toLocaleString()}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
                   {result.costEstimate.totalEstimate && (
                     <div className="border-t border-gray-200 pt-3 mt-1 flex items-center justify-between">
                       <span className="text-sm font-semibold text-gray-900">{tf.totalEstimate}</span>
