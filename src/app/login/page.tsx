@@ -178,7 +178,11 @@ function LoginForm() {
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-4">
-          {isZh ? '登录即代表你同意我们的服务条款和隐私政策。' : 'By signing in you agree to our terms and privacy policy.'}
+          {isZh ? (
+            <>登录即代表你同意我们的<a href="/terms" className="underline hover:text-gray-300">服务条款</a>和<a href="/privacy" className="underline hover:text-gray-300">隐私政策</a>。</>
+          ) : (
+            <>By signing in you agree to our <a href="/terms" className="underline hover:text-gray-300">terms</a> and <a href="/privacy" className="underline hover:text-gray-300">privacy policy</a>.</>
+          )}
         </p>
       </div>
     </div>

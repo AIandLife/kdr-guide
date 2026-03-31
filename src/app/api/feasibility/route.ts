@@ -368,12 +368,12 @@ CRITICAL ACCURACY RULES:
     // Stream Claude's response — returns tokens as they arrive
     const stream = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2500,
+      max_tokens: 4096,
       stream: true,
       messages: [
         {
           role: 'user',
-          content: prompt + '\n\nCRITICAL: Output ONLY the raw JSON object. No markdown, no explanation, no code fences. Start your response with { and end with }.',
+          content: prompt + '\n\nCRITICAL: Output ONLY the raw JSON object. No markdown, no explanation, no code fences. Start your response with { and end with }. Keep text fields concise to stay within token limits.',
         },
         {
           role: 'assistant',
@@ -384,6 +384,7 @@ CRITICAL ACCURACY RULES:
 
     const encoder = new TextEncoder()
     let accumulated = '{'
+    let stopReason = ''
 
     const readable = new ReadableStream({
       async start(controller) {
@@ -392,6 +393,35 @@ CRITICAL ACCURACY RULES:
             if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
               accumulated += event.delta.text
               controller.enqueue(encoder.encode(event.delta.text))
+            }
+            if (event.type === 'message_delta') {
+              stopReason = (event.delta as { stop_reason?: string }).stop_reason || ''
+            }
+          }
+
+          // If truncated by max_tokens, try to close the JSON gracefully
+          if (stopReason === 'max_tokens') {
+            // Close any open strings, arrays, and objects
+            let fix = ''
+            const inString = (accumulated.split('"').length - 1) % 2 === 1
+            if (inString) fix += '"'
+            // Count unclosed brackets
+            let openBraces = 0, openBrackets = 0
+            let insideStr = false
+            for (let i = 0; i < accumulated.length + fix.length; i++) {
+              const c = (accumulated + fix)[i]
+              if (c === '"' && (i === 0 || (accumulated + fix)[i - 1] !== '\\')) insideStr = !insideStr
+              if (insideStr) continue
+              if (c === '{') openBraces++
+              if (c === '}') openBraces--
+              if (c === '[') openBrackets++
+              if (c === ']') openBrackets--
+            }
+            for (let i = 0; i < openBrackets; i++) fix += ']'
+            for (let i = 0; i < openBraces; i++) fix += '}'
+            if (fix) {
+              accumulated += fix
+              controller.enqueue(encoder.encode(fix))
             }
           }
           // Log search + save user report to DB (fire-and-forget)

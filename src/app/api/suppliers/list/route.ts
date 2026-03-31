@@ -8,9 +8,9 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from('supplier_listings')
-    .select('id, business_name, category, origin, description, states, specialties, verified, google_rating, google_reviews, featured, website, phone, wechat, email')
+    .select('id, business_name, category, origin, description, states, specialties, status, google_rating, google_reviews, featured, website, phone, wechat, email')
     .in('status', ['unverified', 'verified'])
-    .order('verified', { ascending: false }) // verified first
+    .order('status', { ascending: false }) // verified first (v > u alphabetically)
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -18,9 +18,10 @@ export async function GET() {
     return Response.json({ suppliers: [] })
   }
 
-  // For unverified: strip contact info
+  // Derive verified boolean from status; strip contact info for unverified
   const sanitized = (data || []).map(s => {
-    if (s.verified) return s
+    const verified = s.status === 'verified'
+    if (verified) return { ...s, verified, status: undefined }
     return {
       id: s.id,
       business_name: s.business_name,
@@ -29,9 +30,9 @@ export async function GET() {
       description: s.description,
       states: s.states,
       specialties: s.specialties,
-      verified: s.verified,
+      verified,
       featured: s.featured,
-      // contact fields hidden
+      // contact fields hidden for unverified
       website: null,
       phone: null,
       wechat: null,

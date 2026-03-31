@@ -47,7 +47,7 @@ export async function POST(req: Request) {
           .eq('id', supplierId)
 
         // Email admin
-        resend.emails.send({
+        await resend.emails.send({
           from: FROM_EMAIL,
           to: ADMIN_EMAIL,
           subject: `[建材商认证] ${supplier.business_name}`,
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
         }).catch(err => console.error('Supplier admin email error:', err))
 
         // Email supplier
-        resend.emails.send({
+        await resend.emails.send({
           from: FROM_EMAIL,
           to: supplier.email,
           subject: '付款成功 — 认证申请审核中',

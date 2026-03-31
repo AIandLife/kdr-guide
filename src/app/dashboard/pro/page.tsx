@@ -72,16 +72,21 @@ function ProfileEditor({
   const handleSave = async () => {
     setSaving(true)
     setSaveError('')
-    const supabase = createClient()
-    const { error } = await supabase
-      .from('professionals')
-      .update(form)
-      .eq('id', profile.id)
-    if (error) {
-      setSaveError(error.message)
-    } else {
-      onSaved(form)
-      setEditing(false)
+    try {
+      const res = await fetch('/api/profile/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profileId: profile.id, ...form }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setSaveError(data.error || 'Update failed')
+      } else {
+        onSaved(form)
+        setEditing(false)
+      }
+    } catch {
+      setSaveError('Network error')
     }
     setSaving(false)
   }
@@ -382,14 +387,16 @@ function ProDashboard() {
   useEffect(() => {
     if (!user) return
     const supabase = createClient()
-    // Try user_id match first; fallback to email (handles direct navigation bypassing /dashboard binder)
+    // Try user_id match first; fallback to server-side email binding
     supabase.from('professionals').select('*').eq('user_id', user.id).maybeSingle()
       .then(async ({ data: byId }) => {
         if (!byId && user.email) {
-          const { data: byEmail } = await supabase.from('professionals').select('*').eq('email', user.email).maybeSingle()
-          if (byEmail) {
-            await supabase.from('professionals').update({ user_id: user.id }).eq('email', user.email)
-            return byEmail
+          // Use server-side API to bind (validates email from auth token)
+          const res = await fetch('/api/profile/bind', { method: 'POST' })
+          const result = await res.json()
+          if (result.bound && result.professionalId) {
+            const { data: bound } = await supabase.from('professionals').select('*').eq('id', result.professionalId).maybeSingle()
+            return bound
           }
           return null
         }
@@ -439,9 +446,18 @@ function ProDashboard() {
 
   const handleMarkReplied = async (enquiryId: string) => {
     setMarkingReplied(enquiryId)
-    const supabase = createClient()
-    await supabase.from('contact_requests').update({ status: 'replied' }).eq('id', enquiryId)
-    setEnquiries(prev => prev.map(e => e.id === enquiryId ? { ...e, status: 'replied' } : e))
+    try {
+      const res = await fetch('/api/enquiries/mark-replied', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enquiryId }),
+      })
+      if (res.ok) {
+        setEnquiries(prev => prev.map(e => e.id === enquiryId ? { ...e, status: 'replied' } : e))
+      }
+    } catch (err) {
+      console.error('Failed to mark replied:', err)
+    }
     setMarkingReplied(null)
   }
 

@@ -262,33 +262,61 @@ function FeasibilityContent() {
         }
       }
 
-      // Parse accumulated JSON — with multi-pass truncation repair
-      const end = accumulated.lastIndexOf('}')
-      if (end === -1) throw new Error('No JSON found in response')
-      let jsonStr = accumulated.slice(0, end + 1)
+      // Parse accumulated JSON — with robust truncation repair
       let result: Record<string, unknown> | null = null
 
       // Try 1: parse as-is
-      try { result = JSON.parse(jsonStr) } catch { /* fall through */ }
+      try { result = JSON.parse(accumulated) } catch { /* fall through */ }
 
-      // Try 2: close open structure at last complete string value
+      // Try 2: auto-close brackets/braces (handles server-side truncation repair)
       if (!result) {
-        for (const sep of ['",\n', '",\r\n', '"\n', '" ']) {
-          const safeEnd = jsonStr.lastIndexOf(sep)
-          if (safeEnd !== -1) {
-            try {
-              result = JSON.parse(jsonStr.slice(0, safeEnd + 1) + '}')
-              break
-            } catch { /* try next */ }
-          }
+        let repaired = accumulated
+        // Trim trailing comma or incomplete value
+        repaired = repaired.replace(/,\s*$/, '')
+        // Close open string if needed
+        const quoteCount = (repaired.match(/(?<!\\)"/g) || []).length
+        if (quoteCount % 2 === 1) repaired += '"'
+        // Remove trailing incomplete key-value (e.g. "key": or "key": "partial)
+        repaired = repaired.replace(/,?\s*"[^"]*":\s*"?[^",}\]]*$/, '')
+        // Count and close unclosed brackets
+        let braces = 0, brackets = 0, inStr = false
+        for (let i = 0; i < repaired.length; i++) {
+          const c = repaired[i]
+          if (c === '"' && (i === 0 || repaired[i - 1] !== '\\')) inStr = !inStr
+          if (inStr) continue
+          if (c === '{') braces++
+          if (c === '}') braces--
+          if (c === '[') brackets++
+          if (c === ']') brackets--
         }
+        for (let i = 0; i < brackets; i++) repaired += ']'
+        for (let i = 0; i < braces; i++) repaired += '}'
+        try { result = JSON.parse(repaired) } catch { /* fall through */ }
       }
 
-      // Try 3: close at last complete number value
+      // Try 3: find last complete top-level property
       if (!result) {
-        const numEnd = jsonStr.search(/\d(?=\s*[\n,}])(?=[^"]*$)/)
-        if (numEnd !== -1) {
-          try { result = JSON.parse(jsonStr.slice(0, numEnd + 1) + '}') } catch { /* fall through */ }
+        const end = accumulated.lastIndexOf('}')
+        if (end !== -1) {
+          const jsonStr = accumulated.slice(0, end + 1)
+          for (const sep of ['",\n', '",\r\n', '"\n', ']\n', '}\n']) {
+            const safeEnd = jsonStr.lastIndexOf(sep)
+            if (safeEnd !== -1) {
+              let candidate = jsonStr.slice(0, safeEnd + 1)
+              // Close remaining brackets
+              let b = 0, k = 0, s = false
+              for (let i = 0; i < candidate.length; i++) {
+                const c = candidate[i]
+                if (c === '"' && (i === 0 || candidate[i - 1] !== '\\')) s = !s
+                if (s) continue
+                if (c === '{') b++; if (c === '}') b--
+                if (c === '[') k++; if (c === ']') k--
+              }
+              for (let i = 0; i < k; i++) candidate += ']'
+              for (let i = 0; i < b; i++) candidate += '}'
+              try { result = JSON.parse(candidate); break } catch { /* try next */ }
+            }
+          }
         }
       }
 
@@ -760,7 +788,8 @@ function FeasibilityContent() {
                     }
                     const role = result.professionals?.[0]?.role || ''
                     const cat = ROLE_TO_CAT[role] || ''
-                    return `/professionals?state=${result.state || ''}${cat ? `&category=${cat}` : ''}`
+                    const stateSlug = (result.state || '').toLowerCase()
+                    return `/professionals/${stateSlug}${cat ? `?category=${cat}` : ''}`
                   })()}
                   className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors text-base"
                 >
@@ -818,14 +847,34 @@ function FeasibilityContent() {
   )
 }
 
+const feasibilityJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AI Feasibility Report — Knockdown Rebuild & Renovation",
+  "url": "https://ausbuildcircle.com/feasibility",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "All",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "AUD" },
+  "description": "Free AI feasibility report for knockdown rebuild, renovation, extension, granny flat and dual occupancy projects across all Australian councils.",
+  "inLanguage": ["en-AU", "zh-Hans"],
+  "provider": {
+    "@type": "Organization",
+    "name": "AusBuildCircle 澳洲建房圈",
+    "url": "https://ausbuildcircle.com"
+  }
+}
+
 export default function FeasibilityPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-orange-400" />
-      </div>
-    }>
-      <FeasibilityContent />
-    </Suspense>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(feasibilityJsonLd) }} />
+      <Suspense fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-orange-400" />
+        </div>
+      }>
+        <FeasibilityContent />
+      </Suspense>
+    </>
   )
 }

@@ -706,10 +706,28 @@ function SuppliersPageInner() {
   )
 }
 
+const suppliersJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Building Materials Supplier Directory — Windows, Flooring, Roofing & More",
+  "url": "https://ausbuildcircle.com/suppliers",
+  "description": "Compare verified Australian building material suppliers for windows, flooring, roofing, kitchens, bathrooms and more. Find the best deals for your knockdown rebuild or renovation project.",
+  "numberOfItems": SUPPLIERS.length,
+  "itemListElement": Object.entries(SUPPLIER_CATEGORIES).slice(0, 8).map(([key, cat], i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "name": cat.en,
+    "url": `https://ausbuildcircle.com/suppliers?category=${key}`
+  }))
+}
+
 export default function SuppliersPage() {
   return (
-    <Suspense>
-      <SuppliersPageInner />
-    </Suspense>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(suppliersJsonLd) }} />
+      <Suspense>
+        <SuppliersPageInner />
+      </Suspense>
+    </>
   )
 }

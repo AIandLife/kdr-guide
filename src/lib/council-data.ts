@@ -536,7 +536,7 @@ export function findCouncilBySuburb(suburb: string, state?: string): CouncilPoli
     'norwood': 'Norwood Payneham St Peters',
     'hobart': 'Hobart', 'sandy bay': 'Hobart',
     // ACT
-    'canberra': 'ACT Government', 'belconnen': 'ACT Government',
+    'canberra': 'Canberra', 'belconnen': 'Canberra',
     // NT
     'darwin': 'Darwin',
   }

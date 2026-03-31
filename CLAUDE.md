@@ -48,7 +48,11 @@
 5. 供应商注册改为 2 步（去掉 Step 3 认证推销）
 6. 注册成功页改为引导去建材目录/专业人士目录（不再引导去后台）
 7. 供应商后台认证入口改为低调的"增加商家可信度"（不强推）
-8. **AI 可行性报告截断 bug 修复**：`max_tokens: 8192 → 1800`，删除 `additionalCosts` 字段
+8. **AI 可行性报告截断 bug 修复**：根因是缓存流式格式不匹配，用 `fullJson.slice(1)` 修复；max_tokens 调整为 2500
+9. 专业人士数据：7个大品牌替换为小公司
+10. 供应商数据：17+大品牌删除，13个小供应商新增（共28个）
+11. 页面标题：/login, /articles, /suppliers/register, /admin 加了 layout.tsx
+12. 供应商 API 修复：`verified` 列不存在，改为从 `status` 派生
 
 ---
 
@@ -95,11 +99,11 @@
 
 ## 六、已知问题 & 待验证
 
-### 刚修的 bug（需要验证是否真的好了）
-- **AI 可行性报告截断**：刚把 max_tokens 从 8192 改到 1800，删了 additionalCosts。需要在生产环境实测几次确认不再出现 "Response was truncated"
+### 已修复的 bug
+- **AI 可行性报告截断**：根本原因是缓存流式格式与 AI 流式格式不匹配（缓存发完整 JSON，前端多加了 `{`），已通过 `fullJson.slice(1)` 修复；max_tokens 调整为 2500
+- **供应商 API `verified` 列不存在**：`supplier_listings` 表没有 `verified` 列，API 改为从 `status` 字段派生 `verified` boolean
 
 ### 待办
-- [ ] 专业人士个人资料编辑页（`/dashboard/pro` 目前只能看，不能编辑）
 - [ ] Melbourne/Brisbane 建筑商 outreach 名单（Sydney 39家已发，等 Terry 决定时机）
 - [ ] GoDaddy DNS：SPF + DMARC 记录（手动配置，需 Terry 操作）
 - [ ] Stripe webhook 端到端测试（生产环境付款全流程）

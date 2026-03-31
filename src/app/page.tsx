@@ -127,8 +127,39 @@ export default function HomePage() {
 
   const STATES = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'ACT', 'TAS', 'NT']
 
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "AusBuildCircle 澳洲建房圈",
+    "url": "https://ausbuildcircle.com",
+    "description": "Australia's knockdown rebuild and renovation platform for Chinese-speaking homeowners",
+    "inLanguage": ["en-AU", "zh-Hans"],
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://ausbuildcircle.com/feasibility?suburb={search_term_string}&state=NSW",
+      "query-input": "required name=search_term_string"
+    }
+  }
+
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "AusBuildCircle 澳洲建房圈",
+    "url": "https://ausbuildcircle.com",
+    "description": "AI-powered knockdown rebuild, renovation, and home extension platform for Australian homeowners",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "hello@ausbuildcircle.com",
+      "contactType": "customer service",
+      "availableLanguage": ["English", "Chinese"]
+    },
+    "sameAs": []
+  }
+
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
       <SiteNav currentPath="/" />
 
       {/* Hero — two-column layout */}
@@ -443,7 +474,7 @@ export default function HomePage() {
           </div>
           <div className="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-xs text-slate-600">
-              {lang === 'zh' ? 'Built with ♥ BossLink商业生态' : 'Built with ♥ BossLink Ecosystem'}
+              © {new Date().getFullYear()} AusBuildCircle
             </p>
             <div className="flex items-center gap-4">
               <Link href="/privacy" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">

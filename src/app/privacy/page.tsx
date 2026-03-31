@@ -137,7 +137,7 @@ export default function PrivacyPage() {
             <p>For privacy-related enquiries or to exercise your rights, please contact:</p>
             <div className="mt-2 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm">
               <p className="font-medium text-gray-900">AusBuildCircle</p>
-              <p className="text-gray-600">Email: <a href="mailto:noreply@ausbuildcircle.com" className="text-orange-500 hover:underline">noreply@ausbuildcircle.com</a></p>
+              <p className="text-gray-600">Email: <a href="mailto:hello@ausbuildcircle.com" className="text-orange-500 hover:underline">hello@ausbuildcircle.com</a></p>
               <p className="text-gray-600">Website: <a href="https://ausbuildcircle.com" className="text-orange-500 hover:underline">ausbuildcircle.com</a></p>
             </div>
           </section>

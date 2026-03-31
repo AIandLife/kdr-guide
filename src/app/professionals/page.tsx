@@ -672,10 +672,28 @@ function ProfessionalsPageInner() {
   )
 }
 
+const professionalsJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Building Professionals Directory — Builders, Designers & Planners",
+  "url": "https://ausbuildcircle.com/professionals",
+  "description": "Find verified builders, town planners, architects, structural engineers and other building professionals across all Australian states for knockdown rebuild and renovation projects.",
+  "numberOfItems": PROFESSIONALS.length,
+  "itemListElement": CATEGORIES.slice(0, 8).map((cat, i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "name": cat.label,
+    "url": `https://ausbuildcircle.com/professionals?category=${cat.id}`
+  }))
+}
+
 export default function ProfessionalsPage() {
   return (
-    <Suspense>
-      <ProfessionalsPageInner />
-    </Suspense>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(professionalsJsonLd) }} />
+      <Suspense>
+        <ProfessionalsPageInner />
+      </Suspense>
+    </>
   )
 }

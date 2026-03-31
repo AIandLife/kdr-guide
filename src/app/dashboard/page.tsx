@@ -14,14 +14,13 @@ export default function DashboardRedirect() {
     if (!user) { router.push('/login?next=/dashboard'); return }
 
     const supabase = createClient()
-    // First try user_id match, fallback to email match (for accounts joined before login)
+    // First try user_id match, fallback to server-side email binding
     supabase.from('professionals').select('id, user_id').eq('user_id', user.id).maybeSingle().then(async ({ data }) => {
       if (data) { router.push('/dashboard/pro'); return }
-      // Fallback: match by email and auto-bind user_id
-      const { data: byEmail } = await supabase.from('professionals').select('id').eq('email', user.email!).maybeSingle()
-      if (byEmail) {
-        // Bind user_id for future lookups
-        await supabase.from('professionals').update({ user_id: user.id }).eq('email', user.email!)
+      // Use server-side API to bind (validates email from auth token, not client)
+      const res = await fetch('/api/profile/bind', { method: 'POST' })
+      const result = await res.json()
+      if (result.bound) {
         router.push('/dashboard/pro')
       } else {
         router.push('/dashboard/homeowner')
