@@ -1,10 +1,27 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 
+/* rate limit: max 3 feedback submissions per hour per IP */
+const ipHits = new Map<string, number[]>()
+function checkRateLimit(ip: string, max: number, windowMs: number): boolean {
+  const now = Date.now()
+  const hits = (ipHits.get(ip) ?? []).filter(t => now - t < windowMs)
+  if (hits.length >= max) return false
+  hits.push(now)
+  ipHits.set(ip, hits)
+  return true
+}
+
 export async function POST(req: Request) {
+  // Rate limit
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+  if (!checkRateLimit(ip, 3, 60 * 60 * 1000)) {
+    return Response.json({ error: 'Too many submissions. Please try again later.' }, { status: 429 })
+  }
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim()
   )
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim() || 'recommendforterry@gmail.com'
   const FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || 'noreply@ausbuildcircle.com'

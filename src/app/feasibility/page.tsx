@@ -953,9 +953,80 @@ function FeasibilityContent() {
         )}
 
         {!loading && !result && !error && (
-          <div className="text-center py-20">
-            <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">{tf.emptyState}</p>
+          <div className="space-y-8">
+            <div className="text-center pt-6 pb-2">
+              <MapPin className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500 text-lg">{tf.emptyState}</p>
+            </div>
+
+            {/* Report preview mockup */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-1 text-center">
+                {lang === 'zh' ? '你将获得什么？' : 'What you\'ll get'}
+              </h3>
+              <p className="text-sm text-gray-400 text-center mb-6">
+                {lang === 'zh' ? '每份报告包含以下专业分析模块' : 'Every report includes these professional analysis modules'}
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {/* Feasibility Score */}
+                <div className="rounded-xl border-2 border-dashed border-green-200 bg-green-50/50 p-4 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 rounded-full border-4 border-green-300 flex items-center justify-center mb-2">
+                    <span className="text-lg font-bold text-green-600">8.2</span>
+                  </div>
+                  <p className="text-xs font-semibold text-gray-700">
+                    {lang === 'zh' ? '可行性评分' : 'Feasibility Score'}
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">1-10</p>
+                </div>
+
+                {/* Risk Flags */}
+                <div className="rounded-xl border-2 border-dashed border-yellow-200 bg-yellow-50/50 p-4 flex flex-col items-center text-center">
+                  <AlertTriangle className="w-8 h-8 text-yellow-400 mb-2" />
+                  <p className="text-xs font-semibold text-gray-700">
+                    {lang === 'zh' ? '风险预警' : 'Risk Flags'}
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">
+                    {lang === 'zh' ? '遗产/洪水/山火' : 'Heritage / Flood / Fire'}
+                  </p>
+                </div>
+
+                {/* Cost Estimate */}
+                <div className="rounded-xl border-2 border-dashed border-orange-200 bg-orange-50/50 p-4 flex flex-col items-center text-center">
+                  <DollarSign className="w-8 h-8 text-orange-400 mb-2" />
+                  <p className="text-xs font-semibold text-gray-700">
+                    {lang === 'zh' ? '费用估算' : 'Cost Estimate'}
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">
+                    {lang === 'zh' ? '拆除+建造范围' : 'Demo + build range'}
+                  </p>
+                </div>
+
+                {/* Approval Path */}
+                <div className="rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/50 p-4 flex flex-col items-center text-center">
+                  <Shield className="w-8 h-8 text-blue-400 mb-2" />
+                  <p className="text-xs font-semibold text-gray-700">
+                    {lang === 'zh' ? '审批路径' : 'Approval Path'}
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">
+                    {lang === 'zh' ? 'CDC/DA + 时间线' : 'CDC/DA + timeline'}
+                  </p>
+                </div>
+
+                {/* Recommended Professionals */}
+                <div className="rounded-xl border-2 border-dashed border-cyan-200 bg-cyan-50/50 p-4 flex flex-col items-center text-center col-span-2 sm:col-span-1">
+                  <Users className="w-8 h-8 text-cyan-400 mb-2" />
+                  <p className="text-xs font-semibold text-gray-700">
+                    {lang === 'zh' ? '推荐专家' : 'Recommended Pros'}
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">
+                    {lang === 'zh' ? '按你的项目匹配' : 'Matched to your project'}
+                  </p>
+                </div>
+              </div>
+              <p className="text-center text-xs text-gray-400 mt-5">
+                {lang === 'zh' ? '完全免费 · AI 实时生成 · 约 15 秒出结果' : 'Completely free · AI-generated in real time · ~15 seconds'}
+              </p>
+            </div>
           </div>
         )}
       </div>

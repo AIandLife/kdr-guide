@@ -13,8 +13,13 @@ export async function GET() {
     .order('verified', { ascending: false })
     .order('created_at', { ascending: false })
 
-  // Strip internal fields before returning to public
-  const cleaned = (data ?? []).map(({ is_demo: _d, ...rest }) => rest)
+  // Strip internal fields; hide contact info for unverified professionals
+  const cleaned = (data ?? []).map(({ is_demo: _d, ...rest }) => {
+    if (!rest.verified) {
+      return { ...rest, phone: null, wechat: null, website: null }
+    }
+    return rest
+  })
 
   return Response.json(cleaned, {
     headers: { 'Cache-Control': 'public, max-age=60' },

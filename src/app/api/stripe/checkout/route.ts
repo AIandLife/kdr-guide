@@ -1,11 +1,19 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
+import { createClient as createServerSupabase } from '@/lib/supabase/server'
 
 export async function POST(req: Request) {
   // Pre-validate env vars
   if (!process.env.STRIPE_SECRET_KEY) return Response.json({ error: 'Stripe not configured: missing STRIPE_SECRET_KEY' }, { status: 500 })
   if (!process.env.STRIPE_PRICE_ANNUAL) return Response.json({ error: 'Stripe not configured: missing STRIPE_PRICE_ANNUAL' }, { status: 500 })
   if (!process.env.STRIPE_PRICE_MONTHLY) return Response.json({ error: 'Stripe not configured: missing STRIPE_PRICE_MONTHLY' }, { status: 500 })
+
+  // Auth check — only logged-in users can create checkout sessions
+  const authClient = await createServerSupabase()
+  const { data: { user }, error: authError } = await authClient.auth.getUser()
+  if (authError || !user) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY.trim())
   try {
@@ -15,11 +23,20 @@ export async function POST(req: Request) {
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim()
     )
 
     // Save credentials to DB before creating Stripe session
+    // Verify the authenticated user owns this professional record
     if (professionalId) {
+      const { data: proRow } = await supabase
+        .from('professionals')
+        .select('id, user_id, email')
+        .eq('id', professionalId)
+        .single()
+      if (!proRow || (proRow.user_id !== user.id && proRow.email !== user.email)) {
+        return Response.json({ error: 'Forbidden: you do not own this professional record' }, { status: 403 })
+      }
       await supabase
         .from('professionals')
         .update({
@@ -31,7 +48,16 @@ export async function POST(req: Request) {
         .eq('id', professionalId)
     }
 
+    // Verify the authenticated user owns this supplier record
     if (supplierId) {
+      const { data: supRow } = await supabase
+        .from('supplier_listings')
+        .select('id, user_id, email')
+        .eq('id', supplierId)
+        .single()
+      if (!supRow || (supRow.user_id !== user.id && supRow.email !== user.email)) {
+        return Response.json({ error: 'Forbidden: you do not own this supplier record' }, { status: 403 })
+      }
       await supabase
         .from('supplier_listings')
         .update({

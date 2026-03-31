@@ -1,14 +1,27 @@
 import { createClient } from '@supabase/supabase-js'
+import { createClient as createServerSupabase } from '@/lib/supabase/server'
 import { Resend } from 'resend'
 
 export async function POST(req: Request) {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim()
   )
+
+  // Try to get authenticated user (optional — suppliers may register before login)
+  let authUserId: string | null = null
+  try {
+    const authClient = await createServerSupabase()
+    const { data: { user } } = await authClient.auth.getUser()
+    if (user) authUserId = user.id
+  } catch { /* not logged in — that's fine */ }
   const resend = new Resend((process.env.RESEND_API_KEY || "").trim())
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim() || 'recommendforterry@gmail.com'
   const FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || 'noreply@ausbuildcircle.com'
+
+  function esc(s: string): string {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  }
 
   try {
     const body = await req.json()
@@ -59,6 +72,7 @@ export async function POST(req: Request) {
         asic_number: asicNumber || null,
         business_license_note: businessLicenseNote || null,
         verification_note: verificationNote || null,
+        ...(authUserId ? { user_id: authUserId } : {}),
       })
       .select()
       .single()
@@ -72,17 +86,17 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
-      subject: `[澳洲建房圈] New Supplier Listing — ${businessName} (${status})`,
+      subject: `[澳洲建房圈] New Supplier Listing — ${esc(businessName)} (${status})`,
       html: `
         <h2>New Supplier Listing Submitted</h2>
         <table style="border-collapse:collapse;width:100%">
-          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Business</td><td style="padding:8px">${businessName}</td></tr>
-          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Contact</td><td style="padding:8px">${contactName}</td></tr>
-          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Email</td><td style="padding:8px">${email}</td></tr>
-          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Category</td><td style="padding:8px">${category}</td></tr>
-          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Origin</td><td style="padding:8px">${origin}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Business</td><td style="padding:8px">${esc(businessName)}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Contact</td><td style="padding:8px">${esc(contactName)}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Email</td><td style="padding:8px">${esc(email)}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Category</td><td style="padding:8px">${esc(category)}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Origin</td><td style="padding:8px">${esc(origin)}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Status</td><td style="padding:8px"><strong>${status}</strong></td></tr>
-          ${isVerificationRequest ? `<tr><td style="padding:8px;font-weight:bold;background:#fff3cd">Verification</td><td style="padding:8px">ABN/ASIC: ${asicNumber || '—'}<br>${verificationNote || ''}</td></tr>` : ''}
+          ${isVerificationRequest ? `<tr><td style="padding:8px;font-weight:bold;background:#fff3cd">Verification</td><td style="padding:8px">ABN/ASIC: ${asicNumber ? esc(asicNumber) : '—'}<br>${verificationNote ? esc(verificationNote) : ''}</td></tr>` : ''}
         </table>
         <p style="margin-top:16px">
           <a href="https://ausbuildcircle.com/admin/suppliers" style="background:#f97316;color:white;padding:8px 16px;border-radius:6px;text-decoration:none">Review in Admin</a>
@@ -101,8 +115,8 @@ export async function POST(req: Request) {
             <h1 style="color:white;margin:0;font-size:22px">✅ 入驻申请已收到</h1>
           </div>
           <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
-            <p style="color:#111827">Hi ${contactName}，</p>
-            <p style="color:#374151">感谢你将 <strong>${businessName}</strong> 提交至澳洲建房圈建材目录。</p>
+            <p style="color:#111827">Hi ${esc(contactName)}，</p>
+            <p style="color:#374151">感谢你将 <strong>${esc(businessName)}</strong> 提交至澳洲建房圈建材目录。</p>
             <p style="color:#374151">我们会在 1–2 个工作日内完成审核，审核通过后你的商家信息将对买家和业主可见。</p>
             <p style="color:#374151">如有问题，直接回复本邮件即可。</p>
             <p style="color:#374151">澳洲建房圈团队</p>

@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     description: 'AI feasibility reports, verified builders, and building material suppliers for knockdown rebuild, renovation, extension and granny flat projects across Australia.',
   },
   alternates: {
-    canonical: 'https://ausbuildcircle.com',
+    canonical: '/',
   },
 }
 

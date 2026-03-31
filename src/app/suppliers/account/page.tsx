@@ -48,7 +48,7 @@ function SupplierAccountPageInner() {
 
   useEffect(() => {
     if (!user) return
-    fetch(`/api/suppliers/account?email=${encodeURIComponent(user.email ?? '')}`)
+    fetch(`/api/suppliers/account`)
       .then(r => r.json())
       .then(data => {
         if (data.listing) setListing(data.listing)

@@ -6,6 +6,10 @@ const supabase = () => createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+function esc(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
 function checkAuth(req: Request) {
   return req.headers.get('x-admin-secret') === process.env.ADMIN_SECRET
 }
@@ -62,9 +66,9 @@ export async function PATCH(req: Request) {
                 <h1 style="color:white;margin:0;font-size:20px">✅ 认证已通过</h1>
               </div>
               <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
-                <p>您好${pro.business_name ? `，<strong>${pro.business_name}</strong>` : ''}，</p>
+                <p>您好${pro.business_name ? `，<strong>${esc(pro.business_name)}</strong>` : ''}，</p>
                 <p>恭喜！您的认证申请已审核通过。您的主页现在已显示 <strong>认证徽章</strong>，并在搜索结果中优先排名。</p>
-                ${adminNote ? `<p style="color:#6b7280;font-size:13px">备注：${adminNote}</p>` : ''}
+                ${adminNote ? `<p style="color:#6b7280;font-size:13px">备注：${esc(adminNote)}</p>` : ''}
                 <p><a href="https://ausbuildcircle.com/professionals" style="color:#f97316">查看你的主页 →</a></p>
                 <p>澳洲建房圈 团队</p>
               </div>
@@ -79,9 +83,9 @@ export async function PATCH(req: Request) {
           html: `
             <div style="font-family:sans-serif;max-width:520px;margin:0 auto">
               <div style="background:#f9fafb;padding:24px;border-radius:12px;border:1px solid #e5e7eb">
-                <p>您好${pro.business_name ? `，<strong>${pro.business_name}</strong>` : ''}，</p>
+                <p>您好${pro.business_name ? `，<strong>${esc(pro.business_name)}</strong>` : ''}，</p>
                 <p>感谢您提交认证申请。经过审核，我们暂时无法通过您的认证申请。</p>
-                ${adminNote ? `<p><strong>原因：</strong>${adminNote}</p>` : ''}
+                ${adminNote ? `<p><strong>原因：</strong>${esc(adminNote)}</p>` : ''}
                 <p>如有疑问或需要补充材料，请直接回复此邮件联系我们。</p>
                 <p>澳洲建房圈 团队</p>
               </div>

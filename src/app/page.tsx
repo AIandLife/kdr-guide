@@ -280,6 +280,41 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Social Proof */}
+      <section className="bg-white border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 bg-orange-50 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-orange-500" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-gray-900">500+</p>
+                <p className="text-xs text-gray-500">{lang === 'zh' ? '可行性报告已生成' : 'Feasibility reports generated'}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 bg-orange-50 rounded-lg flex items-center justify-center">
+                <MapPin className="w-5 h-5 text-orange-500" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-gray-900">537</p>
+                <p className="text-xs text-gray-500">{lang === 'zh' ? '个 Council 全覆盖' : 'Councils covered Australia-wide'}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 bg-orange-50 rounded-lg flex items-center justify-center">
+                <Users className="w-5 h-5 text-orange-500" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-gray-900">50+</p>
+                <p className="text-xs text-gray-500">{lang === 'zh' ? '认证专业人士入驻' : 'Verified professionals listed'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Marquee — Coverage Section */}
       <MarqueeSection lang={lang} />
 
@@ -407,37 +442,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Ecosystem Banner */}
-      <section style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 text-center">
-          <p className="text-xs font-semibold tracking-widest text-orange-400 uppercase mb-3">
-            {lang === 'zh' ? 'BossLink商业生态' : 'BossLink Ecosystem'}
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            {lang === 'zh' ? '我们是生态大家庭的一员' : 'Part of a Bigger Ecosystem'}
-          </h2>
-          <p className="text-slate-400 text-sm mb-8 max-w-lg mx-auto">
-            {lang === 'zh'
-              ? '澳洲建房圈是 BossLink 商业生态旗下的垂直平台之一，共同为华人在澳的生活、创业、置业提供专业支持。'
-              : 'AusBuildCircle is part of the BossLink ecosystem — a network of platforms supporting the Chinese-Australian community.'}
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <a href="https://bosslink.ai" target="_blank" rel="noopener noreferrer"
-              className="inline-flex flex-col items-center border border-orange-500/40 text-orange-400 hover:border-orange-400 hover:text-orange-300 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
-              <span>BossLink →</span>
-              <span className="text-xs font-normal text-orange-400/70 mt-0.5">{lang === 'zh' ? '商业资源库' : 'Business Hub'}</span>
-            </a>
-            <a href="https://www.auspropertycircle.com" target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 border border-orange-500/40 text-orange-400 hover:border-orange-400 hover:text-orange-300 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
-              {lang === 'zh' ? '澳洲房产圈 →' : 'Aus Property Circle →'}
-            </a>
-            <span className="inline-flex items-center gap-1.5 border border-slate-700 text-slate-600 font-semibold px-5 py-2.5 rounded-xl text-sm cursor-default">
-              {lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon'}
-            </span>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="bg-slate-900 border-t border-slate-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
@@ -472,7 +476,17 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <div className="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="border-t border-slate-800 pt-6 flex flex-col items-center gap-3">
+            <p className="text-xs text-slate-500">
+              {lang === 'zh' ? 'BossLink 商业生态成员' : 'Part of the BossLink Ecosystem'}
+              {' · '}
+              <a href="https://bosslink.ai" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-orange-400 transition-colors">BossLink</a>
+              {' · '}
+              <a href="https://www.auspropertycircle.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-orange-400 transition-colors">
+                {lang === 'zh' ? '澳洲房产圈' : 'Aus Property Circle'}
+              </a>
+            </p>
+            <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-xs text-slate-600">
               © {new Date().getFullYear()} AusBuildCircle
             </p>
@@ -483,6 +497,7 @@ export default function HomePage() {
               <Link href="/terms" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
                 {lang === 'zh' ? '服务条款' : 'Terms of Service'}
               </Link>
+            </div>
             </div>
           </div>
         </div>
