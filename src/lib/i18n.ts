@@ -179,7 +179,7 @@ export const translations = {
       tagline: '澳洲',
       guide: '项目流程',
       professionals: '找专业人士',
-      articles: '改建攻略',
+      articles: '建房攻略',
       suppliers: '建材商城',
       directory: '服务目录',
       forum: '讨论社区',
