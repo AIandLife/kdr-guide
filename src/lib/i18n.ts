@@ -10,7 +10,9 @@ export const translations = {
       professionals: 'Professionals',
       articles: 'Build Guides',
       suppliers: 'Suppliers',
+      directory: 'Directory',
       forum: 'Community',
+      tenders: 'Tenders',
       cta: 'Check My Block',
       back: 'Back',
       home: 'Home',
@@ -93,6 +95,12 @@ export const translations = {
       ctaSuccess: 'We\'ll be in touch soon!',
       disclaimer: 'This report is AI-generated and provides directional guidance. For property-specific advice, connect with a verified town planner or builder in our directory above.',
       keyInsight: 'Key insight',
+      recProsTitle: 'Recommended Professionals for You',
+      recProsSubtitle: 'Based on your feasibility report, these professionals can help with your project',
+      recProsViewAll: 'View All Professionals',
+      recProsContact: 'Contact',
+      recProsVerified: 'Verified',
+      recProsEmpty: 'Browse our full professional directory to find the right specialist for your project.',
     },
     // Guide page
     guide: {
@@ -120,6 +128,20 @@ export const translations = {
       registerBtn: 'Join as a Professional',
       registerNote: 'Free listing · No credit card required',
     },
+    // Tenders page
+    tenders: {
+      h1: 'Government Construction Tenders',
+      subtitle: 'Latest construction and building-related tenders from AusTender. Updated daily.',
+      filterAll: 'All',
+      filterConstruction: 'Construction',
+      filterOther: 'Other',
+      searchPlaceholder: 'Search tenders...',
+      construction: 'Construction',
+      published: 'Published',
+      viewOnAusTender: 'View on AusTender',
+      emptyState: 'Data collection in progress. Updated daily.',
+      noResults: 'No tenders match your search.',
+    },
   },
 
   zh: {
@@ -131,7 +153,9 @@ export const translations = {
       professionals: '专业人士',
       articles: '改建攻略',
       suppliers: '建材商',
+      directory: '服务目录',
       forum: '讨论社区',
+      tenders: '政府招标',
       cta: '查询我的地块',
       back: '返回',
       home: '首页',
@@ -214,6 +238,12 @@ export const translations = {
       ctaSuccess: '我们会尽快与你联系！',
       disclaimer: '本报告由 AI 生成，供方向性参考。如需针对你地块的具体建议，可直接联系上方我们推荐的认证专业人士。',
       keyInsight: '关键提示',
+      recProsTitle: '为您推荐的专业人士',
+      recProsSubtitle: '根据您的可行性报告，以下专业人士可以帮助您的项目',
+      recProsViewAll: '查看全部专业人士',
+      recProsContact: '联系',
+      recProsVerified: '已认证',
+      recProsEmpty: '查看完整专业人士目录，找到适合您项目的专业人士。',
     },
     // Guide page
     guide: {
@@ -240,6 +270,20 @@ export const translations = {
       registerEmail: '你的商业邮箱',
       registerBtn: '免费加入',
       registerNote: '免费入驻 · 无需信用卡',
+    },
+    // Tenders page
+    tenders: {
+      h1: '政府建设工程招标',
+      subtitle: '来自 AusTender 的最新建设工程相关招标信息，每日自动更新。',
+      filterAll: '全部',
+      filterConstruction: '建设工程',
+      filterOther: '其他',
+      searchPlaceholder: '搜索招标...',
+      construction: '建设工程',
+      published: '发布于',
+      viewOnAusTender: '查看原文',
+      emptyState: '数据收集中，每日自动更新。',
+      noResults: '没有找到匹配的招标信息。',
     },
   },
 } as const

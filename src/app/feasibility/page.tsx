@@ -14,6 +14,7 @@ import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
 import { useAuth } from '@/lib/auth-context'
 import { LoginGateModal } from '@/components/LoginGateModal'
+import { PROFESSIONALS, CATEGORIES, type Professional } from '@/lib/professionals-data'
 
 interface RiskFlag {
   type: string
@@ -53,6 +54,22 @@ interface FeasibilityResult {
   professionals: { role: string; why: string; timing: string }[]
   keyInsight: string
   _liveZone?: LiveZoneMeta
+}
+
+// Map AI report role names → professional category IDs
+const AI_ROLE_TO_CATEGORY: Record<string, string> = {
+  'Town Planner': 'planner',
+  'Builder': 'builder',
+  'Demolition Contractor': 'demolition',
+  'Surveyor': 'engineer',
+  'Structural Engineer': 'engineer',
+  'Finance Broker': 'finance',
+  'Arborist': 'other',
+  'Geotechnical Engineer': 'engineer',
+  'Architect': 'designer',
+  'Building Designer': 'designer',
+  'Electrician': 'electrician',
+  'Plumber': 'plumber',
 }
 
 const RISK_ICONS: Record<string, React.ElementType> = {
@@ -185,6 +202,32 @@ function FeasibilityContent() {
   const [projectType, setProjectType] = useState(searchParams.get('projectType') || 'kdr')
   const [showLoginGate, setShowLoginGate] = useState(false)
   const { user } = useAuth()
+  const [dbProfessionals, setDbProfessionals] = useState<Professional[]>([])
+
+  // Fetch DB professionals once on mount
+  useEffect(() => {
+    fetch('/api/professionals-list')
+      .then(r => r.json())
+      .then((data: Record<string, unknown>[]) => {
+        const mapped: Professional[] = data.map((d) => ({
+          slug: String(d.business_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+          name: String(d.business_name || ''),
+          category: String(d.category || 'other'),
+          state: String(d.state || ''),
+          regions: Array.isArray(d.regions) ? d.regions as string[] : [],
+          specialties: [],
+          verified: Boolean(d.verified),
+          featured: false,
+          description: String(d.description || ''),
+          website: (d.website as string) || null,
+          wechat: (d.wechat as string) || null,
+          phone: (d.phone as string) || null,
+          languages: Array.isArray(d.languages) ? d.languages as string[] : [],
+        }))
+        setDbProfessionals(mapped)
+      })
+      .catch(() => { /* non-critical */ })
+  }, [])
 
   useEffect(() => {
     const s = searchParams.get('suburb')
@@ -767,6 +810,90 @@ function FeasibilityContent() {
                 ))}
               </div>
             </div>
+
+            {/* Recommended Professionals from Directory */}
+            {(() => {
+              // Derive matching category IDs from AI report roles
+              const roleCats = new Set(
+                (result.professionals || [])
+                  .map(p => AI_ROLE_TO_CATEGORY[p.role])
+                  .filter(Boolean)
+              )
+              const userState = (result.state || state || '').toUpperCase()
+
+              // Combine static + DB professionals, filter by state & role
+              const allPros = [...PROFESSIONALS, ...dbProfessionals]
+              const matched = allPros.filter(p => {
+                const stateMatch = p.state === userState || p.regions.includes('All Australia')
+                const roleMatch = roleCats.has(p.category)
+                return stateMatch && roleMatch
+              })
+              // Deduplicate by slug
+              const seen = new Set<string>()
+              const unique = matched.filter(p => {
+                if (seen.has(p.slug)) return false
+                seen.add(p.slug)
+                return true
+              })
+              // Prioritize verified, then limit to 6
+              unique.sort((a, b) => (b.verified ? 1 : 0) - (a.verified ? 1 : 0))
+              const display = unique.slice(0, 6)
+
+              const stateSlug = userState.toLowerCase()
+
+              return (
+                <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-1 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-orange-500" />
+                    {tf.recProsTitle}
+                  </h2>
+                  <p className="text-sm text-gray-500 mb-5">{tf.recProsSubtitle}</p>
+
+                  {display.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {display.map((pro) => {
+                        const cat = CATEGORIES.find(c => c.id === pro.category)
+                        return (
+                          <div key={pro.slug} className="bg-gray-50 rounded-xl p-4 border border-gray-100 flex flex-col">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm font-semibold text-gray-900 flex-1 truncate">{pro.name}</span>
+                              {pro.verified && (
+                                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium shrink-0">
+                                  {tf.recProsVerified}
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-xs text-orange-600 font-medium mb-1">
+                              {cat ? (lang === 'zh' ? cat.labelZh : cat.label) : pro.category}
+                            </span>
+                            <span className="text-xs text-gray-400 mb-3 line-clamp-1">
+                              {pro.regions.slice(0, 3).join(', ')}
+                            </span>
+                            <Link
+                              href={`/professionals/${stateSlug}/${pro.slug}`}
+                              className="mt-auto inline-flex items-center justify-center gap-1.5 text-sm font-medium text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg px-3 py-2 transition-colors"
+                            >
+                              {tf.recProsContact} →
+                            </Link>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">{tf.recProsEmpty}</p>
+                  )}
+
+                  <div className="mt-5 text-center">
+                    <Link
+                      href={`/professionals/${stateSlug || ''}`}
+                      className="inline-flex items-center gap-2 text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors"
+                    >
+                      {tf.recProsViewAll} →
+                    </Link>
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Post-report CTA section */}
             <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8">
