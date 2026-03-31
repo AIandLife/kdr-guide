@@ -88,6 +88,7 @@ interface TenderData {
   link: string
   is_construction: boolean
   published_at: string | null
+  council_name: string | null
 }
 
 export default function TenderDetailPage() {
@@ -143,7 +144,7 @@ export default function TenderDetailPage() {
         const supabase = createClient()
         const { data, error: fetchError } = await supabase
           .from('government_tenders')
-          .select('id, atm_id, title, agency, category_name, close_date, atm_type, location, description_en, description_zh, link, is_construction, published_at')
+          .select('id, atm_id, title, agency, category_name, close_date, atm_type, location, description_en, description_zh, link, is_construction, published_at, council_name')
           .eq('id', tenderId)
           .single()
 
@@ -272,7 +273,13 @@ export default function TenderDetailPage() {
 
             {/* Metadata row */}
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-500">
-              {tender.agency && (
+              {tender.council_name && (
+                <span className="flex items-center gap-1.5">
+                  <Landmark className="w-4 h-4 text-teal-500" />
+                  <span className="text-teal-700 font-medium">{tender.council_name}</span>
+                </span>
+              )}
+              {tender.agency && !tender.council_name && (
                 <span className="flex items-center gap-1.5">
                   <Landmark className="w-4 h-4 text-gray-400" />
                   {tender.agency}

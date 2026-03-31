@@ -20,6 +20,7 @@ interface Tender {
   published_at: string | null
   close_date: string | null
   source: string
+  council_name: string | null
 }
 
 type FilterTab = string // 'all' | 'construction' | category names
@@ -120,7 +121,7 @@ export default function TendersPage() {
       const { data, error } = await supabase
         .from('government_tenders')
         .select(
-          'id, atm_id, title, category_name, description_en, description_zh, link, is_construction, published_at, close_date, source'
+          'id, atm_id, title, category_name, description_en, description_zh, link, is_construction, published_at, close_date, source, council_name'
         )
         .eq('is_construction', true)
         .order('published_at', { ascending: false })
@@ -184,7 +185,8 @@ export default function TendersPage() {
           t.title.toLowerCase().includes(q) ||
           (t.description_zh || '').toLowerCase().includes(q) ||
           (t.description_en || '').toLowerCase().includes(q) ||
-          (t.category_name || '').toLowerCase().includes(q)
+          (t.category_name || '').toLowerCase().includes(q) ||
+          (t.council_name || '').toLowerCase().includes(q)
       )
     }
     return list
@@ -329,10 +331,15 @@ export default function TendersPage() {
                               : tender.source === 'qld'
                                 ? 'QLD'
                                 : tender.source === 'council'
-                                  ? 'Council'
+                                  ? (isZh ? t.tenders.council : 'Council')
                                   : tender.source === 'school'
                                     ? 'School'
                                     : tender.source.toUpperCase()}
+                        </span>
+                      )}
+                      {tender.council_name && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-teal-50 text-teal-700 border border-teal-200">
+                          {tender.council_name}
                         </span>
                       )}
                     </div>

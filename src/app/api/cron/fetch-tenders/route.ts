@@ -20,11 +20,69 @@ const CONSTRUCTION_KEYWORDS = [
   'road',
   'bridge',
   'architecture',
+  'repair',
+  'civil',
+  'plumbing',
+  'electrical',
+  'landscaping',
+  'playground',
+  'park',
+  'demolition',
+  'roofing',
+  'painting',
+  'concrete',
+  'fencing',
+  'drainage',
+]
+
+const NON_CONSTRUCTION_KEYWORDS = [
+  'it services',
+  'software',
+  'consulting',
+  'legal services',
+  'marketing',
+  'catering',
+  'advertising',
+  'audit',
+  'accounting',
+  'insurance',
+  'recruitment',
+  'training',
+  'printing',
+  'stationery',
+  'medical supplies',
+  'pharmacy',
+  'telecommunications',
 ]
 
 function isConstructionRelated(title: string, description: string): boolean {
   const combined = `${title} ${description}`.toLowerCase()
+  // If clearly non-construction, skip
+  if (NON_CONSTRUCTION_KEYWORDS.some((kw) => combined.includes(kw))) {
+    // Unless it also has strong construction signals
+    if (!CONSTRUCTION_KEYWORDS.some((kw) => combined.includes(kw))) {
+      return false
+    }
+  }
   return CONSTRUCTION_KEYWORDS.some((kw) => combined.includes(kw))
+}
+
+/** Extract council name from VendorPanel tender title/description */
+function extractCouncilName(title: string, description: string): string {
+  const combined = `${title} ${description}`
+  // Common patterns: "XXX Council", "XXX Shire", "City of XXX"
+  const patterns = [
+    /(?:^|\s)((?:[A-Z][a-zA-Z'-]+\s+)*(?:City|Shire|Regional)\s+Council(?:\s+of\s+[A-Z][a-zA-Z'-]+)?)/,
+    /(?:^|\s)(Council\s+of\s+(?:[A-Z][a-zA-Z'-]+\s*)+)/,
+    /(?:^|\s)(City\s+of\s+(?:[A-Z][a-zA-Z'-]+\s*)+)/,
+    /(?:^|\s)((?:[A-Z][a-zA-Z'-]+\s+)+Council)\b/,
+    /(?:^|\s)((?:[A-Z][a-zA-Z'-]+\s+)*(?:Municipality|Borough)(?:\s+of\s+[A-Z][a-zA-Z'-]+)?)/,
+  ]
+  for (const pattern of patterns) {
+    const match = combined.match(pattern)
+    if (match) return match[1].trim()
+  }
+  return ''
 }
 
 /** Extract text content from an XML element by tag name */
@@ -159,137 +217,292 @@ export async function GET(req: Request) {
     (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim()
   )
 
-  let processed = 0
-  let errors = 0
+  let austenderProcessed = 0
+  let austenderErrors = 0
+  let vendorpanelProcessed = 0
+  let vendorpanelErrors = 0
 
   try {
-    // 1. Fetch RSS feed
-    console.log('fetch-tenders: fetching RSS feed...')
-    const rssRes = await fetch(
-      'https://www.tenders.gov.au/public_data/rss/rss.xml',
-      { headers: { 'User-Agent': USER_AGENT } }
-    )
+    // ========== AUSTENDER ==========
+    console.log('fetch-tenders: fetching AusTender RSS feed...')
+    let austenderTotal = 0
+    let austenderExistingCount = 0
 
-    if (!rssRes.ok) {
-      console.error('fetch-tenders: RSS fetch failed', rssRes.status)
-      return NextResponse.json(
-        { error: 'Failed to fetch RSS feed', status: rssRes.status },
-        { status: 502 }
+    try {
+      const rssRes = await fetch(
+        'https://www.tenders.gov.au/public_data/rss/rss.xml',
+        { headers: { 'User-Agent': USER_AGENT } }
       )
+
+      if (!rssRes.ok) {
+        console.error('fetch-tenders: AusTender RSS fetch failed', rssRes.status)
+      } else {
+        const rssXml = await rssRes.text()
+
+        // Parse items
+        const itemRegex = /<item>([\s\S]*?)<\/item>/gi
+        const items: Array<{
+          title: string
+          link: string
+          description: string
+          pubDate: string
+          guid: string
+        }> = []
+
+        let itemMatch
+        while ((itemMatch = itemRegex.exec(rssXml)) !== null) {
+          const itemXml = itemMatch[1]
+          items.push({
+            title: extractTag(itemXml, 'title'),
+            link: extractTag(itemXml, 'link'),
+            description: extractTag(itemXml, 'description'),
+            pubDate: extractTag(itemXml, 'pubDate'),
+            guid: extractTag(itemXml, 'guid'),
+          })
+        }
+
+        austenderTotal = items.length
+        console.log(`fetch-tenders: found ${items.length} items in AusTender RSS`)
+
+        if (items.length > 0) {
+          // Check which guids already exist
+          const guids = items.map((i) => i.guid).filter(Boolean)
+          const { data: existing } = await supabase
+            .from('government_tenders')
+            .select('guid')
+            .in('guid', guids)
+
+          const existingGuids = new Set(
+            (existing || []).map((e: { guid: string }) => e.guid)
+          )
+          austenderExistingCount = existingGuids.size
+
+          // Process new tenders
+          const newItems = items.filter((i) => i.guid && !existingGuids.has(i.guid))
+          console.log(`fetch-tenders: ${newItems.length} new AusTender tenders to process`)
+
+          const toProcess = newItems.slice(0, MAX_TENDERS_PER_RUN)
+
+          for (const item of toProcess) {
+            try {
+              console.log(
+                `fetch-tenders: [AusTender] processing "${item.title.substring(0, 60)}..."`
+              )
+
+              const descriptionEn = item.description || ''
+              const atmId = extractAtmId(item.title)
+
+              // AI analysis
+              const analysis = await analyzeTender(item.title, descriptionEn)
+
+              // Upsert
+              const { error: upsertErr } = await supabase
+                .from('government_tenders')
+                .upsert(
+                  {
+                    atm_id: atmId,
+                    title: item.title,
+                    agency: '',
+                    category_name: analysis.category,
+                    close_date: null,
+                    atm_type: '',
+                    location: '',
+                    description_en: descriptionEn,
+                    description_zh: analysis.summary,
+                    link: item.link,
+                    guid: item.guid,
+                    is_construction: analysis.isConstruction,
+                    published_at: parseDate(item.pubDate),
+                    source: 'austender',
+                    council_name: '',
+                  },
+                  { onConflict: 'guid' }
+                )
+
+              if (upsertErr) {
+                console.error('fetch-tenders: AusTender upsert failed', upsertErr)
+                austenderErrors++
+              } else {
+                austenderProcessed++
+              }
+            } catch (err) {
+              console.error(
+                'fetch-tenders: error processing AusTender item',
+                item.guid,
+                err
+              )
+              austenderErrors++
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error('fetch-tenders: AusTender fatal error', err)
     }
 
-    const rssXml = await rssRes.text()
+    // ========== VENDORPANEL ==========
+    console.log('fetch-tenders: fetching VendorPanel RSS feed...')
+    let vpTotalItems = 0
+    let vpConstructionItems = 0
+    let vpExistingCount = 0
 
-    // 2. Parse items
-    const itemRegex = /<item>([\s\S]*?)<\/item>/gi
-    const items: Array<{
-      title: string
-      link: string
-      description: string
-      pubDate: string
-      guid: string
-    }> = []
+    try {
+      const vpRes = await fetch(
+        'https://www.vendorpanel.com.au/PublicTendersRssV2.aspx?mode=all',
+        { headers: { 'User-Agent': USER_AGENT } }
+      )
 
-    let itemMatch
-    while ((itemMatch = itemRegex.exec(rssXml)) !== null) {
-      const itemXml = itemMatch[1]
-      items.push({
-        title: extractTag(itemXml, 'title'),
-        link: extractTag(itemXml, 'link'),
-        description: extractTag(itemXml, 'description'),
-        pubDate: extractTag(itemXml, 'pubDate'),
-        guid: extractTag(itemXml, 'guid'),
-      })
-    }
+      if (!vpRes.ok) {
+        console.error('fetch-tenders: VendorPanel RSS fetch failed', vpRes.status)
+      } else {
+        const vpXml = await vpRes.text()
 
-    console.log(`fetch-tenders: found ${items.length} items in RSS feed`)
+        // Parse items
+        const vpItemRegex = /<item>([\s\S]*?)<\/item>/gi
+        const vpItems: Array<{
+          title: string
+          link: string
+          description: string
+          pubDate: string
+          guid: string
+        }> = []
 
-    if (items.length === 0) {
-      return NextResponse.json({
-        ok: true,
-        message: 'No items in feed',
-        processed: 0,
-      })
-    }
+        let vpMatch
+        while ((vpMatch = vpItemRegex.exec(vpXml)) !== null) {
+          const itemXml = vpMatch[1]
+          vpItems.push({
+            title: extractTag(itemXml, 'title'),
+            link: extractTag(itemXml, 'link'),
+            description: extractTag(itemXml, 'description'),
+            pubDate: extractTag(itemXml, 'pubDate'),
+            guid: extractTag(itemXml, 'guid'),
+          })
+        }
 
-    // 3. Check which guids already exist
-    const guids = items.map((i) => i.guid).filter(Boolean)
-    const { data: existing } = await supabase
-      .from('government_tenders')
-      .select('guid')
-      .in('guid', guids)
+        vpTotalItems = vpItems.length
+        console.log(`fetch-tenders: found ${vpItems.length} items in VendorPanel RSS`)
 
-    const existingGuids = new Set(
-      (existing || []).map((e: { guid: string }) => e.guid)
-    )
-
-    // 4. Process new tenders
-    const newItems = items.filter((i) => i.guid && !existingGuids.has(i.guid))
-    console.log(`fetch-tenders: ${newItems.length} new tenders to process`)
-
-    const toProcess = newItems.slice(0, MAX_TENDERS_PER_RUN)
-
-    for (const item of toProcess) {
-      try {
+        // Filter to construction-related only
+        const constructionItems = vpItems.filter((item) =>
+          isConstructionRelated(item.title, item.description)
+        )
+        vpConstructionItems = constructionItems.length
         console.log(
-          `fetch-tenders: processing "${item.title.substring(0, 60)}..."`
+          `fetch-tenders: ${constructionItems.length} construction-related items out of ${vpItems.length} total VendorPanel items`
         )
 
-        const descriptionEn = item.description || ''
-        const atmId = extractAtmId(item.title)
+        if (constructionItems.length > 0) {
+          // Prefix guids with 'vp-' to avoid conflicts with AusTender
+          const vpGuids = constructionItems
+            .map((i) => {
+              const rawGuid = i.guid || i.link
+              return rawGuid ? `vp-${rawGuid}` : ''
+            })
+            .filter(Boolean)
 
-        // AI analysis
-        const analysis = await analyzeTender(item.title, descriptionEn)
+          const { data: vpExisting } = await supabase
+            .from('government_tenders')
+            .select('guid')
+            .in('guid', vpGuids)
 
-        // Upsert
-        const { error: upsertErr } = await supabase
-          .from('government_tenders')
-          .upsert(
-            {
-              atm_id: atmId,
-              title: item.title,
-              agency: '',
-              category_name: analysis.category,
-              close_date: null,
-              atm_type: '',
-              location: '',
-              description_en: descriptionEn,
-              description_zh: analysis.summary,
-              link: item.link,
-              guid: item.guid,
-              is_construction: analysis.isConstruction,
-              published_at: parseDate(item.pubDate),
-              source: 'austender',
-            },
-            { onConflict: 'guid' }
+          const vpExistingGuids = new Set(
+            (vpExisting || []).map((e: { guid: string }) => e.guid)
+          )
+          vpExistingCount = vpExistingGuids.size
+
+          // Process new tenders
+          const vpNewItems = constructionItems.filter((i) => {
+            const prefixedGuid = `vp-${i.guid || i.link}`
+            return prefixedGuid && !vpExistingGuids.has(prefixedGuid)
+          })
+          console.log(
+            `fetch-tenders: ${vpNewItems.length} new VendorPanel tenders to process`
           )
 
-        if (upsertErr) {
-          console.error('fetch-tenders: upsert failed', upsertErr)
-          errors++
-        } else {
-          processed++
+          const vpToProcess = vpNewItems.slice(0, MAX_TENDERS_PER_RUN)
+
+          for (const item of vpToProcess) {
+            try {
+              const prefixedGuid = `vp-${item.guid || item.link}`
+              console.log(
+                `fetch-tenders: [VendorPanel] processing "${item.title.substring(0, 60)}..."`
+              )
+
+              const descriptionEn = item.description || ''
+              const councilName = extractCouncilName(item.title, descriptionEn)
+
+              // AI analysis
+              const analysis = await analyzeTender(item.title, descriptionEn)
+
+              // Upsert
+              const { error: upsertErr } = await supabase
+                .from('government_tenders')
+                .upsert(
+                  {
+                    atm_id: null,
+                    title: item.title,
+                    agency: councilName || '',
+                    category_name: analysis.category,
+                    close_date: null,
+                    atm_type: '',
+                    location: '',
+                    description_en: descriptionEn,
+                    description_zh: analysis.summary,
+                    link: item.link,
+                    guid: prefixedGuid,
+                    is_construction: true,
+                    published_at: parseDate(item.pubDate),
+                    source: 'council',
+                    council_name: councilName,
+                  },
+                  { onConflict: 'guid' }
+                )
+
+              if (upsertErr) {
+                console.error('fetch-tenders: VendorPanel upsert failed', upsertErr)
+                vendorpanelErrors++
+              } else {
+                vendorpanelProcessed++
+              }
+            } catch (err) {
+              console.error(
+                'fetch-tenders: error processing VendorPanel item',
+                item.guid,
+                err
+              )
+              vendorpanelErrors++
+            }
+          }
         }
-      } catch (err) {
-        console.error(
-          'fetch-tenders: error processing item',
-          item.guid,
-          err
-        )
-        errors++
       }
+    } catch (err) {
+      console.error('fetch-tenders: VendorPanel fatal error', err)
     }
 
+    const totalProcessed = austenderProcessed + vendorpanelProcessed
+    const totalErrors = austenderErrors + vendorpanelErrors
+
     console.log(
-      `fetch-tenders: done. processed=${processed} already_in_db=${existingGuids.size} errors=${errors}`
+      `fetch-tenders: done. austender=${austenderProcessed} vendorpanel=${vendorpanelProcessed} errors=${totalErrors}`
     )
 
     return NextResponse.json({
       ok: true,
-      processed,
-      already_in_db: existingGuids.size,
-      errors,
-      total_in_feed: items.length,
+      processed: totalProcessed,
+      austender: {
+        processed: austenderProcessed,
+        already_in_db: austenderExistingCount,
+        errors: austenderErrors,
+        total_in_feed: austenderTotal,
+      },
+      vendorpanel: {
+        processed: vendorpanelProcessed,
+        already_in_db: vpExistingCount,
+        errors: vendorpanelErrors,
+        total_in_feed: vpTotalItems,
+        construction_items: vpConstructionItems,
+      },
+      errors: totalErrors,
     })
   } catch (err) {
     console.error('fetch-tenders: fatal error', err)

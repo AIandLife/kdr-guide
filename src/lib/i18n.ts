@@ -151,6 +151,7 @@ export const translations = {
       daysAgo: 'days ago',
       today: 'Today',
       monthsAgo: 'months ago',
+      council: 'Council',
     },
     // Tender detail page
     tenderDetail: {
@@ -322,6 +323,7 @@ export const translations = {
       daysAgo: '天前',
       today: '今天',
       monthsAgo: '个月前',
+      council: '市政招标',
     },
     // Tender detail page
     tenderDetail: {
