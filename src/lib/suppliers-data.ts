@@ -12,6 +12,7 @@ export type SupplierCategory =
   | 'curtains-blinds'
   | 'custom-wardrobes'
   | 'outdoor-paving'
+  | 'other'
 
 export type SupplierOrigin = 'local' | 'china' | 'europe' | 'multi'
 
@@ -52,6 +53,7 @@ export const SUPPLIER_CATEGORIES: Record<SupplierCategory, { en: string; zh: str
   'curtains-blinds':  { en: 'Curtains & Blinds',  zh: '窗帘百叶',   icon: '🪟', color: 'pink' },
   'custom-wardrobes': { en: 'Custom Wardrobes',    zh: '定制衣柜',   icon: '🚪', color: 'purple' },
   'outdoor-paving':   { en: 'Outdoor & Paving',   zh: '户外铺装',   icon: '🧱', color: 'stone' },
+  'other':            { en: 'Other',              zh: '其他',       icon: '📦', color: 'gray' },
 }
 
 export const SUPPLIERS: Supplier[] = [
