@@ -99,9 +99,7 @@ export default function TenderDetailPage() {
   const tenderId = params.id as string
 
   const [tender, setTender] = useState<TenderData | null>(null)
-  const [detailZh, setDetailZh] = useState<string>('')
   const [loading, setLoading] = useState(true)
-  const [analysisLoading, setAnalysisLoading] = useState(false)
   const [error, setError] = useState<string>('')
   const [dbProfessionals, setDbProfessionals] = useState<Professional[]>([])
 
@@ -137,7 +135,7 @@ export default function TenderDetailPage() {
     fetchPros()
   }, [])
 
-  // Fetch tender data
+  // Fetch tender data (static, no AI call)
   useEffect(() => {
     async function fetchTender() {
       setLoading(true)
@@ -156,49 +154,14 @@ export default function TenderDetailPage() {
         }
 
         setTender(data as TenderData)
-        setLoading(false)
-
-        // Now fetch AI analysis
-        setAnalysisLoading(true)
-        const res = await fetch('/api/tenders/detail', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: tenderId }),
-        })
-        const result = await res.json()
-        if (result.detail_zh) {
-          setDetailZh(result.detail_zh)
-        }
       } catch {
         setError(td.loadError)
       } finally {
         setLoading(false)
-        setAnalysisLoading(false)
       }
     }
     if (tenderId) fetchTender()
   }, [tenderId, td.notFound, td.loadError])
-
-  // Render markdown-like sections
-  function renderAnalysis(text: string) {
-    const sections = text.split(/^## /m).filter(Boolean)
-    return sections.map((section, i) => {
-      const lines = section.split('\n')
-      const heading = lines[0].trim()
-      const body = lines.slice(1).join('\n').trim()
-      return (
-        <div key={i} className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
-            <span className="w-1.5 h-5 bg-orange-500 rounded-full inline-block" />
-            {heading}
-          </h3>
-          <div className="text-gray-700 text-sm sm:text-base leading-relaxed whitespace-pre-line pl-4">
-            {body}
-          </div>
-        </div>
-      )
-    })
-  }
 
   // Get recommended professionals for this tender
   function getRecommendedPros(): Professional[] {
@@ -338,36 +301,23 @@ export default function TenderDetailPage() {
 
         {/* Content */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-          {/* AI Analysis */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
-              <span className="text-orange-500">🤖</span>
-              {td.aiAnalysisTitle}
-            </h2>
-
-            {analysisLoading ? (
-              <div className="flex items-center gap-3 py-8 justify-center">
-                <Loader2 className="w-5 h-5 text-orange-500 animate-spin" />
-                <span className="text-gray-500 text-sm">{td.analysisLoading}</span>
-              </div>
-            ) : detailZh ? (
-              renderAnalysis(detailZh)
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-400 text-sm">{td.analysisUnavailable}</p>
-              </div>
-            )}
-
-            <p className="text-xs text-gray-400 mt-4 pt-4 border-t border-gray-100">
-              {td.aiDisclaimer}
-            </p>
-          </div>
+          {/* Chinese Summary */}
+          {tender.description_zh && (
+            <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                📋 {isZh ? '中文概要' : 'Chinese Summary'}
+              </h2>
+              <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+                {tender.description_zh}
+              </p>
+            </div>
+          )}
 
           {/* English description */}
           {tender.description_en && (
             <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-3">
-                {td.originalDescription}
+                📄 {isZh ? '英文原文' : 'Original Description'}
               </h2>
               <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
                 {tender.description_en}
