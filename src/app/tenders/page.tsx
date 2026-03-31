@@ -122,6 +122,7 @@ export default function TendersPage() {
         .select(
           'id, atm_id, title, category_name, description_en, description_zh, link, is_construction, published_at, close_date, source'
         )
+        .eq('is_construction', true)
         .order('published_at', { ascending: false })
         .limit(200)
 
@@ -133,35 +134,48 @@ export default function TendersPage() {
     fetchTenders()
   }, [])
 
-  // Dynamic category tabs from data
+  // Classify construction tenders into sub-categories
+  const CONSTRUCTION_SUBCATEGORIES: Record<string, { en: string; zh: string; keywords: string[] }> = {
+    'new-build': { en: 'New Build', zh: '新建工程', keywords: ['building works', 'construction', 'new build', 'barracks', 'depot'] },
+    'renovation': { en: 'Renovation', zh: '翻新修缮', keywords: ['refurbish', 'renovation', 'remediation', 'upgrade', 'repair', 'restore'] },
+    'infrastructure': { en: 'Roads & Infrastructure', zh: '道路基建', keywords: ['road', 'infrastructure', 'bridge', 'civil', 'highway', 'transport'] },
+    'maintenance': { en: 'Facility Maintenance', zh: '设施维护', keywords: ['maintenance', 'cleaning', 'security', 'materials handling', 'access equipment'] },
+    'design': { en: 'Architecture & Design', zh: '建筑设计', keywords: ['architect', 'design', 'project management', 'planning', 'adviser'] },
+  }
+
+  function getSubCategory(tender: Tender): string {
+    const text = (tender.title + ' ' + tender.description_en + ' ' + tender.category_name).toLowerCase()
+    for (const [key, sub] of Object.entries(CONSTRUCTION_SUBCATEGORIES)) {
+      if (sub.keywords.some(kw => text.includes(kw))) return key
+    }
+    return 'other'
+  }
+
   const categoryTabs = useMemo(() => {
     const counts: Record<string, number> = {}
-    let constructionCount = 0
     for (const t of tenders) {
-      const cat = t.category_name || 'Other'
-      counts[cat] = (counts[cat] || 0) + 1
-      if (t.is_construction) constructionCount++
+      const sub = getSubCategory(t)
+      counts[sub] = (counts[sub] || 0) + 1
     }
     const tabs: { key: string; label: string; count: number }[] = [
       { key: 'all', label: isZh ? '全部' : 'All', count: tenders.length },
-      { key: 'construction', label: isZh ? '建设工程' : 'Construction', count: constructionCount },
     ]
-    // Add top categories sorted by count
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1])
-    for (const [cat, count] of sorted) {
-      if (cat === 'Construction') continue // already in 建设工程 tab
-      tabs.push({ key: `cat:${cat}`, label: cat, count })
+    for (const [key, sub] of Object.entries(CONSTRUCTION_SUBCATEGORIES)) {
+      if (counts[key]) {
+        tabs.push({ key, label: isZh ? sub.zh : sub.en, count: counts[key] })
+      }
+    }
+    if (counts['other']) {
+      tabs.push({ key: 'other', label: isZh ? '其他建筑' : 'Other', count: counts['other'] })
     }
     return tabs
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tenders, isZh])
 
   const filtered = useMemo(() => {
     let list = tenders
-    if (filter === 'construction') {
-      list = list.filter((t) => t.is_construction)
-    } else if (filter.startsWith('cat:')) {
-      const cat = filter.slice(4)
-      list = list.filter((t) => t.category_name === cat)
+    if (filter !== 'all') {
+      list = list.filter((t) => getSubCategory(t) === filter)
     }
     if (search.trim()) {
       const q = search.toLowerCase()
@@ -174,12 +188,10 @@ export default function TendersPage() {
       )
     }
     return list
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tenders, filter, search])
 
-  const constructionCount = useMemo(
-    () => tenders.filter((t) => t.is_construction).length,
-    [tenders]
-  )
+  const constructionCount = tenders.length
 
   return (
     <>
