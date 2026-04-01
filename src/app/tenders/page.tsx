@@ -8,6 +8,12 @@ import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
 import { createClient } from '@/lib/supabase/client'
 
+function cleanHtml(str: string): string {
+  let clean = str.replace(/<br\s*\/?>/gi, ' ').replace(/<\/p>/gi, ' ').replace(/<[^>]*>/g, '')
+  clean = clean.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+  return clean.trim()
+}
+
 interface Tender {
   id: string
   atm_id: string | null
@@ -346,12 +352,12 @@ export default function TendersPage() {
 
                     {/* Primary title: zh in Chinese mode, en in English mode */}
                     <h3 className="text-gray-900 text-sm sm:text-[15px] font-semibold leading-snug mb-1.5 line-clamp-3 group-hover:text-orange-700 transition-colors">
-                      {isZh ? (tender.description_zh || tender.title) : tender.title}
+                      {cleanHtml(isZh ? (tender.description_zh || tender.title) : tender.title)}
                     </h3>
 
                     {/* Secondary: show the other language */}
                     {isZh ? (
-                      <p className="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">{tender.title}</p>
+                      <p className="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">{cleanHtml(tender.title)}</p>
                     ) : tender.description_zh ? (
                       <p className="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">{tender.description_zh}</p>
                     ) : null}

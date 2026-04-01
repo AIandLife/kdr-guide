@@ -13,6 +13,17 @@ import { SiteNav } from '@/components/SiteNav'
 import { PROFESSIONALS, CATEGORIES, type Professional } from '@/lib/professionals-data'
 import { createClient } from '@/lib/supabase/client'
 
+/** Decode HTML entities and strip HTML tags */
+function cleanHtml(str: string): string {
+  // Strip HTML tags
+  let clean = str.replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<[^>]*>/g, '')
+  // Decode common HTML entities
+  clean = clean.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+  // Collapse multiple newlines
+  clean = clean.replace(/\n{3,}/g, '\n\n').trim()
+  return clean
+}
+
 // Category → professional role mapping for construction tenders
 const TENDER_CATEGORY_TO_PRO: Record<string, string[]> = {
   Construction: ['builder', 'engineer', 'demolition', 'designer'],
@@ -261,12 +272,12 @@ export default function TenderDetailPage() {
 
             {/* Primary title */}
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 leading-snug">
-              {isZh ? (tender.description_zh || tender.title) : tender.title}
+              {cleanHtml(isZh ? (tender.description_zh || tender.title) : tender.title)}
             </h1>
 
             {/* Secondary */}
             {isZh ? (
-              <p className="text-gray-500 text-sm sm:text-base mb-4">{tender.title}</p>
+              <p className="text-gray-500 text-sm sm:text-base mb-4">{cleanHtml(tender.title)}</p>
             ) : tender.description_zh ? (
               <p className="text-gray-500 text-sm sm:text-base mb-4">{tender.description_zh}</p>
             ) : null}
@@ -322,7 +333,7 @@ export default function TenderDetailPage() {
               {tender.description_en && (
                 <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
                   <h2 className="text-lg font-semibold text-gray-900 mb-3">📄 英文原文</h2>
-                  <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{tender.description_en}</p>
+                  <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{cleanHtml(tender.description_en)}</p>
                 </div>
               )}
             </>
@@ -331,7 +342,7 @@ export default function TenderDetailPage() {
               {tender.description_en && (
                 <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
                   <h2 className="text-lg font-semibold text-gray-900 mb-3">📄 Description</h2>
-                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">{tender.description_en}</p>
+                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">{cleanHtml(tender.description_en)}</p>
                 </div>
               )}
               {tender.description_zh && (
