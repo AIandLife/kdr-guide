@@ -259,17 +259,17 @@ export default function TenderDetailPage() {
               )}
             </div>
 
-            {/* Chinese summary */}
-            {tender.description_zh && (
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 leading-snug">
-                {tender.description_zh}
-              </h1>
-            )}
+            {/* Primary title */}
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 leading-snug">
+              {isZh ? (tender.description_zh || tender.title) : tender.title}
+            </h1>
 
-            {/* English title */}
-            <p className="text-gray-500 text-sm sm:text-base mb-4">
-              {tender.title}
-            </p>
+            {/* Secondary */}
+            {isZh ? (
+              <p className="text-gray-500 text-sm sm:text-base mb-4">{tender.title}</p>
+            ) : tender.description_zh ? (
+              <p className="text-gray-500 text-sm sm:text-base mb-4">{tender.description_zh}</p>
+            ) : null}
 
             {/* Metadata row */}
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-500">
@@ -308,28 +308,39 @@ export default function TenderDetailPage() {
 
         {/* Content */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-          {/* Chinese Summary */}
-          {tender.description_zh && (
-            <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                📋 {isZh ? '中文概要' : 'Chinese Summary'}
-              </h2>
-              <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                {tender.description_zh}
-              </p>
-            </div>
-          )}
-
-          {/* English description */}
-          {tender.description_en && (
-            <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">
-                📄 {isZh ? '英文原文' : 'Original Description'}
-              </h2>
-              <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-                {tender.description_en}
-              </p>
-            </div>
+          {/* Primary content block - matches current language */}
+          {isZh ? (
+            <>
+              {tender.description_zh && (
+                <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    📋 中文概要
+                  </h2>
+                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">{tender.description_zh}</p>
+                </div>
+              )}
+              {tender.description_en && (
+                <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-3">📄 英文原文</h2>
+                  <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{tender.description_en}</p>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {tender.description_en && (
+                <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-3">📄 Description</h2>
+                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">{tender.description_en}</p>
+                </div>
+              )}
+              {tender.description_zh && (
+                <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-3">📋 Chinese Summary</h2>
+                  <p className="text-gray-600 text-sm leading-relaxed">{tender.description_zh}</p>
+                </div>
+              )}
+            </>
           )}
 
           {/* External link */}

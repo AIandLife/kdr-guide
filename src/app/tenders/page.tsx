@@ -344,17 +344,17 @@ export default function TendersPage() {
                       )}
                     </div>
 
-                    {/* Chinese summary as main title */}
-                    {tender.description_zh && (
-                      <h3 className="text-gray-900 text-sm sm:text-[15px] font-semibold leading-snug mb-1.5 line-clamp-3 group-hover:text-orange-700 transition-colors">
-                        {tender.description_zh}
-                      </h3>
-                    )}
+                    {/* Primary title: zh in Chinese mode, en in English mode */}
+                    <h3 className="text-gray-900 text-sm sm:text-[15px] font-semibold leading-snug mb-1.5 line-clamp-3 group-hover:text-orange-700 transition-colors">
+                      {isZh ? (tender.description_zh || tender.title) : tender.title}
+                    </h3>
 
-                    {/* English title */}
-                    <p className="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">
-                      {tender.title}
-                    </p>
+                    {/* Secondary: show the other language */}
+                    {isZh ? (
+                      <p className="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">{tender.title}</p>
+                    ) : tender.description_zh ? (
+                      <p className="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">{tender.description_zh}</p>
+                    ) : null}
 
                     {/* Professional tags for construction */}
                     {tender.is_construction && (
