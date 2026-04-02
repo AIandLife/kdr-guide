@@ -53,6 +53,37 @@ export async function POST(req: Request) {
     const isVerificationRequest = !!(asicNumber || businessLicenseNote || verificationNote)
     const status = isVerificationRequest ? 'pending_review' : 'unverified'
 
+    // Auto-polish short descriptions with AI
+    let polishedDesc = description || ''
+    if (!polishedDesc || polishedDesc.length < 50) {
+      try {
+        const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim()
+        if (apiKey) {
+          const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+            body: JSON.stringify({
+              model: 'claude-haiku-4-5-20251001',
+              max_tokens: 300,
+              messages: [{ role: 'user', content: `Write a professional 2-3 sentence business description for a building materials supplier. Be factual, no marketing fluff.
+
+Business: ${businessName}
+Category: ${category}
+Origin: ${origin}
+Existing description: ${polishedDesc || 'none'}
+
+Return ONLY the description text, nothing else. Write in the same language as the existing description (Chinese if Chinese, English if English). If no existing description, write in English.` }],
+            }),
+          })
+          if (aiRes.ok) {
+            const aiData = await aiRes.json()
+            const text = aiData.content?.[0]?.text?.trim() || ''
+            if (text && text.length > 20) polishedDesc = text
+          }
+        }
+      } catch { /* non-critical */ }
+    }
+
     const { data: row, error: dbError } = await supabase
       .from('supplier_listings')
       .insert({
@@ -65,7 +96,7 @@ export async function POST(req: Request) {
         abn: abn || null,
         category,
         origin,
-        description: description || null,
+        description: polishedDesc || null,
         states: states || [],
         specialties: specialties || [],
         status,

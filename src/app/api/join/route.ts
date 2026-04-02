@@ -65,6 +65,48 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Database error. Please try again.' }, { status: 500 })
     }
 
+    // Auto-polish short descriptions with AI
+    let polishedDesc = description || ''
+    let polishedDescEn = descriptionEn || ''
+    if (polishedDesc || businessName) {
+      const needsPolish = !polishedDesc || polishedDesc.length < 50
+      const needsEn = !polishedDescEn || polishedDescEn.length < 30
+      if (needsPolish || needsEn) {
+        try {
+          const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim()
+          if (apiKey) {
+            const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+              body: JSON.stringify({
+                model: 'claude-haiku-4-5-20251001',
+                max_tokens: 400,
+                messages: [{ role: 'user', content: `You are helping a building professional write their business listing description. Based on the info below, write two descriptions (2-3 sentences each, professional and factual, no marketing fluff).
+
+Business: ${businessName}
+Category: ${category}
+State: ${state}
+Existing description: ${polishedDesc || 'none'}
+Website: ${website || 'none'}
+
+Return ONLY valid JSON: {"zh":"中文描述","en":"English description"}` }],
+              }),
+            })
+            if (aiRes.ok) {
+              const aiData = await aiRes.json()
+              let text = aiData.content?.[0]?.text?.trim() || ''
+              text = text.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()
+              try {
+                const parsed = JSON.parse(text)
+                if (needsPolish && parsed.zh) polishedDesc = parsed.zh
+                if (needsEn && parsed.en) polishedDescEn = parsed.en
+              } catch { /* keep original */ }
+            }
+          }
+        } catch { /* AI failure is non-critical, keep original description */ }
+      }
+    }
+
     // Also create/update in professionals table so dashboard works
     // But first: if already verified, don't overwrite their record
     const { data: existingPro } = await supabase
@@ -90,12 +132,12 @@ export async function POST(req: Request) {
           category,
           regions: regions || [],
           website: website || null,
-          description: description || null,
+          description: polishedDesc || null,
           verified: false,
           verification_status: 'free',
           business_name_en: businessNameEn || null,
           contact_name_en: contactNameEn || null,
-          description_en: descriptionEn || null,
+          description_en: polishedDescEn || null,
           ...(userId ? { user_id: userId } : {}),
           languages: languages || ['English'],
         }, { onConflict: 'email' })
