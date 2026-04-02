@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Building2, Mail, Loader2, CheckCircle } from 'lucide-react'
+import { X, Building2, Loader2, Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useLang } from '@/lib/language-context'
+
+type Tab = 'login' | 'register'
 
 interface LoginGateModalProps {
   onClose: () => void
@@ -18,10 +20,16 @@ export function LoginGateModal({
 }: LoginGateModalProps) {
   const { lang } = useLang()
   const isZh = lang === 'zh'
+
+  const [tab, setTab] = useState<Tab>('login')
   const [email, setEmail] = useState('')
-  const [sent, setSent] = useState(false)
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
+
   const supabase = createClient()
 
   const defaultSubtitle = {
@@ -30,19 +38,112 @@ export function LoginGateModal({
   }
   const sub = subtitle ?? defaultSubtitle
 
-  const handleSendLink = async (e: React.FormEvent) => {
+  const resetState = () => {
+    setError('')
+    setMessage('')
+  }
+
+  const switchTab = (t: Tab) => {
+    setTab(t)
+    resetState()
+  }
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError('')
-    const { error } = await supabase.auth.signInWithOtp({
+    resetState()
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (error) {
+      if (error.message === 'Invalid login credentials') {
+        setError(
+          isZh
+            ? '登录失败。如果你之前通过邮件链接登录，请点击下方「设置密码」。'
+            : 'Invalid credentials. If you used email link before, click "Set password" below.'
+        )
+      } else {
+        setError(error.message)
+      }
+      setLoading(false)
+      return
+    }
+
+    // Success — close modal, the auth state change will trigger re-render
+    onClose()
+    // Also redirect if needed
+    if (redirectAfter) {
+      window.location.href = redirectAfter
+    }
+  }
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    resetState()
+
+    if (password.length < 6) {
+      setError(isZh ? '密码至少需要 6 个字符' : 'Password must be at least 6 characters')
+      setLoading(false)
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError(isZh ? '两次密码不一致' : 'Passwords do not match')
+      setLoading(false)
+      return
+    }
+
+    const { error } = await supabase.auth.signUp({
       email,
+      password,
       options: {
-        shouldCreateUser: true,
         emailRedirectTo: `${window.location.origin}/auth/callback?next=${redirectAfter}`,
       },
     })
-    if (error) setError(error.message)
-    else setSent(true)
+
+    if (error) {
+      if (error.message.includes('already registered') || error.message.includes('already been registered')) {
+        setError(
+          isZh
+            ? '该邮箱已注册。请切换到「登录」标签。'
+            : 'This email is already registered. Switch to "Login" tab.'
+        )
+      } else {
+        setError(error.message)
+      }
+      setLoading(false)
+      return
+    }
+
+    // Auto-confirm enabled — user is logged in
+    onClose()
+    if (redirectAfter) {
+      window.location.href = redirectAfter
+    }
+  }
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError(isZh ? '请先输入邮箱地址' : 'Please enter your email first')
+      return
+    }
+    setLoading(true)
+    resetState()
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+    })
+
+    if (error) {
+      setError(error.message)
+    } else {
+      setMessage(
+        isZh
+          ? `密码重置链接已发送到 ${email}，请查收邮件。`
+          : `Password reset link sent to ${email}. Check your email.`
+      )
+    }
     setLoading(false)
   }
 
@@ -53,11 +154,16 @@ export function LoginGateModal({
     })
   }
 
+  const inputClass =
+    'w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400'
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
-      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
     >
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
         {/* Header */}
@@ -68,83 +174,184 @@ export function LoginGateModal({
             </div>
             <span className="font-bold text-gray-900 text-sm">AusBuildCircle</span>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         <div className="px-6 py-5">
-          {sent ? (
-            <div className="text-center py-2">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <CheckCircle className="w-6 h-6 text-green-500" />
-              </div>
-              <p className="font-semibold text-gray-900 mb-1">
-                {isZh ? '登录链接已发送！' : 'Check your email!'}
-              </p>
-              <p className="text-sm text-gray-500 mb-3">
-                {isZh ? `点击发送到 ${email} 的邮件链接即可登录。` : `Click the link we sent to ${email} to sign in.`}
-              </p>
-              <p className="text-xs text-orange-500 bg-orange-50 rounded-lg px-3 py-2">
-                {isZh ? '📬 没收到？请检查垃圾邮件或 Junk 文件夹。' : '📬 No email? Check your spam or junk folder.'}
-              </p>
-              <button
-                onClick={() => { setSent(false); setEmail('') }}
-                className="mt-3 text-xs text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {isZh ? '← 重新输入邮箱' : '← Try a different email'}
-              </button>
-            </div>
-          ) : (
-            <>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">
-                {isZh ? '请先登录' : 'Sign in to continue'}
-              </h2>
-              <p className="text-sm text-gray-500 mb-5">
-                {isZh ? sub.zh : sub.en}
-              </p>
+          <h2 className="text-lg font-bold text-gray-900 mb-1">
+            {isZh ? '请先登录' : 'Sign in to continue'}
+          </h2>
+          <p className="text-sm text-gray-500 mb-4">{isZh ? sub.zh : sub.en}</p>
 
-              {/* Google */}
-              <button
-                onClick={handleGoogle}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700 mb-4"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                {isZh ? '使用 Google 登录' : 'Continue with Google'}
-              </button>
+          {/* Google */}
+          <button
+            onClick={handleGoogle}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700 mb-3"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+            </svg>
+            {isZh ? '使用 Google 登录' : 'Continue with Google'}
+          </button>
 
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex-1 h-px bg-gray-200" />
-                <span className="text-xs text-gray-400">{isZh ? '或用邮箱链接' : 'or'}</span>
-                <div className="flex-1 h-px bg-gray-200" />
-              </div>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-gray-400">{isZh ? '或用邮箱密码' : 'or use email'}</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
 
-              <form onSubmit={handleSendLink} className="space-y-3">
+          {/* Tabs */}
+          <div className="flex mb-3 bg-gray-100 rounded-lg p-0.5">
+            <button
+              onClick={() => switchTab('login')}
+              className={`flex-1 py-2 text-xs font-semibold rounded-md transition-colors ${
+                tab === 'login' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              {isZh ? '登录' : 'Login'}
+            </button>
+            <button
+              onClick={() => switchTab('register')}
+              className={`flex-1 py-2 text-xs font-semibold rounded-md transition-colors ${
+                tab === 'register' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              {isZh ? '注册' : 'Register'}
+            </button>
+          </div>
+
+          {/* Login form */}
+          {tab === 'login' && (
+            <form onSubmit={handleLogin} className="space-y-3">
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="email"
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder={isZh ? '你的邮箱地址' : 'your@email.com'}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={isZh ? '邮箱地址' : 'Email address'}
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400"
+                  className={`${inputClass} pl-10`}
                 />
-                {error && <p className="text-xs text-red-500">{error}</p>}
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder={isZh ? '密码' : 'Password'}
+                  required
+                  className={`${inputClass} pl-10 pr-10`}
+                />
                 <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-                  style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-                  {isZh ? '发送登录链接' : 'Send login link'}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
-              </form>
-            </>
+              </div>
+
+              {error && <p className="text-xs text-red-500">{error}</p>}
+              {message && <p className="text-xs text-green-600">{message}</p>}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
+              >
+                {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isZh ? '登录' : 'Log in'}
+              </button>
+
+              <div className="flex items-center justify-between text-xs pt-1">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-orange-500 hover:text-orange-600 transition-colors"
+                >
+                  {isZh ? '忘记密码？' : 'Forgot password?'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {isZh ? '设置密码' : 'Set password'}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Register form */}
+          {tab === 'register' && (
+            <form onSubmit={handleRegister} className="space-y-3">
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={isZh ? '邮箱地址' : 'Email address'}
+                  required
+                  className={`${inputClass} pl-10`}
+                />
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder={isZh ? '密码（至少 6 位）' : 'Password (min 6 chars)'}
+                  required
+                  minLength={6}
+                  className={`${inputClass} pl-10 pr-10`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder={isZh ? '确认密码' : 'Confirm password'}
+                  required
+                  minLength={6}
+                  className={`${inputClass} pl-10`}
+                />
+              </div>
+
+              {error && <p className="text-xs text-red-500">{error}</p>}
+              {message && <p className="text-xs text-green-600">{message}</p>}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
+              >
+                {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isZh ? '注册' : 'Create account'}
+              </button>
+            </form>
           )}
         </div>
       </div>
