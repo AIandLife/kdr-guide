@@ -275,12 +275,10 @@ export default function TenderDetailPage() {
               {cleanHtml(isZh ? (tender.description_zh || tender.title) : tender.title)}
             </h1>
 
-            {/* Secondary */}
-            {isZh ? (
+            {/* Secondary: only show English subtitle in Chinese mode */}
+            {isZh && (
               <p className="text-gray-500 text-sm sm:text-base mb-4">{cleanHtml(tender.title)}</p>
-            ) : tender.description_zh ? (
-              <p className="text-gray-500 text-sm sm:text-base mb-4">{tender.description_zh}</p>
-            ) : null}
+            )}
 
             {/* Metadata row */}
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-500">
@@ -343,12 +341,6 @@ export default function TenderDetailPage() {
                 <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
                   <h2 className="text-lg font-semibold text-gray-900 mb-3">📄 Description</h2>
                   <p className="text-gray-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">{cleanHtml(tender.description_en)}</p>
-                </div>
-              )}
-              {tender.description_zh && (
-                <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 mb-6 shadow-sm">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3">📋 Chinese Summary</h2>
-                  <p className="text-gray-600 text-sm leading-relaxed">{tender.description_zh}</p>
                 </div>
               )}
             </>

@@ -355,12 +355,10 @@ export default function TendersPage() {
                       {cleanHtml(isZh ? (tender.description_zh || tender.title) : tender.title)}
                     </h3>
 
-                    {/* Secondary: show the other language */}
-                    {isZh ? (
+                    {/* Secondary: only show English subtitle in Chinese mode */}
+                    {isZh && (
                       <p className="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">{cleanHtml(tender.title)}</p>
-                    ) : tender.description_zh ? (
-                      <p className="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">{tender.description_zh}</p>
-                    ) : null}
+                    )}
 
                     {/* Professional tags for construction */}
                     {tender.is_construction && (
