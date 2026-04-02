@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
-  CheckCircle, ChevronRight, Loader2, Globe, Check,
+  CheckCircle, ChevronRight, Loader2, Globe, Check, Shield,
   HardHat, FileText, Zap, Droplets, Hammer, DollarSign, Briefcase, Ruler,
   PenTool
 } from 'lucide-react'
@@ -103,6 +103,140 @@ interface TranslationResult {
     translated: string
     confidence: number
   }
+}
+
+/* ── Verification Upsell Card (shown after successful registration) ────── */
+function VerificationUpsellCard({
+  isZh, benefits, docs, category, email, businessName, professionalId,
+}: {
+  isZh: boolean
+  benefits: typeof VERIFY_BENEFITS_EN
+  docs: { label: string; labelZh: string; placeholder: string }[]
+  category: string
+  email: string
+  businessName: string
+  professionalId: string | null
+}) {
+  const [docFields, setDocFields] = useState<Record<string, string>>({})
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  const setField = (key: string, value: string) =>
+    setDocFields(f => ({ ...f, [key]: value }))
+
+  // Derive licenseNumber and ABN from doc fields
+  const licenseField = docs.find(d => d.label !== 'ABN')
+  const abnField = docs.find(d => d.label === 'ABN')
+
+  const handleVerify = async () => {
+    setSubmitting(true)
+    setError('')
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: 'annual',
+          email,
+          businessName,
+          professionalId,
+          entityType: 'professional',
+          abn: abnField ? (docFields[abnField.label] || '').trim() : '',
+          licenseNumber: licenseField ? (docFields[licenseField.label] || '').trim() : '',
+          licenseType: category,
+        }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        throw new Error(data.error || 'Failed to create checkout session')
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Something went wrong')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-orange-200 bg-white shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="px-6 py-5 bg-gradient-to-r from-orange-50 to-amber-50 border-b border-orange-100">
+        <div className="flex items-center gap-3 mb-1">
+          <Shield className="w-5 h-5 text-orange-500" />
+          <h2 className="text-lg font-bold text-gray-900">
+            {isZh ? '升级为认证商家' : 'Upgrade to Verified'}
+          </h2>
+        </div>
+        <p className="text-sm text-gray-500 ml-8">
+          {isZh
+            ? '认证商家获得更多曝光和客户信任'
+            : 'Verified businesses get more visibility and client trust'}
+        </p>
+      </div>
+
+      <div className="p-6 space-y-6">
+        {/* Benefits */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {benefits.map((b, i) => (
+            <div key={i} className="flex gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+              <span className="text-xl shrink-0 mt-0.5">{b.icon}</span>
+              <div>
+                <p className="text-sm font-semibold text-gray-800 leading-tight">{b.title}</p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{b.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Licence / doc fields */}
+        <div className="space-y-3">
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            {isZh ? '认证信息' : 'Verification Details'}
+          </h3>
+          {docs.map(doc => (
+            <div key={doc.label}>
+              <label className="block text-xs text-gray-500 mb-1.5">
+                {isZh ? doc.labelZh : doc.label}
+              </label>
+              <input
+                type="text"
+                value={docFields[doc.label] || ''}
+                onChange={e => setField(doc.label, e.target.value)}
+                placeholder={doc.placeholder}
+                className="w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none text-sm bg-gray-50 border border-gray-200 focus:border-orange-400"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Price */}
+        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-orange-50 border border-orange-100">
+          <DollarSign className="w-4 h-4 text-orange-500 shrink-0" />
+          <span className="text-sm font-semibold text-gray-800">
+            {isZh ? '认证费用：$199 AUD（一次性）' : 'Verification fee: $199 AUD (one-time)'}
+          </span>
+        </div>
+
+        {error && (
+          <div className="rounded-xl p-3 text-sm text-red-600 bg-red-50 border border-red-200">{error}</div>
+        )}
+
+        {/* CTA */}
+        <button
+          onClick={handleVerify}
+          disabled={submitting}
+          className="w-full text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-base disabled:opacity-50"
+          style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 24px rgba(249,115,22,0.3)' }}
+        >
+          {submitting
+            ? <><Loader2 className="w-5 h-5 animate-spin" /> {isZh ? '处理中...' : 'Processing...'}</>
+            : <><Shield className="w-5 h-5" /> {isZh ? '立即认证' : 'Get Verified Now'}</>}
+        </button>
+      </div>
+    </div>
+  )
 }
 
 export default function JoinPage() {
@@ -582,38 +716,49 @@ export default function JoinPage() {
     )
   }
 
-  // ── Step 2: Listed ────────────────────────────────────────────────────────
+  // ── Step 3: Listed — Verification Upsell ───────────────────────────────
   if (view === 'listed') {
+    const benefits = isZh ? VERIFY_BENEFITS_ZH : VERIFY_BENEFITS_EN
+    const docs = VERIFY_DOCS[form.category] || VERIFY_DOCS['Other']
+
     return (
       <div className="min-h-screen bg-gray-50">
         <SiteNav backHref="/professionals" backLabel={isZh ? '返回' : 'Back'} currentPath="/join" />
 
-        <div className="max-w-md mx-auto px-4 sm:px-6 py-20 text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
-            <CheckCircle className="w-10 h-10 text-green-600" />
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+          {/* Success confirmation */}
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              {isZh ? '✅ 收录成功！' : '✅ You\'re Listed!'}
+            </h1>
+            <p className="text-gray-500 text-sm">
+              {isZh
+                ? '你的免费收录已生效。想要脱颖而出？'
+                : 'Your free listing is now active. Want to stand out?'}
+            </p>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
-            {isZh ? '🎉 收录成功！' : '🎉 You\'re Listed!'}
-          </h1>
-          <p className="text-gray-500 leading-relaxed mb-8">
-            {isZh
-              ? `${form.businessName} 已加入我们的专业人士目录，业主搜索时可以看到你的信息。申请认证后可获得优先排名和认证徽章。`
-              : `${form.businessName} is now in our professional directory. Get a verified badge and priority ranking by completing verification.`}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+
+          {/* Verification upsell card */}
+          <VerificationUpsellCard
+            isZh={isZh}
+            benefits={benefits}
+            docs={docs}
+            category={form.category}
+            email={form.email}
+            businessName={form.businessName}
+            professionalId={professionalId}
+          />
+
+          {/* Skip link */}
+          <div className="text-center mt-6">
             <Link
               href="/dashboard"
-              className="inline-flex items-center justify-center gap-2 text-white font-semibold px-6 py-3 rounded-xl"
-              style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}
+              className="text-sm text-gray-400 hover:text-gray-600 transition-colors underline underline-offset-2"
             >
-              <ChevronRight className="w-5 h-5" />
-              {isZh ? '进入个人中心' : 'Go to my account'}
-            </Link>
-            <Link
-              href="/dashboard/pro?tab=verify"
-              className="inline-flex items-center justify-center gap-2 text-gray-700 font-semibold px-6 py-3 rounded-xl bg-white border border-gray-200 hover:border-orange-300 transition-colors"
-            >
-              {isZh ? '申请认证徽章 →' : 'Apply for verification →'}
+              {isZh ? '稍后再说 — 先去看看' : 'Skip for now — I\'ll do it later'}
             </Link>
           </div>
         </div>
