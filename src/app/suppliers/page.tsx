@@ -438,9 +438,10 @@ function SuppliersPageInner() {
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-gray-500 leading-relaxed mb-4 flex-1">
+                <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-4">
                   {isZh ? supplier.descriptionZh : supplier.description}
                 </p>
+                <div className="flex-1" />
 
                 {/* Google Rating */}
                 {supplier.googleRating && supplier.googleReviews && (
