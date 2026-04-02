@@ -236,7 +236,7 @@ function ProfessionalsPageInner() {
     // Fetch from Supabase and merge with hardcoded
     fetch('/api/professionals-list')
       .then(r => r.json())
-      .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,verified:boolean,website:string|null,wechat:string|null,phone:string|null,is_demo:boolean,languages:string[]|null}>) => {
+      .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,description_en:string|null,verified:boolean,website:string|null,wechat:string|null,phone:string|null,is_demo:boolean,languages:string[]|null}>) => {
         const VALID_CATS = new Set(['builder','designer','planner','demolition','engineer','electrician','plumber','finance','other'])
         const CAT_MAP: Record<string, string> = {
           'Builder': 'builder', 'Town Planner': 'planner', 'Building Designer': 'designer',
@@ -254,6 +254,7 @@ function ProfessionalsPageInner() {
           verified: r.verified,
           featured: r.verified && !r.is_demo,
           description: r.description || '',
+          descriptionEn: r.description_en || null,
           website: r.website || null,
           wechat: r.wechat || null,
           phone: r.phone || null,
@@ -483,7 +484,7 @@ function ProfessionalsPageInner() {
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-4">{pro.description}</p>
+                <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-4">{!isZh && pro.descriptionEn ? pro.descriptionEn : pro.description}</p>
 
                 <div className="flex-1" />
 

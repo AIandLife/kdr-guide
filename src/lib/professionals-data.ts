@@ -10,6 +10,7 @@ export interface Professional {
   verified: boolean
   featured: boolean
   description: string
+  descriptionEn?: string | null
   website: string | null
   wechat: string | null
   phone?: string | null
