@@ -121,7 +121,7 @@ export default function TenderDetailPage() {
     async function fetchPros() {
       const { data } = await supabase
         .from('professionals')
-        .select('business_name, category, state, regions, specialties, verified, featured, description, website, wechat, phone, is_demo, languages')
+        .select('business_name, category, state, regions, specialties, verified, featured, description, description_en, website, wechat, phone, is_demo, languages')
         .limit(200)
       if (data) {
         setDbProfessionals(
@@ -135,6 +135,7 @@ export default function TenderDetailPage() {
             verified: p.verified as boolean,
             featured: p.featured as boolean,
             description: p.description as string,
+            descriptionEn: (p.description_en as string | null) || null,
             website: p.website as string | null,
             wechat: p.wechat as string | null,
             phone: p.phone as string | null,
@@ -391,7 +392,7 @@ export default function TenderDetailPage() {
                         {cat ? (isZh ? cat.labelZh : cat.label) : pro.category}
                       </span>
                       <span className="text-xs text-gray-500 mb-3 line-clamp-2">
-                        {pro.description}
+                        {!isZh && pro.descriptionEn ? pro.descriptionEn : pro.description}
                       </span>
                       <Link
                         href={`/professionals/${stateSlug}/${pro.slug}`}

@@ -58,7 +58,7 @@ export default function ProfessionalProfilePage({ params }: { params: Promise<{ 
     if (pro) return
     fetch('/api/professionals-list')
       .then(r => r.json())
-      .then((data: Array<{ business_name: string; category: string; state: string; regions: string[]; description: string; verified: boolean; website: string | null; wechat: string | null }>) => {
+      .then((data: Array<{ business_name: string; category: string; state: string; regions: string[]; description: string; description_en: string | null; verified: boolean; website: string | null; wechat: string | null }>) => {
         const match = data.find(d => slugify(d.business_name) === slug && d.state?.toUpperCase() === state.toUpperCase())
         if (match) {
           setPro({
@@ -71,6 +71,7 @@ export default function ProfessionalProfilePage({ params }: { params: Promise<{ 
             verified: match.verified,
             featured: false,
             description: match.description ?? '',
+            descriptionEn: match.description_en ?? null,
             website: match.website ?? null,
             wechat: match.wechat ?? null,
           })
@@ -169,7 +170,7 @@ export default function ProfessionalProfilePage({ params }: { params: Promise<{ 
                 {cat && <span className={cn('text-sm font-medium px-3 py-1 rounded-full', COLOR_MAP[cat.color])}>{isZh ? cat.labelZh : cat.label}</span>}
                 <span className={cn('text-sm px-3 py-1 rounded-full font-medium', STATE_COLORS[pro.state] || 'bg-gray-100 text-gray-500')}>{pro.state}</span>
               </div>
-              <p className="text-gray-600 leading-relaxed">{pro.description}</p>
+              <p className="text-gray-600 leading-relaxed">{!isZh && pro.descriptionEn ? pro.descriptionEn : pro.description}</p>
             </div>
             <button onClick={toggleFav} className={cn('p-3 rounded-xl transition-colors self-start shrink-0', isFav ? 'text-red-500 bg-red-50 border border-red-200' : 'text-gray-400 bg-gray-50 border border-gray-200 hover:border-red-200 hover:text-red-400')}>
               <Heart className={cn('w-5 h-5', isFav && 'fill-current')} />

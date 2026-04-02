@@ -235,7 +235,7 @@ function ProfessionalsTab() {
 
     fetch('/api/professionals-list')
       .then(r => r.json())
-      .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,verified:boolean,website:string|null,wechat:string|null,phone:string|null,is_demo:boolean,languages:string[]|null}>) => {
+      .then((rows: Array<{business_name:string,category:string,state:string,regions:string[],description:string,description_en:string|null,verified:boolean,website:string|null,wechat:string|null,phone:string|null,is_demo:boolean,languages:string[]|null}>) => {
         const VALID_CATS = new Set(['builder','designer','planner','demolition','engineer','electrician','plumber','finance','other'])
         const CAT_MAP: Record<string, string> = {
           'Builder': 'builder', 'Town Planner': 'planner', 'Building Designer': 'designer',
@@ -253,6 +253,7 @@ function ProfessionalsTab() {
           verified: r.verified,
           featured: r.verified && !r.is_demo,
           description: r.description || '',
+          descriptionEn: r.description_en || null,
           website: r.website || null,
           wechat: r.wechat || null,
           phone: r.phone || null,
@@ -477,7 +478,7 @@ function ProfessionalsTab() {
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-500 leading-relaxed mb-4 flex-1">{pro.description}</p>
+                <p className="text-sm text-gray-500 leading-relaxed mb-4 flex-1">{!isZh && pro.descriptionEn ? pro.descriptionEn : pro.description}</p>
 
                 <div className="mb-3">
                   <div className="flex items-center gap-1 text-xs text-gray-400 mb-2"><MapPin className="w-3.5 h-3.5" />{pro.regions.join(' · ')}</div>

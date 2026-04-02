@@ -219,6 +219,7 @@ function FeasibilityContent() {
           verified: Boolean(d.verified),
           featured: false,
           description: String(d.description || ''),
+          descriptionEn: (d.description_en as string | null) || null,
           website: (d.website as string) || null,
           wechat: (d.wechat as string) || null,
           phone: (d.phone as string) || null,
