@@ -1,3 +1,5 @@
+import { ARTICLES_BATCH2 } from './articles-batch2'
+
 export type ArticleCategory =
   | 'planning'
   | 'finance'
@@ -37,7 +39,7 @@ export const CATEGORY_LABELS: Record<ArticleCategory, { en: string; zh: string; 
   renovation:  { en: 'Renovation',           zh: '翻新改造',    color: 'amber'  },
 }
 
-export const ARTICLES: Article[] = [
+const _ARTICLES: Article[] = [
   {
     slug: 'da-vs-cdc-approval',
     title: 'DA vs CDC: Which Approval Path Is Right for Your KDR?',
@@ -2180,4 +2182,1516 @@ export const ARTICLES: Article[] = [
 <p>在接受拆除报价之前，请持证石棉评估员进行石棉调查（$300–$800）。这将给你一份记录建筑物内石棉位置、数量及状况的报告。然后你可以用它来获取准确的清除报价，避免拆除开始后出现意外。</p>
     `,
   },
+
+  // ========== NEW SEO ARTICLES (2026-03-31) ==========
+
+  {
+    slug: 'kdr-cost-breakdown-2026',
+    title: 'How Much Does a Knockdown Rebuild Cost in Australia 2026',
+    titleZh: '2026年澳洲推倒重建到底要花多少钱？完整费用指南',
+    excerpt: 'A detailed breakdown of knockdown rebuild costs across Australia in 2026 — from demolition to final handover, including hidden costs most people miss.',
+    excerptZh: '2026年澳洲推倒重建全流程费用拆解——从拆除到交房，包括大多数人容易忽略的隐藏成本。',
+    category: 'finance',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-31',
+    readMinutes: 10,
+    tags: ['Cost', 'Budget', 'KDR', 'Demolition', 'Building Costs', '2026'],
+    tagsZh: ['费用', '预算', '推倒重建', '拆除', '建筑成本', '2026'],
+    content: `
+<p>The single most common question we hear is: "How much does a knockdown rebuild actually cost?" The honest answer is that it depends — on your location, your block, your design, and your finishes. But we can give you realistic ranges based on what Australian homeowners are paying in 2026.</p>
+
+<h2>The Big Picture: Total KDR Cost Ranges</h2>
+<p>For a standard 4-bedroom, 2-bathroom home on a straightforward suburban block, here are typical total project costs in 2026:</p>
+<ul>
+  <li><strong>Budget build (project home, basic finishes):</strong> $350,000–$550,000</li>
+  <li><strong>Mid-range build (semi-custom, good finishes):</strong> $550,000–$900,000</li>
+  <li><strong>High-end build (architect-designed, premium finishes):</strong> $900,000–$1,500,000+</li>
+</ul>
+<p>These figures include demolition, site preparation, construction, and standard landscaping — but not the land you already own.</p>
+
+<h2>Construction Cost Per Square Metre by State (2026)</h2>
+<p>The construction component is the largest portion of your budget. Here are typical per-square-metre rates for a mid-specification build:</p>
+<table>
+  <thead><tr><th>State</th><th>Budget</th><th>Mid-Range</th><th>High-End</th></tr></thead>
+  <tbody>
+    <tr><td>NSW (Sydney metro)</td><td>$2,200–$2,800</td><td>$3,000–$4,000</td><td>$4,200–$6,000+</td></tr>
+    <tr><td>VIC (Melbourne metro)</td><td>$2,000–$2,600</td><td>$2,800–$3,800</td><td>$4,000–$5,500+</td></tr>
+    <tr><td>QLD (SEQ)</td><td>$1,900–$2,500</td><td>$2,700–$3,600</td><td>$3,800–$5,200+</td></tr>
+    <tr><td>SA (Adelaide)</td><td>$1,800–$2,400</td><td>$2,500–$3,400</td><td>$3,600–$5,000+</td></tr>
+    <tr><td>WA (Perth)</td><td>$1,900–$2,500</td><td>$2,600–$3,500</td><td>$3,700–$5,200+</td></tr>
+  </tbody>
+</table>
+<p>For a 250sqm home at mid-range spec in Sydney, that translates to roughly $750,000–$1,000,000 for the construction contract alone.</p>
+
+<h2>Demolition Costs</h2>
+<p>Demolition is often the first reality check. Typical costs in 2026:</p>
+<ul>
+  <li><strong>Standard fibro or weatherboard house:</strong> $15,000–$25,000</li>
+  <li><strong>Standard brick veneer house:</strong> $20,000–$35,000</li>
+  <li><strong>Double brick or double storey:</strong> $30,000–$45,000</li>
+  <li><strong>Asbestos removal (if required):</strong> $8,000–$25,000 additional</li>
+</ul>
+<p>These include site clearing, waste disposal, and council permits. If your home was built before 1990, budget for an asbestos survey ($400–$800) before getting demolition quotes.</p>
+
+<h2>The Hidden Costs Most People Miss</h2>
+<p>The building contract and demolition are the obvious costs. But KDR projects come with a string of additional expenses that catch people off guard:</p>
+<ul>
+  <li><strong>Council fees and contributions:</strong> $5,000–$40,000+ (Section 7.11/7.12 contributions in NSW can be substantial)</li>
+  <li><strong>Town planner / planning consultant:</strong> $3,000–$8,000</li>
+  <li><strong>Surveyor (boundary + contour):</strong> $1,500–$3,500</li>
+  <li><strong>Geotechnical (soil) report:</strong> $1,500–$4,000</li>
+  <li><strong>BASIX certificate (NSW) or energy rating:</strong> $500–$2,000</li>
+  <li><strong>Temporary accommodation during build:</strong> $20,000–$50,000 (6–12 months rent)</li>
+  <li><strong>Landscaping and driveway:</strong> $15,000–$60,000</li>
+  <li><strong>Fencing:</strong> $5,000–$15,000</li>
+  <li><strong>Service disconnections and reconnections:</strong> $3,000–$10,000</li>
+  <li><strong>Insurance (construction period):</strong> $2,000–$5,000</li>
+</ul>
+
+<h2>A Realistic Budget Template</h2>
+<p>Here is a sample budget for a mid-range 4-bedroom KDR in Sydney (250sqm build):</p>
+<table>
+  <thead><tr><th>Item</th><th>Estimated Cost</th></tr></thead>
+  <tbody>
+    <tr><td>Demolition (incl. asbestos)</td><td>$35,000</td></tr>
+    <tr><td>Council fees & contributions</td><td>$25,000</td></tr>
+    <tr><td>Professional fees (planner, surveyor, geotech)</td><td>$12,000</td></tr>
+    <tr><td>Building contract (250sqm × $3,500/sqm)</td><td>$875,000</td></tr>
+    <tr><td>Landscaping & driveway</td><td>$35,000</td></tr>
+    <tr><td>Fencing</td><td>$10,000</td></tr>
+    <tr><td>Service connections</td><td>$6,000</td></tr>
+    <tr><td>Temporary accommodation (9 months)</td><td>$36,000</td></tr>
+    <tr><td>Insurance</td><td>$3,000</td></tr>
+    <tr><td>Contingency (10%)</td><td>$100,000</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>$1,137,000</strong></td></tr>
+  </tbody>
+</table>
+
+<h2>How to Reduce Costs Without Cutting Corners</h2>
+<ul>
+  <li><strong>Choose a project home design:</strong> Pre-designed homes are 20–30% cheaper than custom designs because the builder has already optimised materials and labour.</li>
+  <li><strong>Keep the footprint simple:</strong> Rectangular floor plans cost less per sqm than L-shapes or complex rooflines.</li>
+  <li><strong>Spend on what matters:</strong> Kitchen, bathrooms, and insulation are worth investing in. Decorative features and oversized garages are not.</li>
+  <li><strong>Get 3–5 quotes:</strong> Builder pricing varies enormously even for the same design.</li>
+  <li><strong>Lock in a fixed-price contract:</strong> In a volatile cost environment, a fixed-price contract protects you from material price rises.</li>
+</ul>
+
+<h2>Use Our Free Feasibility Tool</h2>
+<p>Before you commit to a KDR, run a quick feasibility check on <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a>. Enter your suburb and block details, and our AI tool will estimate costs, timelines, and potential challenges specific to your area.</p>
+    `,
+    contentZh: `
+<p>我们听到最多的问题就是："推倒重建到底要花多少钱？" 老实说，这取决于你的地段、地块条件、设计方案和装修标准。但根据2026年澳洲业主的实际支出，我们可以给出一些真实的参考范围。</p>
+
+<h2>总预算概览</h2>
+<p>以标准的4卧2卫独栋住宅为例，在普通郊区地块上推倒重建，2026年典型总费用如下：</p>
+<ul>
+  <li><strong>经济型（标准户型、基础装修）：</strong>$350,000–$550,000</li>
+  <li><strong>中档型（半定制、良好装修）：</strong>$550,000–$900,000</li>
+  <li><strong>高端型（建筑师设计、高级装修）：</strong>$900,000–$1,500,000+</li>
+</ul>
+<p>以上包括拆除、场地准备、建筑施工和基础景观——不包括你已经拥有的土地。</p>
+
+<h2>各州每平方米建筑成本（2026年）</h2>
+<p>建筑施工是最大的费用项。以下是中档规格的每平方米参考价：</p>
+<table>
+  <thead><tr><th>州</th><th>经济</th><th>中档</th><th>高端</th></tr></thead>
+  <tbody>
+    <tr><td>NSW（悉尼都会区）</td><td>$2,200–$2,800</td><td>$3,000–$4,000</td><td>$4,200–$6,000+</td></tr>
+    <tr><td>VIC（墨尔本都会区）</td><td>$2,000–$2,600</td><td>$2,800–$3,800</td><td>$4,000–$5,500+</td></tr>
+    <tr><td>QLD（东南昆士兰）</td><td>$1,900–$2,500</td><td>$2,700–$3,600</td><td>$3,800–$5,200+</td></tr>
+    <tr><td>SA（阿德莱德）</td><td>$1,800–$2,400</td><td>$2,500–$3,400</td><td>$3,600–$5,000+</td></tr>
+    <tr><td>WA（珀斯）</td><td>$1,900–$2,500</td><td>$2,600–$3,500</td><td>$3,700–$5,200+</td></tr>
+  </tbody>
+</table>
+<p>以悉尼250平方米中档住宅为例，仅建筑合同部分大约在 $750,000–$1,000,000。</p>
+
+<h2>拆除费用</h2>
+<p>拆除往往是第一个让人清醒的数字：</p>
+<ul>
+  <li><strong>标准纤维板/木板房：</strong>$15,000–$25,000</li>
+  <li><strong>标准砖贴面房：</strong>$20,000–$35,000</li>
+  <li><strong>双砖或两层楼：</strong>$30,000–$45,000</li>
+  <li><strong>石棉清除（如需要）：</strong>额外 $8,000–$25,000</li>
+</ul>
+<p>以上包括场地清理、废物处理和Council许可。如果房屋建于1990年以前，建议先做石棉调查（$400–$800）再获取拆除报价。</p>
+
+<h2>多数人忽略的隐藏费用</h2>
+<p>建筑合同和拆除是明面上的大头，但KDR项目还有一系列容易被忽视的额外开支：</p>
+<ul>
+  <li><strong>Council费用和开发贡献金：</strong>$5,000–$40,000+（NSW的Section 7.11/7.12贡献金可能很高）</li>
+  <li><strong>Town Planner规划顾问：</strong>$3,000–$8,000</li>
+  <li><strong>测量师（边界+地形）：</strong>$1,500–$3,500</li>
+  <li><strong>岩土（土壤）报告：</strong>$1,500–$4,000</li>
+  <li><strong>BASIX证书（NSW）或能效评级：</strong>$500–$2,000</li>
+  <li><strong>施工期间临时住所：</strong>$20,000–$50,000（6–12个月租金）</li>
+  <li><strong>景观和车道：</strong>$15,000–$60,000</li>
+  <li><strong>围栏：</strong>$5,000–$15,000</li>
+  <li><strong>水电气断开和重新接入：</strong>$3,000–$10,000</li>
+  <li><strong>施工期保险：</strong>$2,000–$5,000</li>
+</ul>
+
+<h2>实用预算模板</h2>
+<p>以下是悉尼中档4卧KDR（250平方米建筑面积）的参考预算：</p>
+<table>
+  <thead><tr><th>项目</th><th>预估费用</th></tr></thead>
+  <tbody>
+    <tr><td>拆除（含石棉）</td><td>$35,000</td></tr>
+    <tr><td>Council费用与贡献金</td><td>$25,000</td></tr>
+    <tr><td>专业费用（规划师、测量师、岩土）</td><td>$12,000</td></tr>
+    <tr><td>建筑合同（250sqm × $3,500/sqm）</td><td>$875,000</td></tr>
+    <tr><td>景观与车道</td><td>$35,000</td></tr>
+    <tr><td>围栏</td><td>$10,000</td></tr>
+    <tr><td>水电气接入</td><td>$6,000</td></tr>
+    <tr><td>临时住所（9个月）</td><td>$36,000</td></tr>
+    <tr><td>保险</td><td>$3,000</td></tr>
+    <tr><td>应急备用金（10%）</td><td>$100,000</td></tr>
+    <tr><td><strong>合计</strong></td><td><strong>$1,137,000</strong></td></tr>
+  </tbody>
+</table>
+
+<h2>如何省钱但不偷工减料</h2>
+<ul>
+  <li><strong>选择标准户型：</strong>成品设计比全定制便宜20–30%，因为建筑商已经优化了材料和人工。</li>
+  <li><strong>保持平面简洁：</strong>矩形平面比L型或复杂屋顶线条便宜。</li>
+  <li><strong>把钱花在刀刃上：</strong>厨房、浴室和隔热值得投入，装饰性元素和超大车库则不值。</li>
+  <li><strong>拿3–5个报价：</strong>即使是同一设计，不同建筑商的报价差异也非常大。</li>
+  <li><strong>签固定价格合同：</strong>在材料价格波动的环境下，固定价格合同能保护你免受涨价风险。</li>
+</ul>
+
+<h2>使用我们的免费可行性工具</h2>
+<p>在决定推倒重建之前，先在 <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> 上做一次快速可行性检查。输入你的区域和地块信息，AI工具会为你估算该地区的费用、时间线和潜在挑战。</p>
+    `,
+  },
+
+  {
+    slug: 'da-vs-cdc-explained',
+    title: 'DA vs CDC: Which Approval Path for Your Build',
+    titleZh: 'DA还是CDC：建房审批路径怎么选？',
+    excerpt: 'Development Application or Complying Development Certificate? Understanding the differences in cost, timeline, and flexibility could save you months on your build.',
+    excerptZh: '开发申请（DA）和合规开发证书（CDC）在费用、时间和灵活性上有本质区别，选对路径可以省下好几个月。',
+    category: 'planning',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-31',
+    readMinutes: 9,
+    tags: ['DA', 'CDC', 'Approval', 'Council', 'Planning', 'NSW'],
+    tagsZh: ['DA申请', 'CDC', '审批', 'Council', '规划', 'NSW'],
+    content: `
+<p>Every residential build in Australia needs some form of planning approval before construction can begin. In most states, you have two main pathways: a Development Application (DA) through your local council, or a Complying Development Certificate (CDC) through a private certifier. Choosing the right path can mean the difference between starting construction in 6 weeks or waiting 6 months.</p>
+
+<h2>What Is a Development Application (DA)?</h2>
+<p>A DA is a formal request to your local council to approve your proposed development. The council assesses your plans against its Local Environmental Plan (LEP) and Development Control Plan (DCP), considers any submissions from neighbours, and makes a determination.</p>
+<p><strong>Key features of DA:</strong></p>
+<ul>
+  <li>Assessed by your local council's planning department</li>
+  <li>Can request variations to planning controls (e.g. height, setbacks, floor space ratio)</li>
+  <li>Public notification period — neighbours can make submissions</li>
+  <li>Typical timeline: <strong>3–6 months</strong> for straightforward applications, up to <strong>12+ months</strong> for complex ones</li>
+  <li>Council fees: typically $5,000–$15,000 depending on project value</li>
+  <li>Appeals possible through the Land and Environment Court (NSW) or VCAT (VIC)</li>
+</ul>
+
+<h2>What Is a Complying Development Certificate (CDC)?</h2>
+<p>A CDC is a fast-track approval for developments that tick every box in the relevant state code. In NSW, the State Environmental Planning Policy (Exempt and Complying Development Codes) 2008 sets out these standards. If your project complies with all requirements, a private accredited certifier can approve it — no council involvement needed.</p>
+<p><strong>Key features of CDC:</strong></p>
+<ul>
+  <li>Assessed by a private accredited certifier</li>
+  <li>No public notification required</li>
+  <li>Must comply with <strong>every</strong> standard — no variations permitted</li>
+  <li>Typical timeline: <strong>3–8 weeks</strong></li>
+  <li>Certifier fees: typically $3,000–$8,000</li>
+  <li>Available in NSW, and similar fast-track pathways exist in VIC (ResCode + building permit), QLD (accepted development), SA, and WA</li>
+</ul>
+
+<h2>When Does CDC Not Apply?</h2>
+<p>CDC is not available for every property. Common exclusions include:</p>
+<ul>
+  <li>Properties within a <strong>heritage conservation area</strong> or with heritage listing</li>
+  <li>Land classified as <strong>flood-prone</strong> (varies by council mapping)</li>
+  <li>Properties with <strong>bushfire-prone</strong> designations (BAL-40 or BAL-FZ)</li>
+  <li>Sites in certain <strong>environmentally sensitive</strong> zones</li>
+  <li>Blocks that don't meet <strong>minimum lot size</strong> requirements (typically 450sqm in NSW)</li>
+  <li>Designs that exceed the <strong>maximum building height</strong> or <strong>floor space ratio</strong> for complying development</li>
+</ul>
+<p>You can check whether CDC applies to your property using the NSW Planning Portal's "Can I build?" tool, or ask a private certifier for a preliminary assessment.</p>
+
+<h2>Timeline Comparison</h2>
+<table>
+  <thead><tr><th>Stage</th><th>DA Path</th><th>CDC Path</th></tr></thead>
+  <tbody>
+    <tr><td>Design & documentation</td><td>4–8 weeks</td><td>4–8 weeks</td></tr>
+    <tr><td>Pre-lodgement meeting</td><td>2–4 weeks (recommended)</td><td>Not required</td></tr>
+    <tr><td>Assessment period</td><td>8–24 weeks</td><td>2–4 weeks</td></tr>
+    <tr><td>Conditions clearance</td><td>2–4 weeks</td><td>Minimal</td></tr>
+    <tr><td>Construction certificate</td><td>2–3 weeks</td><td>Issued with CDC</td></tr>
+    <tr><td><strong>Total to construction start</strong></td><td><strong>4–10 months</strong></td><td><strong>2–4 months</strong></td></tr>
+  </tbody>
+</table>
+
+<h2>Cost Comparison</h2>
+<table>
+  <thead><tr><th>Fee</th><th>DA Path</th><th>CDC Path</th></tr></thead>
+  <tbody>
+    <tr><td>Application/assessment fee</td><td>$5,000–$15,000</td><td>$3,000–$8,000</td></tr>
+    <tr><td>Town planner fee</td><td>$3,000–$8,000</td><td>Usually not needed</td></tr>
+    <tr><td>Holding costs (extra months of rent, loan interest)</td><td>$10,000–$30,000+</td><td>Minimal</td></tr>
+    <tr><td><strong>Total approval-phase cost</strong></td><td><strong>$18,000–$53,000</strong></td><td><strong>$3,000–$8,000</strong></td></tr>
+  </tbody>
+</table>
+<p>The biggest saving with CDC is not the direct fees — it is the holding costs you avoid by starting construction 3–6 months earlier.</p>
+
+<h2>State-by-State Overview</h2>
+<p><strong>NSW:</strong> The most developed CDC framework. The Codes SEPP sets clear standards for single dwellings, dual occupancies, and ancillary structures. The NSW Planning Portal is your starting point.</p>
+<p><strong>Victoria:</strong> VIC does not use the term "CDC" but has a similar streamlined process. If your project complies with ResCode (Clause 54/55 of the planning scheme), you can often go straight to a building permit without a planning permit for single dwellings on residentially zoned land.</p>
+<p><strong>Queensland:</strong> QLD uses "accepted development" and "code assessment" categories. Simple single dwellings in residential zones often fall under accepted development — no application required, just a building approval.</p>
+<p><strong>South Australia:</strong> SA's planning system was overhauled with the Planning and Design Code. Many residential developments are now "deemed to satisfy" (similar to CDC) if they meet the code.</p>
+<p><strong>Western Australia:</strong> WA has "deemed provisions" under the Planning and Development (Local Planning Schemes) Regulations. Single houses in residential zones that meet R-Code requirements may not need development approval.</p>
+
+<h2>Practical Decision Checklist</h2>
+<p>Ask these questions to determine your path:</p>
+<ol>
+  <li>Is your property in a heritage area, flood zone, or bushfire zone? → If yes, <strong>DA is likely required</strong>.</li>
+  <li>Does your design comply with all CDC/code standards (height, setbacks, FSR, lot size)? → If yes, <strong>CDC is possible</strong>.</li>
+  <li>Do you need design flexibility (e.g. reduced setbacks, extra height)? → <strong>DA gives you room to negotiate</strong>.</li>
+  <li>Is time critical? → <strong>CDC is significantly faster</strong>.</li>
+  <li>Is your block unusually shaped, sloping, or has easements? → <strong>Get professional advice</strong> — a certifier or planner can tell you quickly.</li>
+</ol>
+
+<h2>Next Steps</h2>
+<p>Before spending money on detailed architectural drawings, get a preliminary assessment. A private certifier can usually tell you within a week whether CDC is available for your block. If not, a pre-lodgement meeting with your council ($200–$500) will clarify what your DA needs to address. You can also use the feasibility tool on <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> to check council-specific requirements for your suburb.</p>
+    `,
+    contentZh: `
+<p>在澳洲，任何住宅建设都需要在开工前获得某种形式的规划审批。在大多数州，你有两条主要路径：通过当地Council提交开发申请（DA），或通过私人认证师获取合规开发证书（CDC）。选对路径，可能意味着6周内开工和等6个月的区别。</p>
+
+<h2>什么是DA（开发申请）？</h2>
+<p>DA是向当地Council提交的正式审批申请。Council会根据地方环境规划（LEP）和开发控制规划（DCP）评估你的方案，考虑邻居的意见，然后做出决定。</p>
+<p><strong>DA的主要特点：</strong></p>
+<ul>
+  <li>由Council的规划部门评估</li>
+  <li>可以申请规划控制的变更（如高度、退缩距离、容积率）</li>
+  <li>需要公示——邻居可以提交意见</li>
+  <li>一般时间线：简单申请<strong>3–6个月</strong>，复杂的可达<strong>12个月以上</strong></li>
+  <li>Council费用：通常 $5,000–$15,000，取决于项目价值</li>
+  <li>可通过土地和环境法院（NSW）或VCAT（VIC）上诉</li>
+</ul>
+
+<h2>什么是CDC（合规开发证书）？</h2>
+<p>CDC是为完全符合州级规范的开发提供的快速审批通道。在NSW，《豁免和合规开发规范州环境规划政策》（Codes SEPP）列出了所有标准。如果你的项目全部达标，私人认证师即可批准——无需Council参与。</p>
+<p><strong>CDC的主要特点：</strong></p>
+<ul>
+  <li>由持证私人认证师评估</li>
+  <li>无需公示</li>
+  <li>必须符合<strong>所有</strong>标准——不允许任何变更</li>
+  <li>一般时间线：<strong>3–8周</strong></li>
+  <li>认证师费用：通常 $3,000–$8,000</li>
+  <li>NSW最成熟，VIC、QLD、SA、WA各有类似的快速通道</li>
+</ul>
+
+<h2>哪些情况不能走CDC？</h2>
+<p>并非所有物业都适用CDC，常见排除情况：</p>
+<ul>
+  <li>位于<strong>遗产保护区</strong>或有遗产登记的物业</li>
+  <li>被标记为<strong>洪水易发区</strong>的土地</li>
+  <li>有<strong>丛林火灾</strong>风险评级（BAL-40或BAL-FZ）的物业</li>
+  <li>位于<strong>环境敏感区</strong>的地块</li>
+  <li>不满足<strong>最小地块面积</strong>要求的地块（NSW通常为450平方米）</li>
+  <li>超过合规开发<strong>最大建筑高度</strong>或<strong>容积率</strong>限制的设计</li>
+</ul>
+
+<h2>时间线对比</h2>
+<table>
+  <thead><tr><th>阶段</th><th>DA路径</th><th>CDC路径</th></tr></thead>
+  <tbody>
+    <tr><td>设计与文件准备</td><td>4–8周</td><td>4–8周</td></tr>
+    <tr><td>预沟通会议</td><td>2–4周（建议）</td><td>不需要</td></tr>
+    <tr><td>审批评估期</td><td>8–24周</td><td>2–4周</td></tr>
+    <tr><td>条件清除</td><td>2–4周</td><td>极少</td></tr>
+    <tr><td>施工许可证</td><td>2–3周</td><td>随CDC一起签发</td></tr>
+    <tr><td><strong>到开工的总时间</strong></td><td><strong>4–10个月</strong></td><td><strong>2–4个月</strong></td></tr>
+  </tbody>
+</table>
+
+<h2>费用对比</h2>
+<table>
+  <thead><tr><th>费用项</th><th>DA路径</th><th>CDC路径</th></tr></thead>
+  <tbody>
+    <tr><td>申请/评估费</td><td>$5,000–$15,000</td><td>$3,000–$8,000</td></tr>
+    <tr><td>Town Planner费用</td><td>$3,000–$8,000</td><td>通常不需要</td></tr>
+    <tr><td>持有成本（多出的租金、贷款利息）</td><td>$10,000–$30,000+</td><td>极少</td></tr>
+    <tr><td><strong>审批阶段总费用</strong></td><td><strong>$18,000–$53,000</strong></td><td><strong>$3,000–$8,000</strong></td></tr>
+  </tbody>
+</table>
+<p>CDC最大的节省不在于直接费用，而是提前3–6个月开工省下的持有成本。</p>
+
+<h2>各州概况</h2>
+<p><strong>NSW：</strong>CDC框架最成熟。Codes SEPP为独栋住宅、双拼和附属建筑制定了明确标准。NSW Planning Portal是你的起点。</p>
+<p><strong>Victoria：</strong>VIC不使用"CDC"这个术语，但有类似的简化流程。如果你的项目符合ResCode（规划方案第54/55条），在住宅用地上建独栋往往可以直接申请建筑许可，无需规划许可。</p>
+<p><strong>Queensland：</strong>QLD使用"accepted development"和"code assessment"分类。住宅区的简单独栋通常属于accepted development——不需要申请，只需建筑审批。</p>
+<p><strong>South Australia：</strong>SA的规划系统已通过Planning and Design Code改革。许多住宅开发现在属于"deemed to satisfy"（类似CDC），只要符合规范即可。</p>
+<p><strong>Western Australia：</strong>WA在规划法规下有"deemed provisions"。住宅区符合R-Code要求的独栋住宅可能不需要开发审批。</p>
+
+<h2>实用决策清单</h2>
+<p>通过以下问题确定你的路径：</p>
+<ol>
+  <li>你的物业是否在遗产区、洪水区或丛林火灾区？→ 是的话，<strong>很可能需要走DA</strong>。</li>
+  <li>你的设计是否符合所有CDC/规范标准（高度、退缩、容积率、地块面积）？→ 是的话，<strong>可以走CDC</strong>。</li>
+  <li>你是否需要设计灵活性（如缩小退缩距离、增加高度）？→ <strong>DA给你谈判空间</strong>。</li>
+  <li>时间是否紧迫？→ <strong>CDC明显更快</strong>。</li>
+  <li>你的地块是否形状异常、有坡度或有地役权？→ <strong>找专业人士评估</strong>，认证师或规划师通常很快就能告诉你。</li>
+</ol>
+
+<h2>下一步</h2>
+<p>在花钱画详细建筑图之前，先做初步评估。私人认证师通常一周内就能告诉你CDC是否适用于你的地块。如果不适用，与Council的预沟通会议（$200–$500）能明确DA需要解决哪些问题。你也可以在 <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> 上使用可行性工具，查看你所在区域的Council具体要求。</p>
+    `,
+  },
+
+  {
+    slug: 'how-to-choose-builder',
+    title: 'How to Choose a Builder in Australia: Complete Checklist',
+    titleZh: '澳洲选建筑商完全指南：避坑清单',
+    excerpt: 'Choosing the wrong builder is the most expensive mistake in residential construction. Here is a systematic checklist to protect yourself.',
+    excerptZh: '选错建筑商是住宅建设中代价最高的错误。这份系统化清单帮你避开陷阱。',
+    category: 'construction',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-31',
+    readMinutes: 10,
+    tags: ['Builder', 'Checklist', 'Contract', 'Licence', 'Insurance', 'Due Diligence'],
+    tagsZh: ['建筑商', '清单', '合同', '执照', '保险', '尽职调查'],
+    content: `
+<p>Your builder will manage the single largest expenditure of your project — and if they go bust, cut corners, or simply do poor work, the cost to you could be catastrophic. Builder insolvencies in Australia have surged in recent years, making due diligence more important than ever. Here is a comprehensive checklist.</p>
+
+<h2>Step 1: Verify Their Licence</h2>
+<p>Every state requires residential builders to hold a licence. An unlicensed builder means no statutory warranties, no home building compensation fund protection, and potentially no insurance coverage.</p>
+<p><strong>Where to check:</strong></p>
+<ul>
+  <li><strong>NSW:</strong> <a href="https://www.fairtrading.nsw.gov.au" target="_blank">NSW Fair Trading</a> — search the licence register</li>
+  <li><strong>VIC:</strong> <a href="https://www.vba.vic.gov.au" target="_blank">Victorian Building Authority (VBA)</a> — practitioner register</li>
+  <li><strong>QLD:</strong> <a href="https://www.qbcc.qld.gov.au" target="_blank">QBCC</a> — licence search and financial status check</li>
+  <li><strong>SA:</strong> <a href="https://www.cbs.sa.gov.au" target="_blank">Consumer and Business Services SA</a></li>
+  <li><strong>WA:</strong> <a href="https://www.dmirs.wa.gov.au" target="_blank">DMIRS WA</a> — building services register</li>
+</ul>
+<p>Check not just that the licence exists, but that it is current and covers the type of work you need (e.g. "General Building" or "Builder — Medium Rise" in NSW, not just "Contractor" or "Tradesperson").</p>
+
+<h2>Step 2: Check Their Insurance</h2>
+<p>Ask for evidence of:</p>
+<ul>
+  <li><strong>Home Building Compensation Fund (HBCF) cover</strong> — mandatory in NSW for work over $20,000. This protects you if the builder dies, disappears, or becomes insolvent. Other states have equivalent schemes (Domestic Building Insurance in VIC, QBCC Insurance in QLD).</li>
+  <li><strong>Public liability insurance:</strong> Minimum $10 million is standard</li>
+  <li><strong>Workers compensation insurance:</strong> Required if they have employees</li>
+</ul>
+<p>Do not accept verbal assurance. Ask for certificates of currency.</p>
+
+<h2>Step 3: Check Their Financial Health</h2>
+<p>After the wave of builder collapses in 2022–2024, financial health is critical:</p>
+<ul>
+  <li><strong>QLD:</strong> QBCC publishes a financial status for every licensed builder — use it</li>
+  <li><strong>All states:</strong> Run an ASIC company search ($9) to check their registered company status, any external administrations, or director disqualifications</li>
+  <li><strong>Ask your broker:</strong> Mortgage brokers who specialise in construction often know which builders are in financial difficulty</li>
+  <li><strong>Red flag:</strong> If a builder asks for a large deposit upfront (more than 5–10%), be cautious — it may indicate cash flow problems</li>
+</ul>
+
+<h2>Step 4: Review Their Track Record</h2>
+<ul>
+  <li><strong>Ask for 5+ references</strong> from completed projects in the last 2 years — and actually call them</li>
+  <li><strong>Visit a current build site:</strong> A tidy, well-organised site indicates good management</li>
+  <li><strong>Check reviews</strong> on Google, ProductReview, and Houzz — but weigh them carefully. One bad review is normal; a pattern of complaints about the same issue is a red flag</li>
+  <li><strong>Check tribunal records:</strong> Search NCAT (NSW), VCAT (VIC), or QCAT (QLD) for any disputes involving the builder</li>
+</ul>
+
+<h2>Step 5: Understand the Contract Type</h2>
+<p>There are three main residential building contract types in Australia:</p>
+<ul>
+  <li><strong>Fixed-price (lump sum):</strong> You agree on a total price upfront. The builder bears the risk of cost overruns (within scope). This is the most common and safest option for homeowners.</li>
+  <li><strong>Cost-plus:</strong> You pay the actual cost of materials and labour, plus a builder's margin (typically 15–25%). You bear the risk of cost overruns. Only suitable if you have deep pockets and trust the builder completely.</li>
+  <li><strong>Design and construct:</strong> The builder provides both design and construction. Convenient, but you have less independent oversight of the design process.</li>
+</ul>
+<p>For most KDR projects, a <strong>fixed-price contract</strong> with a detailed specification is the safest approach.</p>
+
+<h2>Step 6: Scrutinise the Specification</h2>
+<p>The specification document lists every material, fitting, and finish in your home. Vague specs lead to disputes.</p>
+<ul>
+  <li>Every item should specify <strong>brand, model, and colour</strong> — not "or equivalent"</li>
+  <li>Check what is <strong>included</strong> vs <strong>excluded</strong> — common exclusions are driveways, landscaping, fencing, window furnishings, and air conditioning</li>
+  <li><strong>Provisional sums and prime cost items:</strong> These are allowances for items not yet finalised (e.g. kitchen appliances). Understand what happens if the actual cost exceeds the allowance</li>
+  <li>Compare specifications line by line between competing quotes — the cheapest builder often has the thinnest spec</li>
+</ul>
+
+<h2>Step 7: Red Flags to Walk Away From</h2>
+<ul>
+  <li>Builder pressures you to sign quickly ("this price expires Friday")</li>
+  <li>No written quote or contract — only verbal promises</li>
+  <li>Asking for more than 5% deposit before any work begins</li>
+  <li>Cannot provide current insurance certificates</li>
+  <li>Previous company names or director history involving insolvency</li>
+  <li>Refuses to include a detailed specification in the contract</li>
+  <li>No fixed completion date or liquidated damages clause</li>
+  <li>Negative QBCC financial status (QLD) or expired licence</li>
+</ul>
+
+<h2>Step 8: Negotiate Key Contract Terms</h2>
+<p>Before signing, ensure these are clearly stated:</p>
+<ul>
+  <li><strong>Completion date</strong> and liquidated damages for delays (typically $150–$350 per day)</li>
+  <li><strong>Variations process:</strong> How changes are priced and approved during construction</li>
+  <li><strong>Defects liability period:</strong> Typically 6–12 months after handover</li>
+  <li><strong>Progress payment schedule:</strong> Should align with construction milestones, not arbitrary dates</li>
+  <li><strong>Dispute resolution mechanism:</strong> Mediation before tribunal or court</li>
+</ul>
+
+<h2>The Bottom Line</h2>
+<p>Choosing a builder is not about finding the cheapest quote. It is about finding a financially stable, properly licensed, well-insured company with a track record of delivering quality homes on time. Spend 2–3 weeks on due diligence now to avoid 2–3 years of stress later. You can browse vetted builders in your area on <a href="https://ausbuildcircle.com/professionals">AusBuildCircle.com</a>.</p>
+    `,
+    contentZh: `
+<p>建筑商掌管着你项目中最大的一笔支出——如果他们倒闭、偷工减料或者施工质量差，对你的损失可能是灾难性的。近年来澳洲建筑商倒闭潮频发，做好尽职调查比以往任何时候都重要。以下是一份完整的选择清单。</p>
+
+<h2>第一步：验证执照</h2>
+<p>每个州都要求住宅建筑商持有执照。没有执照意味着没有法定保修、没有住宅建筑补偿基金保护，保险也可能无法理赔。</p>
+<p><strong>查询方式：</strong></p>
+<ul>
+  <li><strong>NSW：</strong><a href="https://www.fairtrading.nsw.gov.au" target="_blank">NSW Fair Trading</a> — 搜索执照登记册</li>
+  <li><strong>VIC：</strong><a href="https://www.vba.vic.gov.au" target="_blank">Victorian Building Authority</a> — 从业者登记册</li>
+  <li><strong>QLD：</strong><a href="https://www.qbcc.qld.gov.au" target="_blank">QBCC</a> — 执照搜索和财务状况查询</li>
+  <li><strong>SA：</strong><a href="https://www.cbs.sa.gov.au" target="_blank">Consumer and Business Services SA</a></li>
+  <li><strong>WA：</strong><a href="https://www.dmirs.wa.gov.au" target="_blank">DMIRS WA</a> — 建筑服务登记册</li>
+</ul>
+<p>不仅要确认执照存在，还要确认是否有效且覆盖你需要的工程类型（例如NSW的"General Building"，不只是"Contractor"或"Tradesperson"）。</p>
+
+<h2>第二步：检查保险</h2>
+<p>要求提供以下保险证明：</p>
+<ul>
+  <li><strong>住宅建筑补偿基金（HBCF）：</strong>在NSW，超过$20,000的工程强制要求。如果建筑商死亡、失联或破产，这是你的保障。其他州有类似制度（VIC的Domestic Building Insurance，QLD的QBCC Insurance）。</li>
+  <li><strong>公众责任保险：</strong>最低$1,000万是行业标准</li>
+  <li><strong>工伤保险：</strong>如果有雇员则必须购买</li>
+</ul>
+<p>不要接受口头保证，要求出示有效期内的保险证书原件。</p>
+
+<h2>第三步：检查财务健康状况</h2>
+<p>经历了2022–2024年的建筑商倒闭潮，财务健康至关重要：</p>
+<ul>
+  <li><strong>QLD：</strong>QBCC公开每个持牌建筑商的财务状况——用它</li>
+  <li><strong>全澳：</strong>在ASIC做公司搜索（$9），检查注册状态、是否有外部管理或董事资格取消记录</li>
+  <li><strong>问你的贷款经纪人：</strong>专做建筑贷款的broker通常知道哪些建筑商有财务困难</li>
+  <li><strong>危险信号：</strong>如果建筑商要求大额预付款（超过5–10%），要警惕——可能说明现金流有问题</li>
+</ul>
+
+<h2>第四步：审查过往记录</h2>
+<ul>
+  <li><strong>要求至少5个近两年完工项目的业主联系方式</strong>——真的打电话问</li>
+  <li><strong>去看一个在建工地：</strong>整洁有序的工地说明管理到位</li>
+  <li><strong>查看评价：</strong>Google、ProductReview、Houzz上的评价要看，但要理性判断。一条差评正常，同类投诉反复出现才是红旗</li>
+  <li><strong>查仲裁记录：</strong>搜索NCAT（NSW）、VCAT（VIC）或QCAT（QLD）中涉及该建筑商的纠纷</li>
+</ul>
+
+<h2>第五步：理解合同类型</h2>
+<p>澳洲住宅建筑有三种主要合同类型：</p>
+<ul>
+  <li><strong>固定价格（总价）合同：</strong>提前约定总价，建筑商承担（范围内的）超支风险。最常见也最安全。</li>
+  <li><strong>成本加成（Cost-plus）合同：</strong>你支付实际材料和人工费用，加上建筑商利润（通常15–25%）。超支风险由你承担。只适合预算充裕且完全信任建筑商的情况。</li>
+  <li><strong>设计施工一体（Design and Construct）合同：</strong>建筑商负责设计和施工，方便但你对设计过程的独立监督较少。</li>
+</ul>
+<p>对大多数推倒重建项目来说，<strong>带有详细规格的固定价格合同</strong>是最安全的选择。</p>
+
+<h2>第六步：仔细审查规格书</h2>
+<p>规格书列出了房屋中每种材料、配件和装修标准。模糊的规格是纠纷的根源。</p>
+<ul>
+  <li>每个项目都应注明<strong>品牌、型号和颜色</strong>——不是"或同等产品"</li>
+  <li>搞清楚<strong>包含</strong>和<strong>不包含</strong>的内容——常见排除项有车道、景观、围栏、窗帘和空调</li>
+  <li><strong>暂定金额和主要成本项：</strong>了解如果实际费用超过预留金额会怎样</li>
+  <li>逐行对比不同报价的规格——最便宜的报价往往规格最薄</li>
+</ul>
+
+<h2>第七步：遇到这些红旗，果断放弃</h2>
+<ul>
+  <li>建筑商催你赶紧签约（"这个价格周五过期"）</li>
+  <li>没有书面报价或合同——只有口头承诺</li>
+  <li>开工前要求超过5%的定金</li>
+  <li>无法提供有效保险证书</li>
+  <li>曾更换公司名称或董事有破产历史</li>
+  <li>拒绝在合同中附上详细规格</li>
+  <li>没有固定竣工日期或延误赔偿条款</li>
+  <li>QBCC财务状况为负面（QLD）或执照过期</li>
+</ul>
+
+<h2>第八步：协商关键合同条款</h2>
+<p>签约前确保以下内容清晰写明：</p>
+<ul>
+  <li><strong>竣工日期</strong>和延误的违约金（通常每天$150–$350）</li>
+  <li><strong>变更流程：</strong>施工中如何定价和审批变更</li>
+  <li><strong>缺陷责任期：</strong>交房后通常6–12个月</li>
+  <li><strong>进度付款时间表：</strong>应与施工里程碑挂钩，而非任意日期</li>
+  <li><strong>争议解决机制：</strong>先调解，再仲裁或诉讼</li>
+</ul>
+
+<h2>总结</h2>
+<p>选建筑商不是找最便宜的报价，而是找财务稳健、执照齐全、保险完善、有优质交付记录的公司。现在花2–3周做尽职调查，能避免以后2–3年的煎熬。你可以在 <a href="https://ausbuildcircle.com/professionals">AusBuildCircle.com</a> 上浏览你所在地区经过审核的建筑商。</p>
+    `,
+  },
+
+  {
+    slug: 'granny-flat-rules-australia',
+    title: 'Granny Flat Rules by State: What You Can Build in 2026',
+    titleZh: '2026年各州Granny Flat建造规则：你的地能建吗？',
+    excerpt: 'Granny flat rules vary dramatically across Australian states. This state-by-state guide covers size limits, lot requirements, and approval pathways for 2026.',
+    excerptZh: '澳洲各州的Granny Flat规则差异巨大。本文按州详解面积限制、地块要求和审批途径。',
+    category: 'granny-flat',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-31',
+    readMinutes: 11,
+    tags: ['Granny Flat', 'Secondary Dwelling', 'SEPP', 'Zoning', 'State Rules'],
+    tagsZh: ['Granny Flat', '附属住宅', 'SEPP', '分区', '各州规则'],
+    content: `
+<p>Granny flats — also called secondary dwellings, ancillary dwellings, or dependent person's units — are one of the most popular ways to add value and functionality to a residential property in Australia. But the rules governing what you can build, how big it can be, and what approvals you need vary significantly from state to state.</p>
+
+<h2>New South Wales</h2>
+<p>NSW has the most streamlined granny flat framework in the country, thanks to the State Environmental Planning Policy (Affordable Rental Housing) 2009 — commonly called the "Granny Flat SEPP."</p>
+<p><strong>Key rules:</strong></p>
+<ul>
+  <li><strong>Maximum size:</strong> 60 square metres of internal floor area</li>
+  <li><strong>Minimum lot size:</strong> 450 square metres</li>
+  <li><strong>Approval pathway:</strong> Can be approved as Complying Development (CDC) by a private certifier — no DA required if all standards are met</li>
+  <li><strong>One per lot:</strong> Only one secondary dwelling per lot</li>
+  <li><strong>No separate subdivision:</strong> Cannot be strata-titled or Torrens-titled separately from the main dwelling</li>
+  <li><strong>Can be rented:</strong> Unlike some states, NSW allows granny flats to be rented to non-family members</li>
+  <li><strong>Setbacks:</strong> Minimum 0.9m from side and rear boundaries</li>
+  <li><strong>Height:</strong> Maximum 3.8m (single storey)</li>
+</ul>
+<p>The 60sqm limit includes internal floor area only — it does not include covered verandahs, carports, or garages (up to a point).</p>
+
+<h2>Victoria</h2>
+<p>VIC calls them "secondary dwellings" or "dependent person's units" (DPU), and the rules are significantly more restrictive than NSW.</p>
+<p><strong>Key rules:</strong></p>
+<ul>
+  <li><strong>Dependent Person's Unit (DPU):</strong> Can be approved without a planning permit in many zones, but must be for a "dependent person" (family member) — not for general rental</li>
+  <li><strong>Secondary dwelling (for rental):</strong> Requires a planning permit and must comply with Clause 54/55 (ResCode)</li>
+  <li><strong>Maximum size for DPU:</strong> Generally limited to one bedroom, no more than about 50–60sqm depending on council</li>
+  <li><strong>Recent reforms:</strong> The Victorian Government has been progressively making it easier to build secondary dwellings, particularly in areas well-served by public transport. Check with your council for the latest position</li>
+  <li><strong>No separate title:</strong> Cannot be subdivided separately</li>
+</ul>
+
+<h2>Queensland</h2>
+<p>QLD allows "secondary dwellings" under its planning framework, but rules vary by local government area.</p>
+<p><strong>Key rules:</strong></p>
+<ul>
+  <li><strong>Maximum size:</strong> Typically 80 square metres (some councils allow up to 90sqm)</li>
+  <li><strong>Minimum lot size:</strong> Varies by council, typically 600–800 square metres</li>
+  <li><strong>Approval pathway:</strong> Often "code assessable" rather than requiring full impact assessment — faster than a traditional DA</li>
+  <li><strong>Can be rented:</strong> Yes, to anyone</li>
+  <li><strong>Height:</strong> Generally 1 storey, max height varies by zone</li>
+  <li><strong>Flood overlays:</strong> QLD has extensive flood mapping — check your lot</li>
+</ul>
+
+<h2>South Australia</h2>
+<p>Under the new Planning and Design Code, SA has simplified secondary dwelling rules.</p>
+<p><strong>Key rules:</strong></p>
+<ul>
+  <li><strong>Maximum size:</strong> Generally 60 square metres</li>
+  <li><strong>Minimum lot size:</strong> Varies by zone, typically 450–600sqm</li>
+  <li><strong>Approval pathway:</strong> May qualify as "deemed to satisfy" (fast-track) if all criteria met</li>
+  <li><strong>Can be rented:</strong> Yes</li>
+  <li><strong>Self-contained:</strong> Must include kitchen, bathroom, and sleeping areas</li>
+</ul>
+
+<h2>Western Australia</h2>
+<p>WA calls them "ancillary dwellings" and has been gradually liberalising the rules.</p>
+<p><strong>Key rules:</strong></p>
+<ul>
+  <li><strong>Maximum size:</strong> 70 square metres</li>
+  <li><strong>Minimum lot size:</strong> Varies by R-Code zoning (e.g. R20 typically requires 450sqm+)</li>
+  <li><strong>Approval pathway:</strong> May be approved as "deemed to comply" under the R-Codes</li>
+  <li><strong>Occupancy restrictions:</strong> Some local governments still require the occupant to be a family member — check your local planning scheme</li>
+  <li><strong>Must be ancillary:</strong> The granny flat must be subordinate to the main dwelling</li>
+</ul>
+
+<h2>ACT and Tasmania</h2>
+<p><strong>ACT:</strong> Secondary residences (called "supportive housing" or "secondary residence") are permitted in certain zones. Maximum size generally 90sqm. Lease variation may be required.</p>
+<p><strong>Tasmania:</strong> "Ancillary dwellings" permitted in General Residential zones. Maximum 60sqm floor area. Planning permit usually required.</p>
+
+<h2>Cost to Build a Granny Flat</h2>
+<p>Costs vary depending on whether you build custom, use a kit, or go with a prefab/modular solution:</p>
+<ul>
+  <li><strong>Kit or prefab (basic):</strong> $80,000–$130,000 installed</li>
+  <li><strong>Custom build (mid-range):</strong> $130,000–$200,000</li>
+  <li><strong>High-end custom:</strong> $200,000–$300,000+</li>
+</ul>
+<p>These figures include site preparation, slab, construction, and connection to services. They do not include any required driveway upgrades or landscaping.</p>
+
+<h2>Common Mistakes to Avoid</h2>
+<ul>
+  <li><strong>Not checking zoning first:</strong> Not all residential zones allow secondary dwellings. Verify before you spend money on plans.</li>
+  <li><strong>Forgetting about services:</strong> Water, sewer, and electricity connections can cost $10,000–$30,000 depending on distance from mains.</li>
+  <li><strong>Ignoring stormwater:</strong> Adding impervious surface (the granny flat roof and slab) increases stormwater runoff. Most councils require an on-site detention system.</li>
+  <li><strong>Assuming you can subdivide later:</strong> In most states, granny flats cannot be separately titled. If your goal is subdivision, look at dual occupancy instead.</li>
+  <li><strong>Underestimating council fees:</strong> Development contributions can add $5,000–$20,000 to your project.</li>
+</ul>
+
+<h2>Is a Granny Flat Right for You?</h2>
+<p>Granny flats make financial sense when you need rental income, multigenerational living space, or a home office. Check your specific council's rules before committing — or use the feasibility tool on <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> to get a quick assessment of what is possible on your block.</p>
+    `,
+    contentZh: `
+<p>Granny Flat（也叫附属住宅、次要住宅或附属人居住单元）是澳洲房产增值和功能扩展最受欢迎的方式之一。但各州关于能建多大、需要什么审批、有什么限制的规则差异极大。</p>
+
+<h2>新南威尔士州（NSW）</h2>
+<p>得益于《经济适用房州环境规划政策》（2009年，俗称"Granny Flat SEPP"），NSW拥有全澳最简便的Granny Flat审批框架。</p>
+<p><strong>核心规则：</strong></p>
+<ul>
+  <li><strong>最大面积：</strong>60平方米室内使用面积</li>
+  <li><strong>最小地块：</strong>450平方米</li>
+  <li><strong>审批路径：</strong>可通过私人认证师走CDC快速通道——符合所有标准无需DA</li>
+  <li><strong>每块地一个：</strong>一块地只能有一个附属住宅</li>
+  <li><strong>不能单独分契：</strong>不能与主屋分开做Strata或Torrens产权</li>
+  <li><strong>可以出租：</strong>与某些州不同，NSW允许向非家庭成员出租</li>
+  <li><strong>退缩距离：</strong>侧边和后边界至少0.9米</li>
+  <li><strong>高度：</strong>最高3.8米（单层）</li>
+</ul>
+<p>60平方米的限制只计算室内面积——不包括有顶的阳台、车棚或车库。</p>
+
+<h2>维多利亚州（VIC）</h2>
+<p>VIC称之为"附属住宅"或"受抚养人居住单元"（DPU），规则比NSW严格得多。</p>
+<p><strong>核心规则：</strong></p>
+<ul>
+  <li><strong>DPU：</strong>在很多分区无需规划许可即可审批，但必须供"受抚养人"（家庭成员）居住——不能用于普通出租</li>
+  <li><strong>附属住宅（用于出租）：</strong>需要规划许可，须符合第54/55条（ResCode）</li>
+  <li><strong>DPU最大面积：</strong>通常限一间卧室，约50–60平方米，具体看Council</li>
+  <li><strong>近期改革：</strong>维州政府一直在逐步放宽附属住宅政策，特别是公共交通便利的地区。请向当地Council确认最新规定</li>
+  <li><strong>不能单独分契</strong></li>
+</ul>
+
+<h2>昆士兰州（QLD）</h2>
+<p>QLD在规划框架下允许"附属住宅"，但规则因地方政府而异。</p>
+<p><strong>核心规则：</strong></p>
+<ul>
+  <li><strong>最大面积：</strong>通常80平方米（部分Council允许到90平方米）</li>
+  <li><strong>最小地块：</strong>因Council而异，通常600–800平方米</li>
+  <li><strong>审批路径：</strong>通常为"code assessable"而非全面影响评估——比传统DA更快</li>
+  <li><strong>可以出租：</strong>是的，任何人都可以</li>
+  <li><strong>高度：</strong>一般单层，最大高度视分区而定</li>
+  <li><strong>洪水覆盖：</strong>QLD有广泛的洪水地图——务必检查你的地块</li>
+</ul>
+
+<h2>南澳州（SA）</h2>
+<p>在新的Planning and Design Code下，SA简化了附属住宅规则。</p>
+<p><strong>核心规则：</strong></p>
+<ul>
+  <li><strong>最大面积：</strong>通常60平方米</li>
+  <li><strong>最小地块：</strong>视分区而定，通常450–600平方米</li>
+  <li><strong>审批路径：</strong>符合所有条件可走"deemed to satisfy"快速通道</li>
+  <li><strong>可以出租</strong></li>
+  <li><strong>须自给自足：</strong>必须包含厨房、浴室和卧室</li>
+</ul>
+
+<h2>西澳州（WA）</h2>
+<p>WA称之为"附属住宅"（ancillary dwelling），规则逐步放宽中。</p>
+<p><strong>核心规则：</strong></p>
+<ul>
+  <li><strong>最大面积：</strong>70平方米</li>
+  <li><strong>最小地块：</strong>视R-Code分区而定（如R20通常需要450平方米以上）</li>
+  <li><strong>审批路径：</strong>可能按R-Code的"deemed to comply"审批</li>
+  <li><strong>居住限制：</strong>部分地方政府仍要求居住者为家庭成员——查看你的地方规划方案</li>
+  <li><strong>须为附属性质：</strong>Granny Flat必须从属于主屋</li>
+</ul>
+
+<h2>ACT和塔斯马尼亚</h2>
+<p><strong>ACT：</strong>在特定分区允许附属住宅（称"supportive housing"或"secondary residence"）。最大面积通常90平方米。可能需要地契变更。</p>
+<p><strong>塔斯马尼亚：</strong>在General Residential分区允许"附属住宅"。最大60平方米。通常需要规划许可。</p>
+
+<h2>建造Granny Flat的费用</h2>
+<p>费用取决于你是定制建造、用套件还是预制模块：</p>
+<ul>
+  <li><strong>套件或预制（基础款）：</strong>安装完成 $80,000–$130,000</li>
+  <li><strong>定制建造（中档）：</strong>$130,000–$200,000</li>
+  <li><strong>高端定制：</strong>$200,000–$300,000+</li>
+</ul>
+<p>以上包括场地准备、地基、建造和水电气接入，不包括车道改造或景观。</p>
+
+<h2>常见错误</h2>
+<ul>
+  <li><strong>没有先查分区：</strong>并非所有住宅分区都允许附属住宅。花钱画图之前先确认。</li>
+  <li><strong>忘了水电气接入：</strong>根据距离主管道的远近，接入费用可能在 $10,000–$30,000。</li>
+  <li><strong>忽视雨水排放：</strong>增加不透水面积（屋顶和地基）会增加雨水径流。多数Council要求建场内蓄水系统。</li>
+  <li><strong>以为以后能分契：</strong>大多数州的Granny Flat不能单独分契。如果你的目标是分契，应该考虑双拼（dual occupancy）。</li>
+  <li><strong>低估Council费用：</strong>开发贡献金可能给你的项目增加 $5,000–$20,000。</li>
+</ul>
+
+<h2>Granny Flat适合你吗？</h2>
+<p>当你需要租金收入、多代同堂的居住空间或家庭办公室时，Granny Flat在经济上很有意义。动手之前先查你所在Council的具体规则——或在 <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> 上使用可行性工具，快速评估你的地块能建什么。</p>
+    `,
+  },
+
+  {
+    slug: 'construction-loan-guide',
+    title: 'Construction Loan: How It Works and How to Apply',
+    titleZh: '建筑贷款完全指南：运作方式与申请流程',
+    excerpt: 'Construction loans work differently from standard home loans. Understand progressive drawdowns, deposit requirements, and how to get pre-approved for your build.',
+    excerptZh: '建筑贷款和普通房贷完全不同。本文详解分期放款、首付要求和预审批流程。',
+    category: 'finance',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-31',
+    readMinutes: 10,
+    tags: ['Construction Loan', 'Finance', 'Mortgage', 'Drawdown', 'Pre-Approval', 'Interest Rate'],
+    tagsZh: ['建筑贷款', '贷款', '按揭', '分期放款', '预审批', '利率'],
+    content: `
+<p>If you are planning a knockdown rebuild or building a new home, you will almost certainly need a construction loan. These work very differently from a standard home loan — and understanding the mechanics before you apply will save you stress and money.</p>
+
+<h2>What Is a Construction Loan?</h2>
+<p>A construction loan is a type of home loan designed specifically for building projects. Instead of receiving the full loan amount on settlement day, the lender releases funds in stages — called "progressive drawdowns" — as construction reaches agreed milestones.</p>
+<p>During the construction period, you typically pay <strong>interest only</strong> on the amount drawn down, not on the total loan. Once construction is complete, the loan usually converts to a standard principal-and-interest home loan.</p>
+
+<h2>The Progressive Drawdown Structure</h2>
+<p>Most lenders use a 5 or 6 stage drawdown schedule aligned with your building contract:</p>
+<table>
+  <thead><tr><th>Stage</th><th>Typical %</th><th>What It Covers</th></tr></thead>
+  <tbody>
+    <tr><td>1. Deposit / Base</td><td>5–10%</td><td>Contract deposit, site preparation, slab pour</td></tr>
+    <tr><td>2. Frame</td><td>15–20%</td><td>Wall frames, roof trusses erected</td></tr>
+    <tr><td>3. Lock-up</td><td>20–25%</td><td>Roof on, external walls complete, windows and doors installed</td></tr>
+    <tr><td>4. Fit-out / Fixing</td><td>20–25%</td><td>Internal linings, kitchen, bathroom, electrical and plumbing fit-off</td></tr>
+    <tr><td>5. Completion</td><td>5–10%</td><td>Final finishes, practical completion, handover</td></tr>
+  </tbody>
+</table>
+<p>At each stage, your builder submits a progress claim. Your lender (or their appointed valuer/inspector) verifies the work has been completed before releasing the next payment.</p>
+
+<h2>Interest During Construction</h2>
+<p>This is a crucial point many people misunderstand. During construction, you only pay interest on what has been drawn, not the full loan:</p>
+<ul>
+  <li>After Stage 1 ($80,000 drawn): you pay interest on $80,000</li>
+  <li>After Stage 2 ($240,000 drawn): you pay interest on $240,000</li>
+  <li>After completion ($800,000 drawn): you pay interest on $800,000, then convert to P&I</li>
+</ul>
+<p>With the RBA cash rate at 4.10% as of early 2026, construction loan variable rates are typically 6.0%–7.0%. On a $240,000 drawdown, that is roughly $1,200–$1,400 per month in interest. Budget for interest payments that increase as each stage is drawn.</p>
+
+<h2>Fixed Price vs Cost Plus: What Lenders Prefer</h2>
+<p>Lenders strongly prefer — and many require — a <strong>fixed-price building contract</strong>. This gives the lender certainty about the total cost and makes valuation straightforward.</p>
+<p>If you are using a <strong>cost-plus contract</strong>, fewer lenders will approve you, and those that do will typically:</p>
+<ul>
+  <li>Require a lower loan-to-value ratio (LVR) — often 60–70% maximum</li>
+  <li>Require a larger cash contingency buffer</li>
+  <li>Charge a higher interest rate</li>
+</ul>
+<p>For most owner-occupier builds, a fixed-price contract is the path of least resistance for finance.</p>
+
+<h2>Deposit and LVR Requirements</h2>
+<p>The deposit you need depends on your existing equity and the project cost:</p>
+<ul>
+  <li><strong>If you own the land outright:</strong> Your land equity counts toward the deposit. Many lenders will fund up to 80% LVR of the "on completion" value — so if the completed home is valued at $1.5M and your land is worth $800K, you could potentially borrow up to $1.2M (80% of $1.5M).</li>
+  <li><strong>If you have a mortgage on the land:</strong> Your existing equity in the land (market value minus mortgage balance) counts toward the deposit. The lender may refinance your existing mortgage into the construction loan.</li>
+  <li><strong>Lender's Mortgage Insurance (LMI):</strong> If your LVR exceeds 80%, you will pay LMI — which can add $10,000–$40,000+ to your costs. Some lenders don't offer construction loans above 80% LVR.</li>
+</ul>
+
+<h2>What You Need to Apply</h2>
+<p>To get pre-approved for a construction loan, you will typically need:</p>
+<ol>
+  <li><strong>Income documentation:</strong> Payslips, tax returns, financial statements (if self-employed)</li>
+  <li><strong>Fixed-price building contract</strong> (signed or at least in draft)</li>
+  <li><strong>Council-approved plans</strong> (DA or CDC approval)</li>
+  <li><strong>Builder's licence and insurance certificates</strong></li>
+  <li><strong>Specifications document</strong></li>
+  <li><strong>Land title or evidence of ownership</strong></li>
+  <li><strong>Existing mortgage details</strong> (if applicable)</li>
+</ol>
+<p>Many lenders will issue a conditional pre-approval based on your financials before you have finalised plans, then convert to full approval once plans and contracts are ready.</p>
+
+<h2>Common Pitfalls</h2>
+<ul>
+  <li><strong>Not budgeting for the "gap":</strong> There is often a 2–4 week gap between your builder invoicing and the lender releasing payment. If your builder expects prompt payment, you may need to bridge this gap with cash.</li>
+  <li><strong>Forgetting about rent:</strong> If you are demolishing your existing home, you need somewhere to live during construction (typically 9–15 months). Budget $2,000–$4,000/month for rental.</li>
+  <li><strong>Variations blowing the budget:</strong> Your lender approved a specific amount. If variations push costs above the approved loan, you need to fund the difference from your own pocket.</li>
+  <li><strong>Interest rate rises during build:</strong> A 12-month build period means 12 months of interest rate risk on a variable loan. Ask your broker about fixing the construction loan rate if stability matters to you.</li>
+</ul>
+
+<h2>Tips for a Smooth Application</h2>
+<ul>
+  <li>Use a <strong>mortgage broker who specialises in construction loans</strong> — they know which lenders are builder-friendly and which have efficient drawdown processes</li>
+  <li>Get <strong>pre-approved before signing a building contract</strong> — you don't want to sign a $700K contract only to find your borrowing power is $500K</li>
+  <li>Keep a <strong>cash buffer of at least $30,000–$50,000</strong> above the loan amount for variations and unexpected costs</li>
+  <li>Compare not just interest rates but <strong>drawdown turnaround times</strong> — some lenders take 2 days, others take 2 weeks. Slow drawdowns frustrate builders and can delay your project.</li>
+</ul>
+
+<h2>Next Steps</h2>
+<p>Start by understanding what your block and project would cost. Use the free feasibility check at <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> to get an estimate, then take that to a construction-specialist broker for pre-approval.</p>
+    `,
+    contentZh: `
+<p>如果你在计划推倒重建或建新房，几乎一定需要建筑贷款。它和普通房贷的运作方式完全不同——在申请之前理解这些机制，能为你省去大量压力和金钱。</p>
+
+<h2>什么是建筑贷款？</h2>
+<p>建筑贷款是专为建筑项目设计的房贷类型。银行不会在贷款当天一次性发放全部金额，而是按照施工进度分阶段放款——称为"progressive drawdown"（分期放款）。</p>
+<p>在施工期间，你通常只需支付已放款金额的<strong>利息</strong>，而不是全部贷款金额的利息。施工完成后，贷款通常转为标准的本息还款房贷。</p>
+
+<h2>分期放款结构</h2>
+<p>大多数银行采用5或6阶段的放款计划，与你的建筑合同对应：</p>
+<table>
+  <thead><tr><th>阶段</th><th>比例</th><th>涵盖内容</th></tr></thead>
+  <tbody>
+    <tr><td>1. 定金/地基</td><td>5–10%</td><td>合同定金、场地准备、浇筑地基</td></tr>
+    <tr><td>2. 框架</td><td>15–20%</td><td>墙体框架、屋顶桁架竖立</td></tr>
+    <tr><td>3. 封顶</td><td>20–25%</td><td>屋顶完工、外墙完成、门窗安装</td></tr>
+    <tr><td>4. 装修</td><td>20–25%</td><td>内部衬板、厨房、浴室、水电安装</td></tr>
+    <tr><td>5. 竣工</td><td>5–10%</td><td>最终装修、实际竣工、交付</td></tr>
+  </tbody>
+</table>
+<p>每个阶段，建筑商提交进度款申请。银行（或其委派的估价师/检查员）确认工程完成后才放下一笔款。</p>
+
+<h2>施工期间的利息</h2>
+<p>这是很多人误解的关键点。施工期间，你只为已放款金额付利息：</p>
+<ul>
+  <li>第1阶段放款$80,000后：你支付$80,000的利息</li>
+  <li>第2阶段累计放款$240,000后：你支付$240,000的利息</li>
+  <li>竣工后全额放款$800,000：你支付$800,000的利息，然后转为本息还款</li>
+</ul>
+<p>截至2026年初，RBA现金利率为4.10%，建筑贷款浮动利率通常在6.0%–7.0%。以$240,000放款额计算，每月利息约$1,200–$1,400。要预算好随每个阶段放款递增的利息支出。</p>
+
+<h2>固定价格 vs 成本加成：银行偏好哪个？</h2>
+<p>银行强烈偏好——许多还强制要求——<strong>固定价格建筑合同</strong>。这让银行对总成本有确定性，估值也更直接。</p>
+<p>如果你使用<strong>成本加成合同</strong>，愿意批准的银行更少，批准的也通常会：</p>
+<ul>
+  <li>要求更低的贷款价值比（LVR）——通常最高60–70%</li>
+  <li>要求更大的现金应急储备</li>
+  <li>收取更高的利率</li>
+</ul>
+
+<h2>首付和LVR要求</h2>
+<p>你需要的首付取决于现有权益和项目成本：</p>
+<ul>
+  <li><strong>如果你完全拥有土地：</strong>土地权益算作首付。多数银行可贷到竣工价值的80% LVR——如果建成后估值$150万，土地值$80万，你可能最多借到$120万（$150万的80%）。</li>
+  <li><strong>如果土地有贷款：</strong>你在土地上的现有权益（市值减去贷款余额）算作首付。银行可能把你的现有贷款refinance到建筑贷款中。</li>
+  <li><strong>贷款保险（LMI）：</strong>如果LVR超过80%，你需要支付LMI——可能增加$10,000–$40,000+的费用。部分银行不提供80%以上LVR的建筑贷款。</li>
+</ul>
+
+<h2>申请需要什么材料</h2>
+<p>申请建筑贷款预审批，通常需要：</p>
+<ol>
+  <li><strong>收入证明：</strong>工资单、税务申报表、财务报表（自雇者）</li>
+  <li><strong>固定价格建筑合同</strong>（已签或至少有草稿）</li>
+  <li><strong>Council批准的图纸</strong>（DA或CDC批文）</li>
+  <li><strong>建筑商执照和保险证书</strong></li>
+  <li><strong>规格书</strong></li>
+  <li><strong>土地产权或拥有权证明</strong></li>
+  <li><strong>现有贷款详情</strong>（如适用）</li>
+</ol>
+<p>很多银行会在你确定图纸之前，基于你的财务情况给出有条件预审批，等图纸和合同就绪后再转为正式审批。</p>
+
+<h2>常见陷阱</h2>
+<ul>
+  <li><strong>没有预算"时间差"：</strong>建筑商开票到银行放款之间通常有2–4周间隔。如果建筑商要求及时付款，你可能需要现金来过渡。</li>
+  <li><strong>忘了租金：</strong>如果你要拆掉现住房，施工期间（通常9–15个月）需要租房。预算每月$2,000–$4,000的租金。</li>
+  <li><strong>变更超支：</strong>银行批准了特定金额。如果变更导致成本超出批准额度，差额需要你自己掏。</li>
+  <li><strong>施工期利率上涨：</strong>12个月的施工期意味着12个月的浮动利率风险。如果稳定性对你很重要，问你的broker能否固定建筑贷款利率。</li>
+</ul>
+
+<h2>申请顺利的建议</h2>
+<ul>
+  <li>找<strong>专做建筑贷款的mortgage broker</strong>——他们知道哪些银行对建筑商友好，哪些放款效率高</li>
+  <li>在签建筑合同之前<strong>先拿到预审批</strong>——你不想签了$70万的合同才发现借款能力只有$50万</li>
+  <li>在贷款额度之外保留至少<strong>$30,000–$50,000的现金储备</strong>，应对变更和意外费用</li>
+  <li>比较的不仅是利率，还有<strong>放款周转时间</strong>——有的银行2天，有的2周。放款慢会让建筑商不满，可能延误工期</li>
+</ul>
+
+<h2>下一步</h2>
+<p>先了解你的地块和项目大概需要多少钱。在 <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> 上做一次免费可行性评估获取估算，然后拿着这个去找专做建筑贷款的broker申请预审批。</p>
+    `,
+  },
+
+  {
+    slug: 'heritage-overlay-guide',
+    title: 'Heritage Overlay: Can You Still Knock Down and Rebuild?',
+    titleZh: '遗产覆盖区：还能推倒重建吗？',
+    excerpt: 'A heritage overlay does not necessarily mean you cannot build. Understanding the difference between conservation areas and individual listings is the key.',
+    excerptZh: '遗产覆盖不一定意味着不能建。理解保护区和个体登记的区别是关键。',
+    category: 'planning',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-31',
+    readMinutes: 9,
+    tags: ['Heritage', 'Conservation', 'Council', 'Demolition', 'Planning', 'Overlay'],
+    tagsZh: ['遗产', '保护', 'Council', '拆除', '规划', '覆盖'],
+    content: `
+<p>Finding out your property has a heritage overlay can feel like a death sentence for your knockdown rebuild plans. But it does not have to be. The reality is more nuanced — and understanding the type of heritage listing on your property is the first step to knowing what is possible.</p>
+
+<h2>Heritage Conservation Area vs Individual Heritage Listing</h2>
+<p>These are two fundamentally different things, and the rules around demolition differ significantly:</p>
+
+<h3>Heritage Conservation Area (HCA)</h3>
+<p>An HCA is a precinct — an entire street or neighbourhood — identified as having heritage significance as a collective. Your house is in the area, but may not be individually significant.</p>
+<ul>
+  <li>Properties are typically classified as <strong>"contributing"</strong> or <strong>"non-contributing"</strong> to the heritage character of the area</li>
+  <li><strong>Non-contributing properties</strong> (e.g. a 1970s brick house in a Federation-era streetscape) can often be demolished and rebuilt, provided the new design is sympathetic to the area's character</li>
+  <li><strong>Contributing properties</strong> are harder — councils will strongly resist demolition, though it is not always impossible</li>
+  <li>New builds must typically address the council's heritage DCP — covering materials, roof form, setbacks, fencing, and colour palette</li>
+</ul>
+
+<h3>Individual Heritage Listing</h3>
+<p>An individual heritage listing means your specific property has been identified as having heritage significance. This is a much more restrictive situation:</p>
+<ul>
+  <li>Demolition is <strong>extremely unlikely</strong> to be approved</li>
+  <li>Even major alterations require council consent and often a heritage impact statement</li>
+  <li>Additions are possible but must be subordinate to the original structure and typically located at the rear</li>
+  <li>The Heritage Council (state level) may need to be consulted for state-listed items</li>
+</ul>
+
+<h2>How to Check Your Property's Heritage Status</h2>
+<p>Before panicking or making assumptions, check the actual listing:</p>
+<ol>
+  <li><strong>NSW:</strong> Search the <a href="https://www.hms.heritage.nsw.gov.au" target="_blank">NSW Heritage Management System</a> for state listings, and check your council's LEP maps for local heritage items and HCAs</li>
+  <li><strong>VIC:</strong> Check the <a href="https://vhd.heritagecouncil.vic.gov.au" target="_blank">Victorian Heritage Database</a> and your local council's planning scheme Heritage Overlay maps</li>
+  <li><strong>QLD:</strong> Search the <a href="https://apps.des.qld.gov.au/heritage-register/" target="_blank">Queensland Heritage Register</a></li>
+  <li><strong>Other states:</strong> Each has an equivalent state heritage register and local council overlays</li>
+</ol>
+<p>Pay attention to whether your property is listed as an individual item, or whether it simply falls within a broader heritage area.</p>
+
+<h2>What Happens If You Want to Demolish in an HCA</h2>
+<p>If your property is non-contributing in an HCA, the typical process is:</p>
+<ol>
+  <li><strong>Pre-lodgement meeting:</strong> Meet with your council's heritage planner ($200–$500). Bring photos of your property and initial concept sketches. They will tell you whether demolition is likely to be supported.</li>
+  <li><strong>Heritage impact statement:</strong> You may need a report from a heritage consultant ($2,000–$5,000) assessing the impact of demolition and the appropriateness of the proposed replacement.</li>
+  <li><strong>DA submission:</strong> CDC is not available in heritage areas — you must lodge a DA. Include a Statement of Environmental Effects addressing heritage provisions.</li>
+  <li><strong>Design response:</strong> Your new design must demonstrate how it responds to the heritage character of the area — materials, scale, roof form, and setbacks are all assessed.</li>
+  <li><strong>Determination:</strong> Council assesses, potentially with input from their Heritage Advisory Committee. Timeline: typically 3–6 months.</li>
+</ol>
+
+<h2>Real-World Examples</h2>
+
+<h3>Sydney: Willoughby Council HCA</h3>
+<p>Willoughby has several HCAs where non-contributing properties (typically post-war additions or replacements) have been approved for demolition and rebuild. The key is that replacement designs use materials and forms that are compatible with the Federation/Inter-War character — think brick, timber detailing, hipped roofs, and traditional proportions. Modern box designs are consistently refused.</p>
+
+<h3>Melbourne: Boroondara Heritage Overlay</h3>
+<p>Boroondara has one of the largest numbers of Heritage Overlays in metropolitan Melbourne. For non-contributing properties, council generally supports demolition if the replacement "positively contributes to the heritage character." Significant properties (individually listed or graded "significant" in a precinct) are effectively off-limits for demolition.</p>
+
+<h3>Sydney: Inner West Council</h3>
+<p>Inner West has extensive heritage areas covering Balmain, Rozelle, Leichhardt, and Annandale. The council has a detailed Heritage DCP that specifies acceptable materials, fence heights, and even paint colours for new builds within HCAs. Pre-lodgement consultation is strongly recommended before investing in detailed plans.</p>
+
+<h2>Cost Implications of Heritage</h2>
+<p>Building in a heritage area typically adds to your costs:</p>
+<ul>
+  <li><strong>Heritage consultant:</strong> $2,000–$8,000 for impact assessment and design advice</li>
+  <li><strong>Design costs:</strong> Heritage-sympathetic designs often cost more to document (special materials, detailing)</li>
+  <li><strong>Construction premium:</strong> Heritage-appropriate materials (sandstone, custom joinery, specific brick types) can add 10–20% to construction costs</li>
+  <li><strong>Longer approval timeline:</strong> Heritage DAs take longer, adding holding costs</li>
+  <li><strong>Potential for refusal:</strong> Unlike a straightforward CDC, there is real risk of refusal — budget for possible redesign</li>
+</ul>
+
+<h2>Tips for Success</h2>
+<ul>
+  <li><strong>Engage a heritage consultant early</strong> — before your architect draws detailed plans</li>
+  <li><strong>Study what has been approved nearby</strong> — search your council's DA tracker for recent approvals in your street or HCA</li>
+  <li><strong>Design with context in mind</strong> — the best heritage-area designs are not pastiche copies of old houses, but contemporary designs that respect the scale, materials, and rhythm of the streetscape</li>
+  <li><strong>Consider retention and extension</strong> — in some cases, keeping the front portion of an existing house and building a modern extension at the rear is faster, cheaper, and more likely to be approved than full demolition</li>
+</ul>
+
+<h2>Check Your Property</h2>
+<p>Not sure whether your property has a heritage overlay? Use our feasibility tool at <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> — it checks council-level overlays and flags heritage constraints as part of the assessment.</p>
+    `,
+    contentZh: `
+<p>发现你的物业有遗产覆盖（Heritage Overlay），可能感觉推倒重建的计划要泡汤了。但事实并非如此。实际情况比想象中复杂——理解你物业上遗产登记的类型，是判断可行性的第一步。</p>
+
+<h2>遗产保护区 vs 个体遗产登记</h2>
+<p>这是两个本质不同的概念，拆除规则差异很大：</p>
+
+<h3>遗产保护区（Heritage Conservation Area, HCA）</h3>
+<p>HCA是一个区域——整条街或整个社区——被认定为具有整体遗产价值。你的房子在这个区域内，但本身不一定有遗产价值。</p>
+<ul>
+  <li>物业通常被分为对该区域遗产特征有<strong>"贡献"</strong>或<strong>"无贡献"</strong></li>
+  <li><strong>无贡献物业</strong>（例如联邦时期街景中的70年代砖房）通常可以拆除重建，前提是新设计与该区域的特征协调</li>
+  <li><strong>有贡献物业</strong>更难——Council会强烈反对拆除，虽然并非完全不可能</li>
+  <li>新建筑通常须符合Council的遗产DCP——涵盖材料、屋顶形式、退缩距离、围栏和色彩方案</li>
+</ul>
+
+<h3>个体遗产登记</h3>
+<p>个体遗产登记意味着你的特定物业被认定为具有遗产价值。这是限制更严格的情况：</p>
+<ul>
+  <li>拆除<strong>几乎不可能</strong>获批</li>
+  <li>即使是重大改建也需要Council同意，通常还需要遗产影响报告</li>
+  <li>可以进行加建，但必须从属于原始建筑，通常位于后方</li>
+  <li>州级登记的项目可能需要咨询遗产委员会</li>
+</ul>
+
+<h2>如何查询你物业的遗产状态</h2>
+<p>在恐慌或假设之前，先查清楚实际登记情况：</p>
+<ol>
+  <li><strong>NSW：</strong>在 <a href="https://www.hms.heritage.nsw.gov.au" target="_blank">NSW Heritage Management System</a> 搜索州级登记，在你Council的LEP地图上查看本地遗产项目和HCA</li>
+  <li><strong>VIC：</strong>查看 <a href="https://vhd.heritagecouncil.vic.gov.au" target="_blank">Victorian Heritage Database</a> 和你Council规划方案中的Heritage Overlay地图</li>
+  <li><strong>QLD：</strong>搜索 <a href="https://apps.des.qld.gov.au/heritage-register/" target="_blank">Queensland Heritage Register</a></li>
+  <li><strong>其他州：</strong>各有对应的州遗产登记册和地方Council覆盖层</li>
+</ol>
+<p>关键是弄清你的物业是作为个体项目登记的，还是只是位于更大的遗产区域内。</p>
+
+<h2>在HCA中申请拆除的流程</h2>
+<p>如果你的物业在HCA中属于无贡献，典型流程如下：</p>
+<ol>
+  <li><strong>预沟通会议：</strong>与Council的遗产规划师会面（$200–$500）。带上物业照片和初步概念草图，他们会告诉你拆除是否可能获得支持。</li>
+  <li><strong>遗产影响报告：</strong>可能需要遗产顾问出具报告（$2,000–$5,000），评估拆除影响和替代方案的适当性。</li>
+  <li><strong>DA申请：</strong>遗产区域不能走CDC——必须提交DA，包含环境影响声明，论述遗产条款。</li>
+  <li><strong>设计回应：</strong>新设计必须展示如何回应该区域的遗产特征——材料、比例、屋顶形式、退缩距离都会被评估。</li>
+  <li><strong>审批：</strong>Council评估，可能征求遗产咨询委员会意见。时间线：通常3–6个月。</li>
+</ol>
+
+<h2>实际案例</h2>
+
+<h3>悉尼：Willoughby Council HCA</h3>
+<p>Willoughby有几个HCA，其中无贡献物业（通常是战后新增或替换的建筑）已获准拆除重建。关键是替代设计使用与联邦时期/战间期特征兼容的材料和形式——砖石、木质细节、四坡屋顶、传统比例。现代方盒子设计持续被拒。</p>
+
+<h3>墨尔本：Boroondara Heritage Overlay</h3>
+<p>Boroondara是墨尔本都会区Heritage Overlay数量最多的区域之一。对于无贡献物业，Council通常支持拆除，前提是替代建筑"对遗产特征有积极贡献"。重要物业（个体登记或在区域内被评为"significant"）基本不可能获批拆除。</p>
+
+<h3>悉尼：Inner West Council</h3>
+<p>Inner West有覆盖Balmain、Rozelle、Leichhardt和Annandale的大面积遗产区域。Council有详细的遗产DCP，规定了HCA内新建筑可接受的材料、围栏高度甚至油漆颜色。强烈建议在投入详细设计之前先做预沟通。</p>
+
+<h2>遗产区域的额外成本</h2>
+<p>在遗产区域建房通常会增加成本：</p>
+<ul>
+  <li><strong>遗产顾问：</strong>影响评估和设计建议 $2,000–$8,000</li>
+  <li><strong>设计成本：</strong>遗产协调设计需要更多文档工作（特殊材料、细节设计）</li>
+  <li><strong>施工溢价：</strong>遗产适配材料（砂岩、定制木工、特定砖块类型）可能使建筑成本增加10–20%</li>
+  <li><strong>更长的审批时间：</strong>遗产DA审批更慢，增加持有成本</li>
+  <li><strong>被拒的可能性：</strong>与简单的CDC不同，确实存在被拒风险——预算可能的重新设计费用</li>
+</ul>
+
+<h2>成功建议</h2>
+<ul>
+  <li><strong>尽早聘请遗产顾问</strong>——在建筑师画详细图纸之前</li>
+  <li><strong>研究附近获批的案例</strong>——在你Council的DA追踪器上搜索你所在街道或HCA最近的审批案例</li>
+  <li><strong>考虑环境设计</strong>——最好的遗产区域设计不是模仿老房子，而是在尊重街景的比例、材料和节奏的基础上做当代设计</li>
+  <li><strong>考虑保留加扩建</strong>——有时保留现有房屋前部、在后方建现代扩展，比完全拆除更快、更便宜、也更容易获批</li>
+</ul>
+
+<h2>查询你的物业</h2>
+<p>不确定你的物业是否有遗产覆盖？在 <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> 使用我们的可行性工具——它会检查Council级别的覆盖层，并在评估中标注遗产限制。</p>
+    `,
+  },
+
+  {
+    slug: 'dual-occupancy-guide',
+    title: 'Dual Occupancy: Build Two Homes on One Block',
+    titleZh: '双拼住宅：一块地建两套房的完整指南',
+    excerpt: 'Dual occupancy lets you build two dwellings on a single lot — attached or detached. Here is everything you need to know about lot sizes, costs, and approvals.',
+    excerptZh: '双拼住宅让你在一块地上建两套房——联体或独立。本文涵盖地块要求、费用和审批的全部知识。',
+    category: 'zoning',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-31',
+    readMinutes: 10,
+    tags: ['Dual Occupancy', 'Subdivision', 'Zoning', 'Two Homes', 'Lot Size'],
+    tagsZh: ['双拼', '分契', '分区', '两套房', '地块面积'],
+    content: `
+<p>Dual occupancy — building two dwellings on a single residential lot — is one of the most effective ways to maximise the value of your land. Whether you want to live in one and rent the other, house extended family, or sell one off, understanding the rules is essential before you invest in plans and approvals.</p>
+
+<h2>What Is Dual Occupancy?</h2>
+<p>A dual occupancy (also called "duplex" or "dual occ") means two separate dwellings on one lot. This can take several forms:</p>
+<ul>
+  <li><strong>Attached dual occupancy:</strong> Two dwellings sharing a common wall (like a duplex or semi-detached pair)</li>
+  <li><strong>Detached dual occupancy:</strong> Two separate buildings on the same lot, typically one at the front and one at the rear</li>
+  <li><strong>Dual occupancy with subdivision:</strong> The lot is divided into two Torrens titles, each with its own dwelling — creating two fully independent properties</li>
+</ul>
+<p>Note: a dual occupancy is different from a granny flat/secondary dwelling. A granny flat is subordinate to the main house and generally cannot be separately titled. A dual occupancy creates two equal dwellings.</p>
+
+<h2>Lot Size Requirements by State</h2>
+<p>Minimum lot sizes for dual occupancy vary significantly by state and by the specific zone within each council area:</p>
+
+<h3>NSW</h3>
+<ul>
+  <li>Minimum lot size is set by the council's LEP — typically <strong>600–800sqm</strong> for detached dual occ in R2 (Low Density Residential) zones</li>
+  <li>Some councils allow attached dual occ on lots as small as <strong>450–500sqm</strong></li>
+  <li>R3 (Medium Density) zones often have lower thresholds</li>
+  <li>CDC pathway available if all standards in the Codes SEPP are met (including lot width, setbacks, landscaping)</li>
+  <li>If subdividing, each resulting lot must meet the council's minimum lot size requirement</li>
+</ul>
+
+<h3>Victoria</h3>
+<ul>
+  <li>The <strong>General Residential Zone (GRZ)</strong> allows two dwellings on a lot (no permit required for the use, but a planning permit is needed for the building)</li>
+  <li>Minimum lot size varies — many councils set it at <strong>500–650sqm</strong></li>
+  <li>Must comply with <strong>ResCode</strong> (Clauses 54 and 55 of the planning scheme)</li>
+  <li>The <strong>Neighbourhood Residential Zone (NRZ)</strong> may restrict dual occupancy in some areas — check your zone</li>
+  <li>Garden area requirement: a minimum percentage of the lot (typically 25–35%) must be permeable garden area</li>
+</ul>
+
+<h3>Queensland</h3>
+<ul>
+  <li>Rules vary by local government, but dual occupancy is generally permitted in <strong>Low-Medium Density Residential</strong> zones</li>
+  <li>Typical minimum lot size: <strong>600–800sqm</strong></li>
+  <li>Often code-assessable (no public notification required)</li>
+  <li>Subdivision rules are set by the local council's planning scheme</li>
+</ul>
+
+<h3>South Australia</h3>
+<ul>
+  <li>Under the Planning and Design Code, dual occupancy is assessed against the <strong>General Neighbourhood Zone</strong> or <strong>Suburban Neighbourhood Zone</strong> criteria</li>
+  <li>Minimum lot sizes vary by zone and subzone — commonly <strong>450–700sqm</strong></li>
+  <li>"Deemed to satisfy" pathway available for compliant designs</li>
+</ul>
+
+<h3>Western Australia</h3>
+<ul>
+  <li>Governed by the <strong>Residential Design Codes (R-Codes)</strong></li>
+  <li>The R-Code assigned to your lot determines minimum lot sizes for grouped dwellings — e.g. R20 allows one dwelling per 500sqm, R30 allows one per 300sqm</li>
+  <li>Dual occupancy is generally straightforward in zones R25 and above</li>
+</ul>
+
+<h2>Attached vs Detached: Pros and Cons</h2>
+<table>
+  <thead><tr><th>Factor</th><th>Attached</th><th>Detached</th></tr></thead>
+  <tbody>
+    <tr><td>Lot size required</td><td>Smaller (450–600sqm)</td><td>Larger (600–800sqm+)</td></tr>
+    <tr><td>Construction cost</td><td>Lower (shared wall)</td><td>Higher (two separate structures)</td></tr>
+    <tr><td>Privacy</td><td>Less (shared wall)</td><td>More (separate buildings)</td></tr>
+    <tr><td>Subdivision</td><td>Easier (common wall on boundary)</td><td>More complex (driveway access, services)</td></tr>
+    <tr><td>Market appeal</td><td>Good for owner-occupiers</td><td>Good for investors and families</td></tr>
+    <tr><td>Design flexibility</td><td>More constrained</td><td>More flexible</td></tr>
+  </tbody>
+</table>
+
+<h2>Cost Range for Dual Occupancy (2026)</h2>
+<p>Total project costs depend heavily on location, design, and whether you subdivide:</p>
+<ul>
+  <li><strong>Demolition of existing home:</strong> $20,000–$40,000</li>
+  <li><strong>Construction of two dwellings (attached, mid-spec):</strong> $700,000–$1,200,000 total</li>
+  <li><strong>Construction of two dwellings (detached, mid-spec):</strong> $800,000–$1,400,000 total</li>
+  <li><strong>Council fees and contributions:</strong> $15,000–$60,000</li>
+  <li><strong>Professional fees (surveyor, planner, engineer):</strong> $15,000–$30,000</li>
+  <li><strong>Subdivision costs (if applicable):</strong> $15,000–$40,000 (survey, council fees, linen plan)</li>
+  <li><strong>Total project range:</strong> $800,000–$1,800,000+</li>
+</ul>
+
+<h2>The Subdivision Option</h2>
+<p>If your council allows it and the lot is large enough, you can subdivide after (or concurrently with) construction to create two separate Torrens titles. This is powerful because:</p>
+<ul>
+  <li>Each dwelling becomes an independent, sellable property</li>
+  <li>Separate titles generally achieve higher sale prices than strata-titled units</li>
+  <li>Each buyer can get a standard home loan (not an investor loan for a unit)</li>
+</ul>
+<p>The subdivision process involves a surveyor preparing a plan of subdivision, council approval, and registration with your state's land titles office. Budget 3–6 months and $15,000–$40,000 for the process.</p>
+
+<h2>Key Considerations</h2>
+<ul>
+  <li><strong>Driveway access:</strong> Both dwellings need legal and practical access to the street. A shared driveway with an easement may be required for rear dwellings.</li>
+  <li><strong>Parking:</strong> Most councils require 1–2 car spaces per dwelling</li>
+  <li><strong>Private open space:</strong> Each dwelling must have usable private outdoor space — typically 24–40sqm minimum</li>
+  <li><strong>Overlooking and overshadowing:</strong> Your design must demonstrate that neither dwelling unreasonably impacts neighbours or the other dwelling</li>
+  <li><strong>Infrastructure contributions:</strong> Councils may charge developer contributions for the additional dwelling</li>
+  <li><strong>Financing:</strong> Construction loans for dual occupancy are more complex — some lenders treat it as a development loan with stricter criteria</li>
+</ul>
+
+<h2>Is Dual Occupancy Right for Your Block?</h2>
+<p>The first question is always: does your lot meet the minimum size and zoning requirements? Check your council's planning controls, or run a quick check on <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> to see whether dual occupancy is feasible on your block.</p>
+    `,
+    contentZh: `
+<p>双拼住宅——在一块住宅用地上建两套房——是最大化土地价值的有效方式之一。无论你想自住一套出租一套、给大家庭提供住所，还是分开出售，在投入设计和审批之前了解规则至关重要。</p>
+
+<h2>什么是双拼住宅？</h2>
+<p>双拼住宅（Dual Occupancy，也叫"duplex"或"dual occ"）是指一块地上的两套独立住宅，有几种形式：</p>
+<ul>
+  <li><strong>联体双拼：</strong>两套住宅共享一面墙（像半独立屋）</li>
+  <li><strong>独立双拼：</strong>同一块地上的两栋独立建筑，通常一前一后</li>
+  <li><strong>带分契的双拼：</strong>地块一分为二，各有独立Torrens产权和住宅——创建两个完全独立的物业</li>
+</ul>
+<p>注意：双拼住宅不同于Granny Flat/附属住宅。Granny Flat从属于主屋，通常不能单独分契。双拼创建的是两套平等的住宅。</p>
+
+<h2>各州地块面积要求</h2>
+<p>双拼住宅的最小地块面积因州和各Council的具体分区而异：</p>
+
+<h3>NSW</h3>
+<ul>
+  <li>最小地块面积由Council的LEP规定——R2（低密度住宅）分区中独立双拼通常需要<strong>600–800平方米</strong></li>
+  <li>部分Council允许联体双拼在<strong>450–500平方米</strong>的地块上建造</li>
+  <li>R3（中密度）分区通常门槛更低</li>
+  <li>如果分契，每块结果地块必须满足Council的最小面积要求</li>
+</ul>
+
+<h3>Victoria</h3>
+<ul>
+  <li><strong>General Residential Zone (GRZ)</strong> 允许一块地上建两套房（用途无需许可，但建筑需要规划许可）</li>
+  <li>最小地块因Council而异——很多设在<strong>500–650平方米</strong></li>
+  <li>必须符合<strong>ResCode</strong>（规划方案第54和55条）</li>
+  <li><strong>Neighbourhood Residential Zone (NRZ)</strong> 在某些地区可能限制双拼——查看你的分区</li>
+  <li>花园面积要求：地块的最低百分比（通常25–35%）须为透水花园区域</li>
+</ul>
+
+<h3>Queensland</h3>
+<ul>
+  <li>规则因地方政府而异，但双拼通常在<strong>低中密度住宅</strong>分区允许</li>
+  <li>典型最小地块：<strong>600–800平方米</strong></li>
+  <li>通常为code-assessable（无需公示）</li>
+</ul>
+
+<h3>South Australia</h3>
+<ul>
+  <li>在Planning and Design Code下，双拼按<strong>General Neighbourhood Zone</strong>或<strong>Suburban Neighbourhood Zone</strong>标准评估</li>
+  <li>最小地块因区域和子区域而异——通常<strong>450–700平方米</strong></li>
+  <li>符合条件的设计可走"deemed to satisfy"快速通道</li>
+</ul>
+
+<h3>Western Australia</h3>
+<ul>
+  <li>由<strong>Residential Design Codes (R-Codes)</strong>管理</li>
+  <li>你地块的R-Code决定了组合住宅的最小地块面积——如R20每500平方米一套，R30每300平方米一套</li>
+  <li>R25及以上分区，双拼通常比较简单</li>
+</ul>
+
+<h2>联体 vs 独立：优劣对比</h2>
+<table>
+  <thead><tr><th>因素</th><th>联体</th><th>独立</th></tr></thead>
+  <tbody>
+    <tr><td>地块要求</td><td>较小（450–600sqm）</td><td>较大（600–800sqm+）</td></tr>
+    <tr><td>建筑成本</td><td>较低（共享墙体）</td><td>较高（两栋独立建筑）</td></tr>
+    <tr><td>隐私</td><td>较少（共享墙体）</td><td>较多（独立建筑）</td></tr>
+    <tr><td>分契</td><td>更容易（共墙在边界上）</td><td>更复杂（车道通行、水电气）</td></tr>
+    <tr><td>市场吸引力</td><td>适合自住者</td><td>适合投资者和家庭</td></tr>
+    <tr><td>设计灵活性</td><td>较受限</td><td>更灵活</td></tr>
+  </tbody>
+</table>
+
+<h2>双拼住宅费用范围（2026年）</h2>
+<p>总项目成本取决于地段、设计和是否分契：</p>
+<ul>
+  <li><strong>拆除现有住宅：</strong>$20,000–$40,000</li>
+  <li><strong>两套联体住宅建造（中档）：</strong>总计 $700,000–$1,200,000</li>
+  <li><strong>两套独立住宅建造（中档）：</strong>总计 $800,000–$1,400,000</li>
+  <li><strong>Council费用和贡献金：</strong>$15,000–$60,000</li>
+  <li><strong>专业费用（测量师、规划师、工程师）：</strong>$15,000–$30,000</li>
+  <li><strong>分契费用（如适用）：</strong>$15,000–$40,000（测量、Council费用、注册）</li>
+  <li><strong>总项目范围：</strong>$800,000–$1,800,000+</li>
+</ul>
+
+<h2>分契选项</h2>
+<p>如果Council允许且地块足够大，你可以在建造后（或同时）分契，创建两个独立的Torrens产权。这很有价值因为：</p>
+<ul>
+  <li>每套住宅成为独立的、可出售的物业</li>
+  <li>独立产权通常比Strata产权实现更高的售价</li>
+  <li>每个买家可以获得标准房贷（不是投资者公寓贷款）</li>
+</ul>
+<p>分契过程涉及测量师准备分割规划、Council审批和在州土地产权办公室注册。预算3–6个月和 $15,000–$40,000。</p>
+
+<h2>关键注意事项</h2>
+<ul>
+  <li><strong>车道通行：</strong>两套住宅都需要合法的街道通行权。后方住宅可能需要共享车道加地役权。</li>
+  <li><strong>停车位：</strong>多数Council要求每套住宅1–2个车位</li>
+  <li><strong>私人户外空间：</strong>每套住宅须有可用的私人户外空间——通常最少24–40平方米</li>
+  <li><strong>视线和遮阳影响：</strong>你的设计必须证明两套住宅都不会对邻居或对方造成不合理影响</li>
+  <li><strong>基础设施贡献金：</strong>Council可能对额外的住宅收取开发贡献金</li>
+  <li><strong>贷款：</strong>双拼住宅的建筑贷款更复杂——部分银行将其视为开发贷款，审批标准更严格</li>
+</ul>
+
+<h2>双拼住宅适合你的地块吗？</h2>
+<p>首要问题永远是：你的地块是否满足最小面积和分区要求？查看你Council的规划控制，或在 <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> 上做快速检查，看看双拼在你的地块上是否可行。</p>
+    `,
+  },
+
+  {
+    slug: 'building-costs-by-state-2026',
+    title: 'Building Costs by State: Sydney vs Melbourne vs Brisbane 2026',
+    titleZh: '2026年各州建筑成本对比：悉尼 vs 墨尔本 vs 布里斯班',
+    excerpt: 'Building costs vary up to 30% between Australian cities. This data-driven comparison covers per-sqm rates, labour costs, and why prices differ across states.',
+    excerptZh: '澳洲各城市建筑成本差异可达30%。本文用数据对比各州每平方米造价、人工费用以及价格差异的原因。',
+    category: 'construction',
+    author: 'AusBuildCircle Editorial',
+    authorRole: 'Editorial Team',
+    authorRoleZh: '编辑团队',
+    date: '2026-03-31',
+    readMinutes: 10,
+    tags: ['Building Costs', 'Sydney', 'Melbourne', 'Brisbane', 'State Comparison', '2026'],
+    tagsZh: ['建筑成本', '悉尼', '墨尔本', '布里斯班', '各州对比', '2026'],
+    content: `
+<p>One of the most frustrating aspects of budgeting for a new home is that building costs are highly location-dependent. A house that costs $750,000 to build in Brisbane could cost $950,000 in Sydney — for the same design and specification. This guide breaks down the differences and explains why they exist.</p>
+
+<h2>Per-Square-Metre Construction Costs (2026)</h2>
+<p>The following table shows typical construction costs (building contract only, excluding land, demolition, and soft costs) for a mid-range residential build in 2026:</p>
+<table>
+  <thead><tr><th>City / Region</th><th>Budget</th><th>Mid-Range</th><th>High-End</th><th>Luxury / Architect</th></tr></thead>
+  <tbody>
+    <tr><td>Sydney (metro)</td><td>$2,200–$2,800</td><td>$3,000–$4,000</td><td>$4,200–$5,500</td><td>$5,500–$8,000+</td></tr>
+    <tr><td>Sydney (outer west/south)</td><td>$2,000–$2,500</td><td>$2,700–$3,500</td><td>$3,800–$5,000</td><td>$5,000–$7,000+</td></tr>
+    <tr><td>Melbourne (metro)</td><td>$2,000–$2,600</td><td>$2,800–$3,800</td><td>$4,000–$5,200</td><td>$5,200–$7,500+</td></tr>
+    <tr><td>Melbourne (outer suburbs)</td><td>$1,800–$2,400</td><td>$2,500–$3,400</td><td>$3,600–$4,800</td><td>$4,800–$6,500+</td></tr>
+    <tr><td>Brisbane / SEQ</td><td>$1,900–$2,500</td><td>$2,700–$3,600</td><td>$3,800–$5,000</td><td>$5,000–$7,000+</td></tr>
+    <tr><td>Gold Coast</td><td>$2,000–$2,600</td><td>$2,800–$3,700</td><td>$3,900–$5,200</td><td>$5,200–$7,500+</td></tr>
+    <tr><td>Adelaide</td><td>$1,800–$2,400</td><td>$2,500–$3,400</td><td>$3,600–$4,800</td><td>$4,800–$6,500+</td></tr>
+    <tr><td>Perth</td><td>$1,900–$2,500</td><td>$2,600–$3,500</td><td>$3,700–$5,000</td><td>$5,000–$7,000+</td></tr>
+    <tr><td>Hobart</td><td>$2,000–$2,600</td><td>$2,700–$3,600</td><td>$3,800–$5,000</td><td>N/A (limited market)</td></tr>
+    <tr><td>Canberra</td><td>$2,100–$2,700</td><td>$2,900–$3,800</td><td>$4,000–$5,200</td><td>$5,200–$7,000+</td></tr>
+    <tr><td>Regional NSW/VIC</td><td>$1,800–$2,500</td><td>$2,500–$3,500</td><td>$3,500–$5,000</td><td>Varies widely</td></tr>
+  </tbody>
+</table>
+<p><em>Note: These ranges reflect market conditions as of early 2026. Actual costs vary by builder, design complexity, site conditions, and specification level.</em></p>
+
+<h2>Why Sydney Is the Most Expensive</h2>
+<p>Sydney consistently tops the list for building costs. Several factors drive this:</p>
+<ul>
+  <li><strong>Labour costs:</strong> Sydney tradesperson rates are the highest in the country. An experienced carpenter or plumber can command $60–$85/hour in Sydney vs $50–$70 in Brisbane or Adelaide. The total labour component of a build is typically 40–50% of the contract price.</li>
+  <li><strong>Council fees and contributions:</strong> Section 7.11 and 7.12 developer contributions in Sydney can be $20,000–$50,000+ per dwelling — significantly more than most other cities.</li>
+  <li><strong>Site complexity:</strong> Many Sydney blocks are sloping, have rock (sandstone), or have challenging access. These factors add $20,000–$100,000+ to site costs.</li>
+  <li><strong>Regulatory burden:</strong> NSW's planning system, while comprehensive, adds compliance costs (BASIX, NatHERS, development contributions) that are higher than most states.</li>
+  <li><strong>Demand:</strong> Strong demand for builders in Sydney means less competitive pricing and longer wait times.</li>
+</ul>
+
+<h2>Melbourne: Good Value for Quality</h2>
+<p>Melbourne building costs are typically 5–15% lower than Sydney for equivalent quality:</p>
+<ul>
+  <li><strong>Flatter land:</strong> Melbourne's western and northern suburbs are predominantly flat, reducing site costs</li>
+  <li><strong>Competitive builder market:</strong> Melbourne has more volume builders than any other city, driving competitive pricing for project homes</li>
+  <li><strong>Garden area requirements:</strong> VIC's mandatory garden area rules (30% minimum in GRZ) can reduce the buildable footprint, but this means smaller (cheaper) builds</li>
+  <li><strong>Energy efficiency:</strong> VIC requires 7-star NatHERS rating, which adds $5,000–$15,000 to build costs vs the national 6-star minimum</li>
+</ul>
+
+<h2>Brisbane and SEQ: Rising Fast</h2>
+<p>Brisbane has historically been one of the most affordable capital cities to build in. That gap is narrowing:</p>
+<ul>
+  <li><strong>Population growth:</strong> SEQ's population boom has created enormous demand for builders, pushing prices up</li>
+  <li><strong>Post-flood premium:</strong> Many areas have higher foundation requirements due to flood mapping, adding to costs</li>
+  <li><strong>Tropical/subtropical requirements:</strong> Termite management, cyclone ratings (in North QLD), and ventilation requirements add to building costs</li>
+  <li><strong>Still competitive:</strong> Despite increases, Brisbane remains 10–20% cheaper than Sydney for equivalent builds</li>
+</ul>
+
+<h2>Material Costs: A National Picture</h2>
+<p>Key material costs in 2026:</p>
+<table>
+  <thead><tr><th>Material</th><th>2024 Price</th><th>2026 Price</th><th>Trend</th></tr></thead>
+  <tbody>
+    <tr><td>Structural timber (framing)</td><td>$6–$9 per lineal metre</td><td>$5.50–$8 per lineal metre</td><td>Stabilised</td></tr>
+    <tr><td>Concrete (delivered)</td><td>$250–$320 per m³</td><td>$270–$350 per m³</td><td>Slight increase</td></tr>
+    <tr><td>Standard bricks</td><td>$0.80–$1.20 each</td><td>$0.85–$1.30 each</td><td>Stable</td></tr>
+    <tr><td>Plasterboard (13mm std)</td><td>$9–$13 per sheet</td><td>$10–$14 per sheet</td><td>Stable</td></tr>
+    <tr><td>Steel (reinforcing)</td><td>$1,200–$1,600 per tonne</td><td>$1,100–$1,500 per tonne</td><td>Eased</td></tr>
+    <tr><td>Roofing (Colorbond)</td><td>$25–$35 per sqm</td><td>$27–$38 per sqm</td><td>Slight increase</td></tr>
+  </tbody>
+</table>
+<p>Material costs have broadly stabilised after the supply chain disruptions of 2021–2023. The main cost driver in 2026 is labour, not materials.</p>
+
+<h2>Labour Rates by Trade (Approximate Hourly)</h2>
+<table>
+  <thead><tr><th>Trade</th><th>Sydney</th><th>Melbourne</th><th>Brisbane</th><th>Adelaide</th><th>Perth</th></tr></thead>
+  <tbody>
+    <tr><td>Carpenter</td><td>$65–$85</td><td>$55–$75</td><td>$55–$75</td><td>$50–$65</td><td>$55–$75</td></tr>
+    <tr><td>Electrician</td><td>$70–$90</td><td>$60–$80</td><td>$60–$80</td><td>$55–$70</td><td>$60–$80</td></tr>
+    <tr><td>Plumber</td><td>$75–$95</td><td>$65–$85</td><td>$60–$80</td><td>$55–$75</td><td>$65–$85</td></tr>
+    <tr><td>Bricklayer</td><td>$60–$80</td><td>$55–$75</td><td>$50–$70</td><td>$45–$65</td><td>$50–$70</td></tr>
+    <tr><td>Tiler</td><td>$60–$80</td><td>$55–$70</td><td>$50–$70</td><td>$45–$65</td><td>$50–$70</td></tr>
+  </tbody>
+</table>
+
+<h2>What Affects Your Specific Cost</h2>
+<p>Beyond location, these factors significantly impact your per-sqm rate:</p>
+<ul>
+  <li><strong>Single storey vs double storey:</strong> Double storey is typically 15–25% cheaper per sqm of total floor area (because you share one roof and one slab)</li>
+  <li><strong>Site slope:</strong> A sloping block can add $30,000–$150,000+ in retaining walls and excavation</li>
+  <li><strong>Soil type:</strong> Reactive clay (common in Melbourne's west) requires deeper foundations. Rock (common in Sydney) requires expensive excavation.</li>
+  <li><strong>Design complexity:</strong> Every corner, change of roofline, and non-standard angle adds cost</li>
+  <li><strong>Finish level:</strong> The difference between a laminate benchtop and a stone benchtop is $5,000–$15,000. Multiply this across every selection in the house.</li>
+</ul>
+
+<h2>How to Get Accurate Costs for Your Project</h2>
+<ol>
+  <li><strong>Get at least 3 quotes</strong> from licensed builders for the same design and specification</li>
+  <li><strong>Compare like for like:</strong> Ensure all quotes are based on the same specification. The cheapest quote is often the least specified.</li>
+  <li><strong>Factor in site costs:</strong> Ask for a separate site cost estimate or ensure it is clearly itemised in the quote</li>
+  <li><strong>Use our feasibility tool:</strong> <a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> provides suburb-level cost estimates based on current market data</li>
+</ol>
+    `,
+    contentZh: `
+<p>预算新房最令人沮丧的一点是，建筑成本高度依赖地理位置。同样的设计和规格，在布里斯班可能花$750,000，到悉尼就要$950,000。本指南详细拆解各州差异并解释原因。</p>
+
+<h2>每平方米建筑成本（2026年）</h2>
+<p>下表显示2026年中档住宅的典型建筑成本（仅建筑合同，不含土地、拆除和软性费用）：</p>
+<table>
+  <thead><tr><th>城市/地区</th><th>经济</th><th>中档</th><th>高端</th><th>豪华/建筑师设计</th></tr></thead>
+  <tbody>
+    <tr><td>悉尼（都会区）</td><td>$2,200–$2,800</td><td>$3,000–$4,000</td><td>$4,200–$5,500</td><td>$5,500–$8,000+</td></tr>
+    <tr><td>悉尼（外西/南区）</td><td>$2,000–$2,500</td><td>$2,700–$3,500</td><td>$3,800–$5,000</td><td>$5,000–$7,000+</td></tr>
+    <tr><td>墨尔本（都会区）</td><td>$2,000–$2,600</td><td>$2,800–$3,800</td><td>$4,000–$5,200</td><td>$5,200–$7,500+</td></tr>
+    <tr><td>墨尔本（外围郊区）</td><td>$1,800–$2,400</td><td>$2,500–$3,400</td><td>$3,600–$4,800</td><td>$4,800–$6,500+</td></tr>
+    <tr><td>布里斯班/东南昆</td><td>$1,900–$2,500</td><td>$2,700–$3,600</td><td>$3,800–$5,000</td><td>$5,000–$7,000+</td></tr>
+    <tr><td>黄金海岸</td><td>$2,000–$2,600</td><td>$2,800–$3,700</td><td>$3,900–$5,200</td><td>$5,200–$7,500+</td></tr>
+    <tr><td>阿德莱德</td><td>$1,800–$2,400</td><td>$2,500–$3,400</td><td>$3,600–$4,800</td><td>$4,800–$6,500+</td></tr>
+    <tr><td>珀斯</td><td>$1,900–$2,500</td><td>$2,600–$3,500</td><td>$3,700–$5,000</td><td>$5,000–$7,000+</td></tr>
+    <tr><td>霍巴特</td><td>$2,000–$2,600</td><td>$2,700–$3,600</td><td>$3,800–$5,000</td><td>市场有限</td></tr>
+    <tr><td>堪培拉</td><td>$2,100–$2,700</td><td>$2,900–$3,800</td><td>$4,000–$5,200</td><td>$5,200–$7,000+</td></tr>
+    <tr><td>地方NSW/VIC</td><td>$1,800–$2,500</td><td>$2,500–$3,500</td><td>$3,500–$5,000</td><td>差异大</td></tr>
+  </tbody>
+</table>
+<p><em>注：以上范围反映2026年初市场状况。实际成本因建筑商、设计复杂度、场地条件和规格水平而异。</em></p>
+
+<h2>为什么悉尼最贵</h2>
+<p>悉尼的建筑成本持续居全澳首位，原因如下：</p>
+<ul>
+  <li><strong>人工费用：</strong>悉尼技工时薪全澳最高。经验丰富的木匠或水管工在悉尼时薪$60–$85，布里斯班或阿德莱德只需$50–$70。人工通常占合同价的40–50%。</li>
+  <li><strong>Council费用和贡献金：</strong>悉尼的Section 7.11和7.12开发贡献金每套住宅可达$20,000–$50,000+——远高于其他城市。</li>
+  <li><strong>场地复杂度：</strong>悉尼很多地块有坡度、岩石（砂岩）或通行困难，这些可以给场地成本增加$20,000–$100,000+。</li>
+  <li><strong>监管成本：</strong>NSW的规划体系虽然完善，但增加了BASIX、NatHERS、开发贡献金等合规成本，高于大多数州。</li>
+  <li><strong>需求：</strong>悉尼对建筑商的强劲需求意味着定价竞争性较低，等待时间更长。</li>
+</ul>
+
+<h2>墨尔本：质量性价比高</h2>
+<p>墨尔本建筑成本通常比悉尼同等质量低5–15%：</p>
+<ul>
+  <li><strong>地形平坦：</strong>墨尔本西区和北区大多平坦，减少了场地费用</li>
+  <li><strong>竞争激烈的建筑市场：</strong>墨尔本的量产建筑商数量全澳最多，推动了标准户型的竞争性定价</li>
+  <li><strong>花园面积要求：</strong>VIC的强制花园面积规则（GRZ中最低30%）可能减少可建面积，但也意味着更小（更便宜）的建筑</li>
+  <li><strong>能效要求：</strong>VIC要求7星NatHERS评级，比全国最低6星标准多出$5,000–$15,000的建筑成本</li>
+</ul>
+
+<h2>布里斯班和东南昆士兰：快速上涨</h2>
+<p>布里斯班历来是建筑成本最实惠的首府城市之一，但差距在缩小：</p>
+<ul>
+  <li><strong>人口增长：</strong>东南昆的人口激增创造了巨大的建筑需求，推高了价格</li>
+  <li><strong>洪水溢价：</strong>许多地区因洪水地图而有更高的地基要求，增加了成本</li>
+  <li><strong>热带/亚热带要求：</strong>白蚁防治、飓风评级（北昆）和通风要求增加了建筑成本</li>
+  <li><strong>仍有竞争力：</strong>尽管涨价，布里斯班同等建筑仍比悉尼便宜10–20%</li>
+</ul>
+
+<h2>建材成本：全国概况</h2>
+<p>2026年主要建材价格：</p>
+<table>
+  <thead><tr><th>建材</th><th>2024年价格</th><th>2026年价格</th><th>趋势</th></tr></thead>
+  <tbody>
+    <tr><td>结构木材（框架）</td><td>$6–$9/延米</td><td>$5.50–$8/延米</td><td>趋稳</td></tr>
+    <tr><td>混凝土（运送到场）</td><td>$250–$320/立方米</td><td>$270–$350/立方米</td><td>微涨</td></tr>
+    <tr><td>标准砖</td><td>$0.80–$1.20/块</td><td>$0.85–$1.30/块</td><td>稳定</td></tr>
+    <tr><td>石膏板（13mm标准）</td><td>$9–$13/张</td><td>$10–$14/张</td><td>稳定</td></tr>
+    <tr><td>钢材（钢筋）</td><td>$1,200–$1,600/吨</td><td>$1,100–$1,500/吨</td><td>回落</td></tr>
+    <tr><td>屋顶（Colorbond）</td><td>$25–$35/平方米</td><td>$27–$38/平方米</td><td>微涨</td></tr>
+  </tbody>
+</table>
+<p>经历了2021–2023年的供应链混乱后，建材成本已基本趋稳。2026年的主要成本驱动因素是人工，不是材料。</p>
+
+<h2>各行业技工时薪（大致）</h2>
+<table>
+  <thead><tr><th>工种</th><th>悉尼</th><th>墨尔本</th><th>布里斯班</th><th>阿德莱德</th><th>珀斯</th></tr></thead>
+  <tbody>
+    <tr><td>木匠</td><td>$65–$85</td><td>$55–$75</td><td>$55–$75</td><td>$50–$65</td><td>$55–$75</td></tr>
+    <tr><td>电工</td><td>$70–$90</td><td>$60–$80</td><td>$60–$80</td><td>$55–$70</td><td>$60–$80</td></tr>
+    <tr><td>水管工</td><td>$75–$95</td><td>$65–$85</td><td>$60–$80</td><td>$55–$75</td><td>$65–$85</td></tr>
+    <tr><td>砌砖工</td><td>$60–$80</td><td>$55–$75</td><td>$50–$70</td><td>$45–$65</td><td>$50–$70</td></tr>
+    <tr><td>贴砖工</td><td>$60–$80</td><td>$55–$70</td><td>$50–$70</td><td>$45–$65</td><td>$50–$70</td></tr>
+  </tbody>
+</table>
+
+<h2>影响你具体成本的因素</h2>
+<p>除了地理位置，以下因素也显著影响你的每平方米造价：</p>
+<ul>
+  <li><strong>单层 vs 双层：</strong>双层每平方米（按总建筑面积计）通常便宜15–25%（因为共享一个屋顶和一块地基）</li>
+  <li><strong>地块坡度：</strong>有坡度的地块可能增加$30,000–$150,000+的挡土墙和开挖费用</li>
+  <li><strong>土壤类型：</strong>膨胀性粘土（墨尔本西区常见）需要更深的地基。岩石（悉尼常见）需要昂贵的开挖。</li>
+  <li><strong>设计复杂度：</strong>每个转角、屋顶线变化和非标准角度都增加成本</li>
+  <li><strong>装修等级：</strong>一个复合板台面和石材台面的差价是$5,000–$15,000。把这个差异乘以房子里的每个选择。</li>
+</ul>
+
+<h2>如何获得你项目的准确报价</h2>
+<ol>
+  <li><strong>至少拿3个报价</strong>，基于相同的设计和规格</li>
+  <li><strong>同等对比：</strong>确保所有报价基于相同规格。最便宜的报价往往规格最低。</li>
+  <li><strong>考虑场地费用：</strong>要求单独的场地成本估算，或确保在报价中清晰列明</li>
+  <li><strong>使用我们的可行性工具：</strong><a href="https://ausbuildcircle.com/feasibility">AusBuildCircle.com</a> 基于当前市场数据提供区域级别的成本估算</li>
+</ol>
+    `,
+  },
 ]
+
+export const ARTICLES: Article[] = [..._ARTICLES, ...ARTICLES_BATCH2]
