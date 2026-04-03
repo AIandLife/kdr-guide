@@ -55,7 +55,23 @@ export async function POST(req: NextRequest) {
       from: `AusBuildCircle <${fromEmail}>`,
       to: normalizedEmail,
       subject: `Your verification code: ${code}`,
-      text: `Your AusBuildCircle verification code is: ${code}\n\nThis code expires in 10 minutes.\n\nIf you didn't request this, please ignore this email.\n\n你的澳洲建房圈验证码是：${code}\n验证码10分钟内有效。如非本人操作，请忽略。`,
+      html: `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:480px;margin:0 auto;background:#f9fafb;">
+  <div style="background:#f97316;padding:28px 24px;text-align:center;border-radius:12px 12px 0 0;">
+    <span style="font-weight:800;font-size:20px;color:#fff;letter-spacing:0.5px;">AusBuildCircle</span>
+    <p style="color:rgba(255,255,255,0.8);font-size:12px;margin:6px 0 0;">澳洲建房圈</p>
+  </div>
+  <div style="padding:32px 24px;background:#fff;">
+    <h2 style="color:#111;font-size:18px;margin:0 0 8px;font-weight:700;">Password Verification Code</h2>
+    <p style="color:#555;font-size:14px;margin:0 0 24px;line-height:1.5;">Enter this code on the website to set your password:<br>请在网页上输入以下验证码来设置密码：</p>
+    <div style="background:#1a1a2e;border-radius:12px;padding:24px;text-align:center;margin:0 0 24px;">
+      <span style="font-size:36px;font-weight:800;letter-spacing:12px;color:#f97316;font-family:monospace;">${code}</span>
+    </div>
+    <p style="color:#999;font-size:12px;margin:0;line-height:1.5;">This code expires in 10 minutes. If you didn't request this, please ignore this email.<br>验证码 10 分钟内有效。如非本人操作，请忽略。</p>
+  </div>
+  <div style="padding:16px 24px;text-align:center;border-top:1px solid #eee;">
+    <span style="color:#bbb;font-size:11px;">AusBuildCircle · <a href="https://ausbuildcircle.com" style="color:#f97316;text-decoration:none;">ausbuildcircle.com</a></span>
+  </div>
+</div>`,
     })
 
     return NextResponse.json({ ok: true })
