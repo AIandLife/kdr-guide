@@ -4,6 +4,7 @@ import './globals.css'
 import { LangProvider } from '@/lib/language-context'
 import { AuthProvider } from '@/lib/auth-context'
 import FeedbackWidget from '@/components/FeedbackWidget'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 import type { Lang } from '@/lib/i18n'
 
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
     description: 'AI feasibility reports, verified builders, and building material suppliers for knockdown rebuild, renovation, extension and granny flat projects across Australia.',
     url: 'https://ausbuildcircle.com',
     siteName: 'AusBuildCircle 澳洲建房圈',
+    images: [{ url: '/og.jpg', width: 1200, height: 630 }],
     locale: 'en_AU',
     type: 'website',
   },
@@ -37,6 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={initialLang === 'zh' ? 'zh' : 'en'}>
       <body className="min-h-screen bg-gray-950 text-white antialiased">
+        <GoogleAnalytics />
         <LangProvider initialLang={initialLang}>
           <AuthProvider>
             {children}
