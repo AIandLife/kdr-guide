@@ -1,20 +1,22 @@
 'use client'
 
-import { useState, Suspense, useEffect } from 'react'
+import { useState, useRef, Suspense, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Loader2, Globe, Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import { Loader2, Globe, Eye, EyeOff, Lock, Mail, ArrowLeft, CheckCircle } from 'lucide-react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { useLang } from '@/lib/language-context'
 
 type Tab = 'login' | 'register'
+type ResetStep = 'email' | 'code' | 'password' | 'done'
 
 function LoginForm() {
   const { lang } = useLang()
   const isZh = lang === 'zh'
   const searchParams = useSearchParams()
   const next = searchParams.get('next') ?? '/'
+  const startForgot = searchParams.get('forgot') === 'true'
 
   const [tab, setTab] = useState<Tab>('login')
   const [email, setEmail] = useState('')
@@ -26,6 +28,15 @@ function LoginForm() {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [isWeChat, setIsWeChat] = useState(false)
+
+  // Reset password OTP state
+  const [showReset, setShowReset] = useState(startForgot)
+  const [resetStep, setResetStep] = useState<ResetStep>('email')
+  const [resetEmail, setResetEmail] = useState('')
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', ''])
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([])
 
   useEffect(() => {
     setIsWeChat(/MicroMessenger/i.test(navigator.userAgent))
@@ -51,7 +62,6 @@ function LoginForm() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
-      // Check if this might be a magic-link-only user
       if (error.message === 'Invalid login credentials') {
         setError(
           isZh
@@ -65,7 +75,6 @@ function LoginForm() {
       return
     }
 
-    // Success — redirect
     window.location.href = next
   }
 
@@ -108,7 +117,6 @@ function LoginForm() {
       return
     }
 
-    // Subscribe to newsletter
     if (newsletter) {
       fetch('/api/newsletter', {
         method: 'POST',
@@ -117,32 +125,7 @@ function LoginForm() {
       }).catch(() => {})
     }
 
-    // Auto-confirm is enabled, so user is logged in immediately
     window.location.href = next
-  }
-
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setError(isZh ? '请先输入邮箱地址' : 'Please enter your email first')
-      return
-    }
-    setLoading(true)
-    resetState()
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
-    })
-
-    if (error) {
-      setError(error.message)
-    } else {
-      setMessage(
-        isZh
-          ? `密码重置链接已发送到 ${email}，请查收邮件。`
-          : `Password reset link sent to ${email}. Check your email.`
-      )
-    }
-    setLoading(false)
   }
 
   const handleGoogle = async () => {
@@ -152,9 +135,351 @@ function LoginForm() {
     })
   }
 
+  // ---- OTP Reset Flow ----
+  const openResetFlow = () => {
+    setShowReset(true)
+    setResetStep('email')
+    setResetEmail(email) // pre-fill from login form
+    setOtpDigits(['', '', '', '', '', ''])
+    setNewPassword('')
+    setConfirmNewPassword('')
+    resetState()
+  }
+
+  const handleSendCode = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!resetEmail) {
+      setError(isZh ? '请输入邮箱地址' : 'Please enter your email')
+      return
+    }
+    setLoading(true)
+    resetState()
+
+    try {
+      const res = await fetch('/api/auth/send-reset-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: resetEmail }),
+      })
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Failed to send code')
+        setLoading(false)
+        return
+      }
+
+      setMessage(
+        isZh
+          ? `验证码已发送到 ${resetEmail}，请查收邮件（检查垃圾箱）。`
+          : `Code sent to ${resetEmail}. Check your inbox (and spam folder).`
+      )
+      setResetStep('code')
+    } catch {
+      setError(isZh ? '发送失败，请稍后重试' : 'Failed to send. Please try again.')
+    }
+    setLoading(false)
+  }
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (value.length > 1) {
+      // Handle paste: distribute digits across inputs
+      const digits = value.replace(/\D/g, '').slice(0, 6).split('')
+      const newOtp = [...otpDigits]
+      digits.forEach((d, i) => {
+        if (index + i < 6) newOtp[index + i] = d
+      })
+      setOtpDigits(newOtp)
+      const nextIndex = Math.min(index + digits.length, 5)
+      otpRefs.current[nextIndex]?.focus()
+      return
+    }
+
+    if (value && !/^\d$/.test(value)) return // only digits
+
+    const newOtp = [...otpDigits]
+    newOtp[index] = value
+    setOtpDigits(newOtp)
+
+    if (value && index < 5) {
+      otpRefs.current[index + 1]?.focus()
+    }
+  }
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus()
+    }
+  }
+
+  const handleVerifyCode = (e: React.FormEvent) => {
+    e.preventDefault()
+    const code = otpDigits.join('')
+    if (code.length !== 6) {
+      setError(isZh ? '请输入完整的 6 位验证码' : 'Please enter the full 6-digit code')
+      return
+    }
+    resetState()
+    setResetStep('password')
+  }
+
+  const handleSetNewPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    resetState()
+
+    if (newPassword.length < 6) {
+      setError(isZh ? '密码至少需要 6 个字符' : 'Password must be at least 6 characters')
+      return
+    }
+    if (newPassword !== confirmNewPassword) {
+      setError(isZh ? '两次密码不一致' : 'Passwords do not match')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const res = await fetch('/api/auth/verify-reset-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: resetEmail,
+          code: otpDigits.join(''),
+          newPassword,
+        }),
+      })
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Failed to reset password')
+        // If code is invalid/expired, go back to code step
+        if (res.status === 400) {
+          setResetStep('code')
+          setOtpDigits(['', '', '', '', '', ''])
+        }
+        setLoading(false)
+        return
+      }
+
+      setResetStep('done')
+    } catch {
+      setError(isZh ? '操作失败，请稍后重试' : 'Failed. Please try again.')
+    }
+    setLoading(false)
+  }
+
+  const backToLogin = () => {
+    setShowReset(false)
+    setResetStep('email')
+    resetState()
+  }
+
   const inputClass =
     'w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-400'
 
+  // ---- Reset Password UI ----
+  if (showReset) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="w-full max-w-sm">
+          <div className="text-center mb-8">
+            <Link href="/" className="inline-flex items-center gap-2 mb-6">
+              <Image src="/logo-icon.png" alt="AusBuildCircle" width={40} height={40} className="rounded-xl" />
+              <span className="font-bold text-xl text-gray-900">AusBuildCircle</span>
+            </Link>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="p-6 space-y-4">
+              {/* Back button */}
+              {resetStep !== 'done' && (
+                <button
+                  onClick={backToLogin}
+                  className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  {isZh ? '返回登录' : 'Back to login'}
+                </button>
+              )}
+
+              {/* Step 1: Enter email */}
+              {resetStep === 'email' && (
+                <form onSubmit={handleSendCode} className="space-y-3">
+                  <h2 className="text-lg font-bold text-gray-900">
+                    {isZh ? '重置密码' : 'Reset password'}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    {isZh
+                      ? '输入你的邮箱，我们会发送一个 6 位验证码。'
+                      : "Enter your email and we'll send you a 6-digit code."}
+                  </p>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="email"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      placeholder={isZh ? '邮箱地址' : 'Email address'}
+                      required
+                      className={`${inputClass} pl-10`}
+                      autoFocus
+                    />
+                  </div>
+
+                  {error && <p className="text-xs text-red-500">{error}</p>}
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                    style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
+                  >
+                    {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {isZh ? '发送验证码' : 'Send code'}
+                  </button>
+                </form>
+              )}
+
+              {/* Step 2: Enter 6-digit code */}
+              {resetStep === 'code' && (
+                <form onSubmit={handleVerifyCode} className="space-y-3">
+                  <h2 className="text-lg font-bold text-gray-900">
+                    {isZh ? '输入验证码' : 'Enter verification code'}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    {isZh
+                      ? `验证码已发送到 ${resetEmail}`
+                      : `Code sent to ${resetEmail}`}
+                  </p>
+
+                  <div className="flex gap-2 justify-center py-2">
+                    {otpDigits.map((digit, i) => (
+                      <input
+                        key={i}
+                        ref={(el) => { otpRefs.current[i] = el }}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(i, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                        className="w-11 h-13 text-center text-xl font-bold rounded-xl border border-gray-200 bg-gray-50 text-gray-900 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        autoFocus={i === 0}
+                      />
+                    ))}
+                  </div>
+
+                  {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+                  {message && <p className="text-xs text-green-600 text-center">{message}</p>}
+
+                  <button
+                    type="submit"
+                    disabled={loading || otpDigits.join('').length !== 6}
+                    className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                    style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
+                  >
+                    {isZh ? '验证' : 'Verify'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setResetStep('email')
+                      resetState()
+                    }}
+                    className="w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {isZh ? '没收到？重新发送' : "Didn't receive it? Resend"}
+                  </button>
+                </form>
+              )}
+
+              {/* Step 3: Set new password */}
+              {resetStep === 'password' && (
+                <form onSubmit={handleSetNewPassword} className="space-y-3">
+                  <h2 className="text-lg font-bold text-gray-900">
+                    {isZh ? '设置新密码' : 'Set new password'}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    {isZh ? '请输入你的新密码（至少 6 位）' : 'Enter your new password (min 6 characters)'}
+                  </p>
+
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder={isZh ? '新密码' : 'New password'}
+                      required
+                      minLength={6}
+                      className={`${inputClass} pl-10 pr-10`}
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      placeholder={isZh ? '确认新密码' : 'Confirm new password'}
+                      required
+                      minLength={6}
+                      className={`${inputClass} pl-10`}
+                    />
+                  </div>
+
+                  {error && <p className="text-xs text-red-500">{error}</p>}
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                    style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
+                  >
+                    {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {isZh ? '设置密码' : 'Set password'}
+                  </button>
+                </form>
+              )}
+
+              {/* Step 4: Done */}
+              {resetStep === 'done' && (
+                <div className="text-center py-4">
+                  <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-8 h-8 text-green-500" />
+                  </div>
+                  <p className="font-semibold text-gray-900 mb-1">
+                    {isZh ? '密码已设置！' : 'Password set!'}
+                  </p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    {isZh ? '你现在可以用新密码登录了。' : 'You can now log in with your new password.'}
+                  </p>
+                  <button
+                    onClick={backToLogin}
+                    className="inline-block px-6 py-3 rounded-xl text-white font-semibold text-sm"
+                    style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
+                  >
+                    {isZh ? '去登录' : 'Go to login'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ---- Normal Login / Register UI ----
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
@@ -286,14 +611,14 @@ function LoginForm() {
                 <div className="flex items-center justify-between text-xs">
                   <button
                     type="button"
-                    onClick={handleForgotPassword}
+                    onClick={openResetFlow}
                     className="text-orange-500 hover:text-orange-600 transition-colors"
                   >
                     {isZh ? '忘记密码？' : 'Forgot password?'}
                   </button>
                   <button
                     type="button"
-                    onClick={handleForgotPassword}
+                    onClick={openResetFlow}
                     className="text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     {isZh ? '之前用邮件链接登录？设置密码' : 'Used email link before? Set password'}

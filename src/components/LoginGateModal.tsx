@@ -123,28 +123,9 @@ export function LoginGateModal({
     }
   }
 
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setError(isZh ? '请先输入邮箱地址' : 'Please enter your email first')
-      return
-    }
-    setLoading(true)
-    resetState()
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
-    })
-
-    if (error) {
-      setError(error.message)
-    } else {
-      setMessage(
-        isZh
-          ? `密码重置链接已发送到 ${email}，请查收邮件。`
-          : `Password reset link sent to ${email}. Check your email.`
-      )
-    }
-    setLoading(false)
+  const handleForgotPassword = () => {
+    // Redirect to login page with forgot=true to use the OTP reset flow
+    window.location.href = `/login?forgot=true`
   }
 
   const handleGoogle = async () => {
