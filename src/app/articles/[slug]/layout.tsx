@@ -12,6 +12,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${article.title} | AusBuildCircle 澳洲建房圈`,
     description: article.excerpt,
+    alternates: {
+      canonical: `/articles/${slug}`,
+    },
     openGraph: {
       title: article.title,
       description: article.excerpt,
@@ -20,11 +23,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       publishedTime: article.date,
       authors: [article.author],
       siteName: 'AusBuildCircle 澳洲建房圈',
+      images: [{ url: '/og.jpg', width: 1200, height: 630 }],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: article.title,
       description: article.excerpt,
+      images: ['/og.jpg'],
     },
   }
 }
@@ -57,7 +62,9 @@ async function ArticleJsonLd({ params }: { params: Promise<{ slug: string }> }) 
     '@type': 'Article',
     headline: article.title,
     description: article.excerpt,
+    image: ['https://ausbuildcircle.com/og.jpg'],
     datePublished: article.date,
+    dateModified: article.date,
     author: {
       '@type': 'Organization',
       name: 'AusBuildCircle',

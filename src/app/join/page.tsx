@@ -716,50 +716,40 @@ export default function JoinPage() {
     )
   }
 
-  // ── Step 3: Listed — Verification Upsell ───────────────────────────────
+  // ── Step 2: Listed — Success ─────────────────────────────────────────────
   if (view === 'listed') {
-    const benefits = isZh ? VERIFY_BENEFITS_ZH : VERIFY_BENEFITS_EN
-    const docs = VERIFY_DOCS[form.category] || VERIFY_DOCS['Other']
-
     return (
       <div className="min-h-screen bg-gray-50">
         <SiteNav backHref="/professionals" backLabel={isZh ? '返回' : 'Back'} currentPath="/join" />
 
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-          {/* Success confirmation */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-16">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+              <CheckCircle className="w-9 h-9 text-green-600" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-              {isZh ? '✅ 收录成功！' : '✅ You\'re Listed!'}
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+              {isZh ? '✅ 收录成功！' : "✅ You're Listed!"}
             </h1>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-sm mb-8 max-w-md mx-auto leading-relaxed">
               {isZh
-                ? '你的免费收录已生效。想要脱颖而出？'
-                : 'Your free listing is now active. Want to stand out?'}
+                ? '你的公司信息已收录到专业人士目录中，业主可以直接看到并联系你。'
+                : 'Your business is now in the professional directory — homeowners can find and contact you directly.'}
             </p>
-          </div>
-
-          {/* Verification upsell card */}
-          <VerificationUpsellCard
-            isZh={isZh}
-            benefits={benefits}
-            docs={docs}
-            category={form.category}
-            email={form.email}
-            businessName={form.businessName}
-            professionalId={professionalId}
-          />
-
-          {/* Skip link */}
-          <div className="text-center mt-6">
-            <Link
-              href="/dashboard"
-              className="text-sm text-gray-400 hover:text-gray-600 transition-colors underline underline-offset-2"
-            >
-              {isZh ? '稍后再说 — 先去看看' : 'Skip for now — I\'ll do it later'}
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                href="/professionals"
+                className="px-6 py-3 rounded-xl text-white font-semibold transition-all"
+                style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
+              >
+                {isZh ? '浏览专业人士目录' : 'Browse Directory'}
+              </Link>
+              <Link
+                href="/dashboard"
+                className="px-6 py-3 rounded-xl text-gray-600 font-medium transition-colors bg-gray-100 hover:bg-gray-200 border border-gray-200"
+              >
+                {isZh ? '进入我的后台' : 'Go to Dashboard'}
+              </Link>
+            </div>
           </div>
         </div>
       </div>

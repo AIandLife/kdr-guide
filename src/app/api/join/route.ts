@@ -16,11 +16,13 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { businessName, contactName, email, phone, state, category, regions, website, description, businessNameEn, contactNameEn, descriptionEn, userId, languages } = body
+    const { businessName, contactName, email: rawEmail, phone, state, category, regions, website, description, businessNameEn, contactNameEn, descriptionEn, userId, languages } = body
 
-    if (!businessName || !contactName || !email || !state || !category) {
+    if (!businessName || !contactName || !rawEmail || !state || !category) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 })
     }
+
+    const email = String(rawEmail).toLowerCase().trim()
 
     // Simple rate limit: reject if same email submitted in last 60 minutes
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()

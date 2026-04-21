@@ -26,9 +26,6 @@ export const metadata: Metadata = {
     title: 'AusBuildCircle 澳洲建房圈',
     description: 'AI feasibility reports, verified builders, and building material suppliers for knockdown rebuild, renovation, extension and granny flat projects across Australia.',
   },
-  alternates: {
-    canonical: '/',
-  },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

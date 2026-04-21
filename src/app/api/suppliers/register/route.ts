@@ -26,15 +26,17 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
     const {
-      businessName, contactName, email, phone, website, wechat, abn,
+      businessName, contactName, email: rawEmail, phone, website, wechat, abn,
       category, origin, description, states, specialties,
       // verification fields (optional on first submit)
       asicNumber, businessLicenseNote, verificationNote,
     } = body
 
-    if (!businessName || !contactName || !email || !category || !origin) {
+    if (!businessName || !contactName || !rawEmail || !category || !origin) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 })
     }
+
+    const email = String(rawEmail).toLowerCase().trim()
 
     // Check for duplicate email
     const { data: existing } = await supabase
