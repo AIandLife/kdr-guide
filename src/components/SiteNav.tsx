@@ -25,12 +25,13 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
   const { user, loading } = useAuth()
 
   const links = [
-    { href: '/guide',         label: t.nav.guide },
-    { href: '/articles',      label: t.nav.articles },
-    { href: '/professionals', label: t.nav.professionals },
-    { href: '/suppliers',     label: t.nav.suppliers },
-    { href: '/tenders',       label: t.nav.tenders },
-    { href: '/forum',         label: t.nav.forum },
+    { href: '/guide/kdr',        label: t.nav.kdr },
+    { href: '/guide/granny',     label: t.nav.granny },
+    { href: '/guide/renovation', label: t.nav.renovation },
+    { href: '/professionals',    label: t.nav.professionals },
+    { href: '/suppliers',        label: t.nav.suppliers },
+    { href: '/articles',         label: t.nav.articles },
+    { href: '/forum',            label: t.nav.forum },
   ]
 
   const handleSignOut = async () => {

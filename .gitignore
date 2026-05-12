@@ -9,3 +9,7 @@ node_modules/
 **/.DS_Store
 supabase/.temp/
 supabase/.temp/
+
+_design/
+_terryos.md
+tsconfig.tsbuildinfo
