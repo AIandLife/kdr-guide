@@ -1,13 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 import { createClient as createServerClient } from '@/lib/supabase/server'
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+const getSupabaseAdmin = () => createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim()
 )
 
 // GET /api/reviews?entity_type=professional&entity_id=xxx
 export async function GET(req: Request) {
+  const supabaseAdmin = getSupabaseAdmin()
   const url = new URL(req.url)
   const entityType = url.searchParams.get('entity_type')
   const entityId = url.searchParams.get('entity_id')
@@ -46,6 +47,7 @@ export async function GET(req: Request) {
 
 // POST /api/reviews
 export async function POST(req: Request) {
+  const supabaseAdmin = getSupabaseAdmin()
   // Check auth via server client
   const serverSupa = await createServerClient()
   const { data: { user } } = await serverSupa.auth.getUser()
