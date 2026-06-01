@@ -542,9 +542,13 @@ function FeasibilityContent() {
                   {lang === 'zh' ? '实时规划数据' : 'Live Planning Data'}
                 </span>
                 <span className="text-green-600">
-                  {lang === 'zh'
-                    ? `已从${result._liveZone.source === 'nsw-eplan' ? 'NSW ePlanning Portal' : result._liveZone.source === 'vic-vicplan' ? 'VicPlan' : result._liveZone.source}读取实时分区数据`
-                    : `Zone data pulled live from ${result._liveZone.source === 'nsw-eplan' ? 'NSW ePlanning Portal' : result._liveZone.source === 'vic-vicplan' ? 'VicPlan' : result._liveZone.source}`}
+                  {(() => {
+                    const s = result._liveZone.source
+                    const name = s === 'nsw-eplan' ? 'NSW ePlanning Portal'
+                      : s === 'vic-vicplan' ? 'VicPlan'
+                      : (lang === 'zh' ? 'NSW 地籍' : 'NSW Cadastre') // source 为空=分区未命中、但地块数据来自地籍
+                    return lang === 'zh' ? `已从 ${name} 读取实时数据` : `Live data from ${name}`
+                  })()}
                 </span>
                 <div className="flex flex-wrap gap-2 ml-auto">
                   {result._liveZone.zoneCode && (
