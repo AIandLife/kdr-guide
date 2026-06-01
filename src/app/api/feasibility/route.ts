@@ -80,15 +80,9 @@ export async function POST(req: Request) {
         if (ls?.minRequired) {
           ls.passed = sqm >= ls.minRequired
         }
-        const ce = report.costEstimate as { demolition?: number[]; buildPerSqm?: number[]; totalEstimate?: number[] } | undefined
-        if (ce?.buildPerSqm) {
-          const [bMin, bMax] = ce.buildPerSqm
-          const [dMin, dMax] = ce.demolition ?? [0, 0]
-          ce.totalEstimate = [
-            Math.round((bMin * sqm + dMin) / 1000) * 1000,
-            Math.round((bMax * sqm + dMax) / 1000) * 1000,
-          ]
-        }
+        // NOTE: do NOT recompute total as buildPerSqm × lotSize — lotSize is the
+        // LAND area, not the dwelling floor area. The cached report's totalEstimate
+        // is already correct; multiplying by land area produces absurd totals.
       }
 
       const encoder = new TextEncoder()
