@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { findCouncilBySuburb, findCouncil, STATE_COST_RANGES } from '@/lib/council-data'
-import { getLiveZoning, type LiveZoneData } from '@/lib/spatial-api'
+import { getLiveSite, type LiveZoneData, type ParcelData } from '@/lib/spatial-api'
 
 export const runtime = 'edge'  // Edge Runtime: 30s limit on Hobby (vs 10s for serverless)
 
@@ -125,15 +125,21 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Suburb is required' }, { status: 400 })
     }
 
-    // 1. Try live spatial API with a 4s timeout — skip gracefully if slow
+    // 1. Try live spatial API (geocode once → zoning + real parcel area) with timeout
     let liveZone: LiveZoneData | null = null
+    let liveParcel: ParcelData | null = null
     if (state) {
       const lookupAddress = address || suburb
-      liveZone = await Promise.race([
-        getLiveZoning(lookupAddress, state),
-        new Promise<null>(resolve => setTimeout(() => resolve(null), 4000)),
+      const site = await Promise.race([
+        getLiveSite(lookupAddress, state),
+        new Promise<{ zone: null; parcel: null }>(resolve => setTimeout(() => resolve({ zone: null, parcel: null }), 6000)),
       ])
+      liveZone = site.zone
+      liveParcel = site.parcel
     }
+    // Lot size: user input wins; otherwise fall back to the real cadastre area (NSW)
+    const effectiveLotSize: number | null = lotSize ? Number(lotSize) : (liveParcel?.areaSqm ?? null)
+    const lotSizeSource: 'user' | 'cadastre' | null = lotSize ? 'user' : (liveParcel?.areaSqm ? 'cadastre' : null)
 
     // 2. Try static council data
     const councilData = findCouncilBySuburb(suburb, state) || findCouncil(suburb)
@@ -142,7 +148,7 @@ export async function POST(req: Request) {
     // 3. Build context for AI — live data takes priority, supplemented by council static data
     let contextInfo: string
     if (liveZone) {
-      const liveCtx = buildLiveZoneContext(liveZone, lotSize ? Number(lotSize) : null)
+      const liveCtx = buildLiveZoneContext(liveZone, effectiveLotSize)
       const staticSupp = councilData ? `
 SUPPLEMENTARY COUNCIL DATA (${councilData.council}):
 - Heritage Risk: ${councilData.heritageRisk}
@@ -279,7 +285,7 @@ Project Type: ${projectLabelText}
 ${projectContext}
 Suburb: ${suburb}
 ${state ? `State: ${state}` : ''}
-${lotSize ? `Lot Size: ${lotSize} sqm` : ''}
+${effectiveLotSize ? `Lot Size: ${effectiveLotSize} sqm${lotSizeSource === 'cadastre' ? ' (from NSW cadastre — official)' : ''}` : ''}
 
 ${contextInfo}
 
@@ -356,13 +362,16 @@ CRITICAL ACCURACY RULES:
 - For pre-1987 homes, always flag asbestos removal cost.`
 
     // Attach live zone metadata for the frontend badge
-    const liveMeta = liveZone ? {
-      source: liveZone.source,
-      zoneCode: liveZone.zoneCode,
-      zoneName: liveZone.zoneName,
-      fsr: liveZone.fsr,
-      maxHeight: liveZone.maxHeight,
-      minLotSize: liveZone.minLotSize,
+    const liveMeta = (liveZone || liveParcel) ? {
+      source: liveZone?.source ?? null,
+      zoneCode: liveZone?.zoneCode ?? null,
+      zoneName: liveZone?.zoneName ?? null,
+      fsr: liveZone?.fsr ?? null,
+      maxHeight: liveZone?.maxHeight ?? null,
+      minLotSize: liveZone?.minLotSize ?? null,
+      lotAreaSqm: liveParcel?.areaSqm ?? null,   // real registered lot area (NSW cadastre)
+      lotId: liveParcel?.lotId ?? null,
+      lotSource: lotSizeSource,                  // 'user' | 'cadastre' | null
     } : null
 
     // Stream Claude's response — returns tokens as they arrive
@@ -448,7 +457,7 @@ CRITICAL ACCURACY RULES:
             await supabase.from('feasibility_searches').insert({
               suburb,
               state: dbState,
-              lot_size: lotSize ? Number(lotSize) : null,
+              lot_size: effectiveLotSize,
               project_type: projectType || 'kdr',
               council: councilData?.council || parsed.council || null,
               feasibility_score: parsed.feasibilityScore || null,
