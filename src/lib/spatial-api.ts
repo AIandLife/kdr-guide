@@ -365,3 +365,94 @@ export async function getLiveZoning(address: string, state: string): Promise<Liv
     return null
   }
 }
+
+// ─── NSW Cadastre: real parcel area + lot id ──────────────────────────────────
+// Layer 9 "Lot" of the NSW DCDB. Point-intersect returns the registered lot,
+// incl. planlotarea (registered area, units in planlotareaunits) and lotidstring.
+
+export interface ParcelData {
+  source: 'nsw-cadastre'
+  areaSqm: number | null   // registered lot area in square metres
+  lotId: string | null     // e.g. "2//DP1001738"
+  frontageM: number | null // TODO: derive from geometry + road layer (not yet wired)
+}
+
+const NSW_CADASTRE_LOT_URL =
+  'https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9/query'
+
+// Local equirectangular projection → shoelace area in m² (accurate at parcel scale).
+function ringAreaSqm(ring: number[][]): number {
+  if (!ring || ring.length < 4) return 0
+  const lat0 = (ring.reduce((s, p) => s + p[1], 0) / ring.length) * Math.PI / 180
+  const mLng = 111320 * Math.cos(lat0)
+  const mLat = 110540
+  const pts = ring.map(([x, y]) => [x * mLng, y * mLat])
+  let a = 0
+  for (let i = 0; i < pts.length - 1; i++) {
+    a += pts[i][0] * pts[i + 1][1] - pts[i + 1][0] * pts[i][1]
+  }
+  return Math.abs(a) / 2
+}
+
+export async function getNSWParcel(lat: number, lng: number): Promise<ParcelData | null> {
+  try {
+    const url = `${NSW_CADASTRE_LOT_URL}?geometry=${lng},${lat}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=planlotarea,planlotareaunits,lotidstring&returnGeometry=true&outSR=4326&f=json`
+    const res = await fetch(url, {
+      headers: { 'Accept': 'application/json', 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
+      signal: AbortSignal.timeout(6000),
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    const feat = data?.features?.[0]
+    if (!feat) return null
+    const a: Record<string, unknown> = feat.attributes || {}
+    // 1) Registered area if present (planlotareaunits is usually "Meters" = m²)
+    let areaSqm: number | null = typeof a.planlotarea === 'number' ? a.planlotarea : null
+    const units = String(a.planlotareaunits ?? '').toLowerCase()
+    if (areaSqm != null && units.includes('hect')) areaSqm = areaSqm * 10000 // hectares → m²
+    // 2) Fall back to geometry — many older DP lots have no registered area field
+    if (areaSqm == null) {
+      const rings = (feat.geometry?.rings ?? []) as number[][][]
+      if (rings.length) areaSqm = ringAreaSqm(rings[0])
+    }
+    return {
+      source: 'nsw-cadastre',
+      areaSqm: areaSqm != null ? Math.round(areaSqm) : null,
+      lotId: a.lotidstring ? String(a.lotidstring) : null,
+      frontageM: null,
+    }
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Geocode ONCE, then fetch zoning + parcel in parallel.
+ * Real parcel area is currently NSW-only; other states return parcel: null.
+ */
+export async function getLiveSite(
+  address: string,
+  state: string,
+): Promise<{ zone: LiveZoneData | null; parcel: ParcelData | null }> {
+  const coords = await geocodeAddress(address)
+  if (!coords) return { zone: null, parcel: null }
+  const s = state.toUpperCase()
+  const zoneP: Promise<LiveZoneData | null> = (async () => {
+    try {
+      switch (s) {
+        case 'NSW': return await getNSWZoning(coords.lat, coords.lng)
+        case 'VIC': return await getVICZoning(coords.lat, coords.lng)
+        case 'QLD': return await getQLDZoning(coords.lat, coords.lng)
+        case 'WA':  return await getWAZoning(coords.lat, coords.lng)
+        case 'SA':  return await getSAZoning(coords.lat, coords.lng)
+        default:    return null
+      }
+    } catch { return null }
+  })()
+  const parcelP: Promise<ParcelData | null> = (async () => {
+    try { return s === 'NSW' ? await getNSWParcel(coords.lat, coords.lng) : null }
+    catch { return null }
+  })()
+  const [zone, parcel] = await Promise.all([zoneP, parcelP])
+  return { zone, parcel }
+}

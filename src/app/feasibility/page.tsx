@@ -30,6 +30,9 @@ interface LiveZoneMeta {
   fsr: string | null
   maxHeight: number | null
   minLotSize: number | null
+  lotAreaSqm?: number | null
+  lotId?: string | null
+  lotSource?: 'user' | 'cadastre' | null
 }
 
 interface FeasibilityResult {
@@ -562,6 +565,11 @@ function FeasibilityContent() {
                   {result._liveZone.minLotSize && (
                     <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full border border-green-200">
                       {lang === 'zh' ? `最小地块 ${result._liveZone.minLotSize}m²` : `Min lot ${result._liveZone.minLotSize}m²`}
+                    </span>
+                  )}
+                  {result._liveZone.lotAreaSqm && result._liveZone.lotSource === 'cadastre' && (
+                    <span className="bg-green-100 text-green-800 font-semibold text-xs px-2 py-0.5 rounded-full border border-green-200">
+                      {lang === 'zh' ? `🏠 地块 ${result._liveZone.lotAreaSqm}m² 实测` : `🏠 Lot ${result._liveZone.lotAreaSqm}m² (cadastre)`}
                     </span>
                   )}
                 </div>
