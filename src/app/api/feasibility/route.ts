@@ -132,7 +132,7 @@ export async function POST(req: Request) {
       const lookupAddress = address || suburb
       const site = await Promise.race([
         getLiveSite(lookupAddress, state),
-        new Promise<{ zone: null; parcel: null }>(resolve => setTimeout(() => resolve({ zone: null, parcel: null }), 6000)),
+        new Promise<{ zone: null; parcel: null }>(resolve => setTimeout(() => resolve({ zone: null, parcel: null }), 13000)),
       ])
       liveZone = site.zone
       liveParcel = site.parcel

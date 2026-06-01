@@ -453,6 +453,12 @@ export async function getLiveSite(
     try { return s === 'NSW' ? await getNSWParcel(coords.lat, coords.lng) : null }
     catch { return null }
   })()
-  const [zone, parcel] = await Promise.all([zoneP, parcelP])
+  // Guard each sub-query independently so a slow zoning lookup can't discard a
+  // ready parcel result (or vice-versa).
+  const SUB_TIMEOUT = 7000
+  const [zone, parcel] = await Promise.all([
+    Promise.race([zoneP, new Promise<LiveZoneData | null>(r => setTimeout(() => r(null), SUB_TIMEOUT))]),
+    Promise.race([parcelP, new Promise<ParcelData | null>(r => setTimeout(() => r(null), SUB_TIMEOUT))]),
+  ])
   return { zone, parcel }
 }
