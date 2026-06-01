@@ -355,6 +355,7 @@ Be specific, honest, and practical. If risks are high, say so clearly. Use real 
 
 CRITICAL ACCURACY RULES:
 - Build costs: Use 2024-2026 realistic ranges. Sydney/Melbourne/Perth mid-spec KDR = $2,800-$4,200/sqm minimum. Do NOT use $1,800/sqm — that is pre-2022 data.
+- CRITICAL — "Lot Size" is the LAND area, NOT the floor area being built. NEVER multiply the lot size by the per-sqm build rate. A new home's floor area is typically 200-350 sqm (or FSR × lot if that is smaller); apply the per-sqm build cost ONLY to that floor area. For renovations/extensions/granny flats, apply it only to the added/affected floor area (granny flats max 60 sqm). A typical detached KDR total build is $400k-$1.2m — totals in the tens of millions are ALWAYS wrong and mean you mistakenly used land area as floor area.
 - DA timelines: Use real-world times, not statutory targets. Inner Sydney councils = 6-18 months. Outer suburban = 3-6 months.
 - Heritage: If the council has Heritage Conservation Areas (Strathfield, Woollahra, Inner West, Boroondara etc.), explicitly warn CDC may NOT be available.
 - Always include Section 7.11 contributions in NSW cost estimates (commonly $8,000-$20,000).
