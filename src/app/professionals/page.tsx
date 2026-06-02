@@ -109,7 +109,9 @@ function DemandFeed({ isZh }: { isZh: boolean }) {
       {/* Signal list */}
       <div className="divide-y divide-gray-50">
         {signals.map((s, i) => {
-          const proj = PROJECT_LABELS[s.projectType]
+          // Defensive: DB data can contain unexpected projectType values (legacy
+          // rows, alternate casing, bad writes). Never let one crash the page.
+          const proj = PROJECT_LABELS[s.projectType] ?? { en: s.projectType || 'Project', zh: s.projectType || '项目', color: 'orange' }
           const isRealAndRecent = s.isReal && s.hoursAgo < 2
           return (
             <div key={`${s.suburb}-${i}-${s.hoursAgo}`}
