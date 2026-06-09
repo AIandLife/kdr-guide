@@ -342,7 +342,11 @@ Generate a comprehensive, honest feasibility report tailored to the project type
       "timing": <${isZh ? '简体中文说明在流程中何时聘请' : 'when in the process to engage them'}>
     }
   ],
-  "keyInsight": <${isZh ? '1句最重要的简体中文提示' : '1 sentence — the single most important thing this homeowner needs to know'}>
+  "keyInsight": <${isZh ? '1句最重要的简体中文提示' : '1 sentence — the single most important thing this homeowner needs to know'}>,
+  "worthIt": {
+    "verdict": ${isZh ? '<"划算" | "要算一下" | "不一定划算">' : '<"Worth it" | "Do the maths" | "Maybe not">'},
+    "reason": <${isZh ? '1句直白的"值不值"理由，给大致数字' : '1 plain-language money-case sentence with a rough number'}>
+  }
 }
 
 Be specific, honest, and practical. If risks are high, say so clearly. Use real Australian industry knowledge.
@@ -353,6 +357,8 @@ CRITICAL ACCURACY RULES:
 - DA timelines: Use real-world times, not statutory targets. Inner Sydney councils = 6-18 months. Outer suburban = 3-6 months.
 - Heritage: If the council has Heritage Conservation Areas (Strathfield, Woollahra, Inner West, Boroondara etc.), explicitly warn CDC may NOT be available.
 - Always include Section 7.11 contributions in NSW cost estimates (commonly $8,000-$20,000).
+- WORTH-IT: Always fill "worthIt" — the money case the homeowner cares about most. KDR: you keep the land + pay no stamp duty, so it usually beats buying an equivalent new home by a meaningful amount — estimate it (e.g. "~$150k–$250k cheaper than buying new here"). Granny flat: weekly rental yield vs build cost. Dual occ: subdivision uplift (two titles worth more than one block). Renovation/extension: value-add vs cost and the renovate-vs-rebuild crossover. Be honest if it's marginal.
+- NEXT STEPS: the FIRST step (urgency "First") must be a concrete action the homeowner can do THIS WEEK, with a rough price and why — e.g. "Order a Section 10.7 certificate ($50, ~1 week) to confirm easements and overlays before spending on design." Make it unmissable and do-able, not vague.
 - Always include OSD stormwater tank where required by council.
 - For pre-1987 homes, always flag asbestos removal cost.`
 
