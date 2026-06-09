@@ -56,6 +56,7 @@ interface FeasibilityResult {
   nextSteps: { step: number; title: string; detail: string; urgency: string }[]
   professionals: { role: string; why: string; timing: string }[]
   keyInsight: string
+  worthIt?: { verdict: string; reason: string }
   _liveZone?: LiveZoneMeta
 }
 
@@ -666,6 +667,17 @@ function FeasibilityContent() {
                   </p>
                 </div>
               </div>
+              {result.worthIt && (
+                <div className="mt-3 bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl shrink-0 leading-none">💰</span>
+                    <p className="text-emerald-900 text-sm leading-relaxed">
+                      <strong>{lang === 'zh' ? '值不值' : 'Worth it?'} · {result.worthIt.verdict}</strong>
+                      {' — '}{result.worthIt.reason}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Lot Size Check */}
@@ -792,6 +804,16 @@ function FeasibilityContent() {
                 <ChevronRight className="w-5 h-5 text-orange-500" />
                 {tf.nextStepsTitle}
               </h2>
+              {(() => {
+                const first = result.nextSteps.find(s => s.urgency === 'First') || result.nextSteps[0]
+                return first ? (
+                  <div className="mb-4 bg-orange-500 text-white rounded-xl p-4">
+                    <div className="text-xs font-semibold text-orange-50 mb-1">{lang === 'zh' ? '👉 下一步，就做这一件' : '👉 Your single next step'}</div>
+                    <div className="text-base font-bold">{first.title}</div>
+                    <div className="text-sm text-orange-50 mt-1 leading-relaxed">{first.detail}</div>
+                  </div>
+                ) : null
+              })()}
               <div className="space-y-4">
                 {result.nextSteps.map((step, i) => (
                   <div key={i} className="flex gap-4">
