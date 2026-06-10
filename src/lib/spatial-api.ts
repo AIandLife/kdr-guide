@@ -21,6 +21,10 @@ export interface LiveZoneData {
 export interface GeoPoint {
   lat: number
   lng: number
+  /** true only when the geocoder matched a specific house/building — a
+   *  suburb-only match lands on an arbitrary coordinate (often a park or
+   *  school) and must never be treated as the user's parcel. */
+  precise?: boolean
 }
 
 // ─── Geocoder (cached, with fallback — free, no key required) ─────────────────
@@ -40,7 +44,14 @@ async function geocodeNominatim(q: string): Promise<GeoPoint | null> {
     if (!res.ok) return null
     const data = await res.json()
     if (!data.length) return null
-    return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) }
+    const d = data[0]
+    const t = String(d.addresstype || d.type || '')
+    const c = String(d.class || '')
+    return {
+      lat: parseFloat(d.lat),
+      lng: parseFloat(d.lon),
+      precise: c === 'building' || ['house', 'address', 'building'].includes(t),
+    }
   } catch { return null }
 }
 
@@ -52,9 +63,12 @@ async function geocodePhoton(q: string): Promise<GeoPoint | null> {
     })
     if (!res.ok) return null
     const data = await res.json()
-    const coords = data?.features?.[0]?.geometry?.coordinates
+    const f = data?.features?.[0]
+    const coords = f?.geometry?.coordinates
     if (!Array.isArray(coords) || coords.length < 2) return null
-    return { lat: coords[1], lng: coords[0] }
+    const t = String(f?.properties?.type || '')
+    const k = String(f?.properties?.osm_key || '')
+    return { lat: coords[1], lng: coords[0], precise: t === 'house' || k === 'building' }
   } catch { return null }
 }
 
@@ -476,8 +490,13 @@ export async function getLiveSite(
     } catch { return null }
   })()
   const parcelP: Promise<ParcelData | null> = (async () => {
-    try { return s === 'NSW' ? await getNSWParcel(coords.lat, coords.lng) : null }
-    catch { return null }
+    try {
+      // Parcel facts only make sense for a street-level address. A suburb-only
+      // geocode is an arbitrary centroid — often a park, school or reserve —
+      // and reporting that parcel (e.g. 40,000㎡) as "your lot" is badly wrong.
+      if (!coords.precise) return null
+      return s === 'NSW' ? await getNSWParcel(coords.lat, coords.lng) : null
+    } catch { return null }
   })()
   // Guard each sub-query independently so a slow zoning lookup can't discard a
   // ready parcel result (or vice-versa).
