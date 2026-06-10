@@ -346,7 +346,17 @@ Generate a comprehensive, honest feasibility report tailored to the project type
   "worthIt": {
     "verdict": ${isZh ? '<"划算" | "要算一下" | "不一定划算">' : '<"Worth it" | "Do the maths" | "Maybe not">'},
     "reason": <${isZh ? '1句直白的"值不值"理由，给大致数字' : '1 plain-language money-case sentence with a rough number'}>
-  }
+  },
+  "alternatives": [
+    {
+      "typeKey": <"kdr" | "granny-flat" | "dual-occ" | "renovation" | "extension" — must DIFFER from the current project type>,
+      "label": <${isZh ? '该类型的简体中文名' : 'type name'}>,
+      "cost": <short cost range string e.g. "$120k–$250k">,
+      "months": <short duration string e.g. "6–9">,
+      "note": <${isZh ? '1句话：这块地走这条路的优劣（要尊重地块事实）' : '1 sentence: why this path may or may not suit this block'}>
+    },
+    <exactly 2 items — the two most relevant ALTERNATIVE types for this block>
+  ]
 }
 
 Be specific, honest, and practical. If risks are high, say so clearly. Use real Australian industry knowledge.
@@ -359,6 +369,7 @@ CRITICAL ACCURACY RULES:
 - Always include Section 7.11 contributions in NSW cost estimates (commonly $8,000-$20,000).
 - WORTH-IT: Always fill "worthIt" — the money case the homeowner cares about most. KDR: you keep the land + pay no stamp duty, so it usually beats buying an equivalent new home by a meaningful amount — estimate it (e.g. "~$150k–$250k cheaper than buying new here"). Granny flat: weekly rental yield vs build cost. Dual occ: subdivision uplift (two titles worth more than one block). Renovation/extension: value-add vs cost and the renovate-vs-rebuild crossover. Be honest if it's marginal.
 - NEXT STEPS: the FIRST step (urgency "First") must be a concrete action the homeowner can do THIS WEEK, with a rough price and why — e.g. "Order a Section 10.7 certificate ($50, ~1 week) to confirm easements and overlays before spending on design." Make it unmissable and do-able, not vague.
+- ALTERNATIVES: pick the 2 most relevant OTHER project types for THIS block (e.g. KDR requested → granny-flat & dual-occ). Notes must respect the block facts (lot size, zoning, frontage) — if subdivision/dual occupancy is unlikely on this lot, say so honestly. One short sentence each.
 - Always include OSD stormwater tank where required by council.
 - For pre-1987 homes, always flag asbestos removal cost.`
 
