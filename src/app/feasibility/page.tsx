@@ -261,6 +261,7 @@ function FeasibilityContent() {
   }, [searchParams, user])
 
   const [loadingStep, setLoadingStep] = useState(0)
+  const [liveFacts, setLiveFacts] = useState<LiveZoneMeta | null>(null)
 
   const fetchFeasibility = async (sub: string, addr: string, lot: string, st: string, l: string, pt = 'kdr') => {
     if (!sub) return
@@ -268,6 +269,14 @@ function FeasibilityContent() {
     setLoadingStep(0)
     setError('')
     setResult(null)
+    setLiveFacts(null)
+
+    // Fast, LLM-free facts lookup in PARALLEL — shows the real block data within
+    // seconds, long before the slow AI report finishes. Degrades silently.
+    fetch('/api/site-data', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ suburb: sub, address: addr || null, state: st, lotSize: lot ? Number(lot) : null }),
+    }).then(r => r.json()).then(d => { if (d?.meta) setLiveFacts(d.meta) }).catch(() => {})
 
     // Animated step progression (purely cosmetic, gives feedback during the ~8-15s wait)
     const stepTimer1 = setTimeout(() => setLoadingStep(1), 1800)
@@ -503,6 +512,20 @@ function FeasibilityContent() {
           <div className="bg-white border border-gray-200 rounded-2xl p-10 text-center shadow-sm">
             <Loader2 className="w-12 h-12 animate-spin text-orange-400 mx-auto mb-6" />
             <p className="text-gray-700 text-lg font-semibold mb-6">{tf.loadingTitle}</p>
+            {liveFacts && (liveFacts.zoneCode || liveFacts.lotAreaSqm) && (
+              <div className="max-w-md mx-auto mb-6 bg-green-50 border border-green-200 rounded-xl p-4 text-left">
+                <p className="text-sm font-semibold text-green-700 mb-2 flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4" /> {lang === 'zh' ? '已查到你这块地（官方数据）' : 'Found your block (official data)'}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {liveFacts.zoneCode && <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">{liveFacts.zoneCode}{liveFacts.zoneName ? ' · ' + liveFacts.zoneName : ''}</span>}
+                  {liveFacts.lotAreaSqm && liveFacts.lotSource === 'cadastre' && <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded-full">🏠 {lang === 'zh' ? '地块' : 'Lot'} {liveFacts.lotAreaSqm}㎡</span>}
+                  {liveFacts.minLotSize && <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">{lang === 'zh' ? '最小地块' : 'Min lot'} {liveFacts.minLotSize}㎡</span>}
+                  {liveFacts.maxHeight && <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">{lang === 'zh' ? '限高' : 'Max'} {liveFacts.maxHeight}m</span>}
+                </div>
+                <p className="text-[11px] text-green-600 mt-2">{lang === 'zh' ? 'AI 正在据此生成你的完整报告…' : 'AI is writing your full report from this…'}</p>
+              </div>
+            )}
             <div className="max-w-xs mx-auto space-y-3 text-left">
               {(lang === 'zh'
                 ? ['正在查询规划分区数据...', '正在分析地块条件与风险...', '正在估算建设费用与时间线...', '正在生成可行性报告...']
