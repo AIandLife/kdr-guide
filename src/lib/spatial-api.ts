@@ -23,13 +23,17 @@ export interface GeoPoint {
   lng: number
 }
 
-// ─── Geocoder (Nominatim, free, no key required) ─────────────────────────────
+// ─── Geocoder (cached, with fallback — free, no key required) ─────────────────
+// Nominatim rate-limits hard (and can block a server IP under load), so we cache
+// successes in-memory per warm instance and fall back to Photon (also OSM-based,
+// independent host) when Nominatim is unavailable. Failures are NOT cached so the
+// next request can recover.
 
-export async function geocodeAddress(address: string): Promise<GeoPoint | null> {
+const geocodeCache = new Map<string, GeoPoint>()
+
+async function geocodeNominatim(q: string): Promise<GeoPoint | null> {
   try {
-    const q = encodeURIComponent(address + ', Australia')
-    const url = `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=au`
-    const res = await fetch(url, {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=au`, {
       headers: { 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
       signal: AbortSignal.timeout(5000),
     })
@@ -37,9 +41,31 @@ export async function geocodeAddress(address: string): Promise<GeoPoint | null> 
     const data = await res.json()
     if (!data.length) return null
     return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) }
-  } catch {
-    return null
-  }
+  } catch { return null }
+}
+
+async function geocodePhoton(q: string): Promise<GeoPoint | null> {
+  try {
+    const res = await fetch(`https://photon.komoot.io/api/?q=${q}&limit=1`, {
+      headers: { 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
+      signal: AbortSignal.timeout(5000),
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    const coords = data?.features?.[0]?.geometry?.coordinates
+    if (!Array.isArray(coords) || coords.length < 2) return null
+    return { lat: coords[1], lng: coords[0] }
+  } catch { return null }
+}
+
+export async function geocodeAddress(address: string): Promise<GeoPoint | null> {
+  const key = address.trim().toLowerCase()
+  const cached = geocodeCache.get(key)
+  if (cached) return cached
+  const q = encodeURIComponent(address + ', Australia')
+  const point = (await geocodeNominatim(q)) || (await geocodePhoton(q))
+  if (point) geocodeCache.set(key, point)
+  return point
 }
 
 // ─── NSW ePlanning API ────────────────────────────────────────────────────────
