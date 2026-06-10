@@ -83,6 +83,53 @@ export async function geocodeAddress(address: string): Promise<GeoPoint | null> 
   return point
 }
 
+// ─── NSW official address geocoder (GURAS Address Points) ────────────────────
+// OSM house-number coverage in Australia is patchy, so street addresses often
+// geocode only to street level and we lose the parcel lookup. The NSW Spatial
+// Services Geocoded Addressing Theme holds EVERY NSW house number — exact,
+// free, and the point sits on the actual lot. Returns precise:true on a match.
+
+const NSW_ADDR_URL =
+  'https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Geocoded_Addressing_Theme/FeatureServer/1/query'
+
+export async function geocodeNSWAddress(raw: string): Promise<GeoPoint | null> {
+  try {
+    let s = raw.toUpperCase().replace(/[^A-Z0-9\/\- ]+/g, ' ').replace(/\s+/g, ' ').trim()
+    s = s.replace(/\b(NSW|NEW SOUTH WALES|AUSTRALIA)\b/g, ' ').replace(/\b\d{4}\b\s*$/, '').replace(/\s+/g, ' ').trim()
+    // "5/12 Smith St" → use the street number 12; "Unit 5 12 Smith St" likewise
+    const m = s.match(/^(?:UNIT\s+\d+[A-Z]?\s+|\d+[A-Z]?\s*\/\s*)?(\d+[A-Z]?(?:-\d+[A-Z]?)?)\s+([A-Z'\-]{2,})\s*(.*)$/)
+    if (!m) return null
+    const hn = m[1]
+    const firstWord = m[2]
+    const rest = (m[3] || '').trim()
+    const where = `housenumber='${hn}' AND address LIKE '${hn} ${firstWord}%'`
+    const url = `${NSW_ADDR_URL}?where=${encodeURIComponent(where)}&outFields=address&returnGeometry=true&outSR=4326&resultRecordCount=10&f=json`
+    const res = await fetch(url, {
+      headers: { 'Accept': 'application/json', 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
+      signal: AbortSignal.timeout(6000),
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    const feats: { attributes?: { address?: string }; geometry?: { x?: number; y?: number } }[] = data?.features || []
+    if (!feats.length) return null
+    let best = feats[0]
+    if (feats.length > 1 && rest) {
+      // Disambiguate by how many remaining input words (suburb etc.) appear
+      const tokens = rest.split(' ').filter(w => w.length > 1)
+      let bestScore = -1
+      for (const f of feats) {
+        const addr = String(f.attributes?.address || '')
+        const score = tokens.filter(t => addr.includes(t)).length
+        if (score > bestScore) { bestScore = score; best = f }
+      }
+      if (bestScore < 1) return null // several candidates, none matches the suburb — don't guess
+    }
+    const g = best.geometry
+    if (typeof g?.x !== 'number' || typeof g?.y !== 'number') return null
+    return { lat: g.y, lng: g.x, precise: true }
+  } catch { return null }
+}
+
 // ─── NSW ePlanning API ────────────────────────────────────────────────────────
 
 const NSW_EPLAN_URL = 'https://api.apps1.nsw.gov.au/planning/viewersf/V1/ePlanningApi/layerintersect'
@@ -475,9 +522,20 @@ export async function getLiveSite(
   address: string,
   state: string,
 ): Promise<{ zone: LiveZoneData | null; parcel: ParcelData | null }> {
-  const coords = await geocodeAddress(address)
-  if (!coords) return { zone: null, parcel: null }
   const s = state.toUpperCase()
+  // NSW: try the official GURAS address point first — it knows every house
+  // number (OSM often doesn't) and the point sits on the actual parcel.
+  let coords: GeoPoint | null = null
+  if (s === 'NSW') {
+    const key = 'nswaddr:' + address.trim().toLowerCase()
+    coords = geocodeCache.get(key) ?? null
+    if (!coords) {
+      coords = await geocodeNSWAddress(address)
+      if (coords) geocodeCache.set(key, coords)
+    }
+  }
+  if (!coords) coords = await geocodeAddress(address)
+  if (!coords) return { zone: null, parcel: null }
   const zoneP: Promise<LiveZoneData | null> = (async () => {
     try {
       switch (s) {
