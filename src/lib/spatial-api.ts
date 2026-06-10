@@ -37,7 +37,7 @@ const geocodeCache = new Map<string, GeoPoint>()
 
 async function geocodeNominatim(q: string): Promise<GeoPoint | null> {
   try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=au`, {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=au&addressdetails=1`, {
       headers: { 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
       signal: AbortSignal.timeout(5000),
     })
@@ -45,12 +45,13 @@ async function geocodeNominatim(q: string): Promise<GeoPoint | null> {
     const data = await res.json()
     if (!data.length) return null
     const d = data[0]
-    const t = String(d.addresstype || d.type || '')
-    const c = String(d.class || '')
+    // precise ⇢ the geocoder matched an actual HOUSE NUMBER. Type checks alone
+    // are too loose: a made-up address can fuzzy-match a station/large building
+    // and we'd report a 40,000㎡ railway parcel as "your lot".
     return {
       lat: parseFloat(d.lat),
       lng: parseFloat(d.lon),
-      precise: c === 'building' || ['house', 'address', 'building'].includes(t),
+      precise: Boolean(d.address?.house_number),
     }
   } catch { return null }
 }
@@ -66,9 +67,9 @@ async function geocodePhoton(q: string): Promise<GeoPoint | null> {
     const f = data?.features?.[0]
     const coords = f?.geometry?.coordinates
     if (!Array.isArray(coords) || coords.length < 2) return null
-    const t = String(f?.properties?.type || '')
-    const k = String(f?.properties?.osm_key || '')
-    return { lat: coords[1], lng: coords[0], precise: t === 'house' || k === 'building' }
+    // Same house-number requirement as Nominatim — osm_key 'building' alone
+    // matches stations/POIs and must not count as parcel-level precision.
+    return { lat: coords[1], lng: coords[0], precise: Boolean(f?.properties?.housenumber) }
   } catch { return null }
 }
 
