@@ -736,6 +736,11 @@ function FeasibilityContent() {
                     </span>
                   )}
                 </div>
+                {!result._liveZone.lotAreaSqm && (
+                  <span className="w-full text-xs text-green-700/80">
+                    💡 {lang === 'zh' ? '想看你家地块的实测面积？用完整门牌地址（如 12 Albert St, Strathfield）再查一次' : 'Want your exact lot size? Re-run with a full street address (e.g. 12 Albert St)'}
+                  </span>
+                )}
               </div>
             )}
 
