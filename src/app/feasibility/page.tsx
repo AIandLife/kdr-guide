@@ -57,6 +57,7 @@ interface FeasibilityResult {
   professionals: { role: string; why: string; timing: string }[]
   keyInsight: string
   worthIt?: { verdict: string; reason: string }
+  alternatives?: { typeKey: string; label: string; cost: string; months: string; note: string }[]
   _liveZone?: LiveZoneMeta
 }
 
@@ -187,6 +188,118 @@ function EmailReportButton({ suburb, state, lang, userEmail }: { suburb: string;
   )
 }
 
+// ── WeChat-friendly share card (pure canvas, no deps) ─────────────────────────
+// Homeowners discuss 6-7 figure decisions in family WeChat groups; give them a
+// clean image with the verdict + key numbers so the report shares itself.
+function buildShareCard(result: FeasibilityResult, lang: string): string {
+  const isZh = lang === 'zh'
+  const W = 750, H = 1000, S = 2
+  const canvas = document.createElement('canvas')
+  canvas.width = W * S
+  canvas.height = H * S
+  const ctx = canvas.getContext('2d')!
+  ctx.scale(S, S)
+  const FONT = '-apple-system, "PingFang SC", "Microsoft YaHei", sans-serif'
+
+  const wrap = (text: string, x: number, y: number, maxW: number, lh: number, maxLines: number) => {
+    let line = '', lines = 0
+    for (const ch of text) {
+      if (ctx.measureText(line + ch).width > maxW) {
+        ctx.fillText(line, x, y + lines * lh)
+        lines++
+        line = ch
+        if (lines >= maxLines - 1) { line += '…'; break }
+      } else line += ch
+    }
+    if (line) { ctx.fillText(line.replace(/…+$/, '…'), x, y + lines * lh); lines++ }
+    return y + lines * lh
+  }
+  const fmtMoney = (n: number) => n >= 1e6 ? `$${(n / 1e6).toFixed(1)}m` : `$${Math.round(n / 1000)}k`
+
+  // bg
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, W, H)
+  // header band
+  const grad = ctx.createLinearGradient(0, 0, W, 0)
+  grad.addColorStop(0, '#f97316'); grad.addColorStop(1, '#fb923c')
+  ctx.fillStyle = grad
+  ctx.fillRect(0, 0, W, 130)
+  ctx.fillStyle = '#ffffff'
+  ctx.font = `bold 32px ${FONT}`
+  ctx.fillText(isZh ? '澳洲建房圈 AusBuildCircle' : 'AusBuildCircle', 40, 58)
+  ctx.font = `22px ${FONT}`
+  ctx.globalAlpha = 0.9
+  ctx.fillText(isZh ? 'AI 地块可行性报告' : 'AI Block Feasibility Report', 40, 96)
+  ctx.globalAlpha = 1
+  // suburb + type
+  ctx.fillStyle = '#111827'
+  ctx.font = `bold 42px ${FONT}`
+  ctx.fillText(`${result.suburb}${result.state ? ', ' + result.state : ''}`, 40, 205)
+  ctx.fillStyle = '#ea580c'
+  ctx.font = `bold 24px ${FONT}`
+  ctx.fillText(result.projectType || '', 40, 245)
+  // score circle (top right)
+  const cx = 645, cy = 210, r = 56
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.strokeStyle = '#fde8d7'; ctx.lineWidth = 10; ctx.stroke()
+  ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + (Math.min(result.feasibilityScore, 10) / 10) * Math.PI * 2)
+  ctx.strokeStyle = result.feasibilityScore >= 7 ? '#22c55e' : result.feasibilityScore >= 5 ? '#f59e0b' : '#ef4444'
+  ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.stroke()
+  ctx.fillStyle = '#111827'; ctx.font = `bold 40px ${FONT}`; ctx.textAlign = 'center'
+  ctx.fillText(String(result.feasibilityScore), cx, cy + 8)
+  ctx.font = `18px ${FONT}`; ctx.fillStyle = '#6b7280'
+  ctx.fillText(result.feasibilityLabel || '', cx, cy + 36)
+  ctx.textAlign = 'left'
+  // verdict
+  ctx.fillStyle = '#374151'
+  ctx.font = `25px ${FONT}`
+  wrap(result.verdict || '', 40, 305, 670, 38, 4)
+  // worth-it / insight box
+  const boxY = 470
+  ctx.fillStyle = result.worthIt ? '#ecfdf5' : '#fff7ed'
+  ctx.beginPath(); ctx.roundRect(40, boxY, 670, 130, 16); ctx.fill()
+  ctx.fillStyle = result.worthIt ? '#047857' : '#9a3412'
+  ctx.font = `bold 24px ${FONT}`
+  ctx.fillText(result.worthIt
+    ? `💰 ${isZh ? '值不值' : 'Worth it?'} · ${result.worthIt.verdict}`
+    : `💡 ${isZh ? '关键提示' : 'Key insight'}`, 64, boxY + 42)
+  ctx.fillStyle = result.worthIt ? '#065f46' : '#7c2d12'
+  ctx.font = `21px ${FONT}`
+  wrap(result.worthIt ? result.worthIt.reason : (result.keyInsight || ''), 64, boxY + 76, 620, 30, 2)
+  // stat boxes
+  const ce = result.costEstimate
+  const costStr = ce?.totalEstimate ? `${fmtMoney(ce.totalEstimate[0])}–${fmtMoney(ce.totalEstimate[1])}`
+    : ce?.buildPerSqm ? `$${ce.buildPerSqm[0]}–${ce.buildPerSqm[1]}/㎡` : '—'
+  const tw = result.timeline?.totalWeeks
+  const timeStr = tw ? `${Math.round(tw[0] / 4.3)}–${Math.round(tw[1] / 4.3)} ${isZh ? '个月' : 'mo'}` : '—'
+  const stats = [
+    { label: isZh ? '估算总费用' : 'Est. cost', value: costStr },
+    { label: isZh ? '预计工期' : 'Timeline', value: timeStr },
+    { label: isZh ? '审批路径' : 'Approval', value: result.approvalPath?.type || '—' },
+  ]
+  stats.forEach((s, i) => {
+    const x = 40 + i * 230
+    ctx.fillStyle = '#fff7ed'
+    ctx.beginPath(); ctx.roundRect(x, 640, 210, 110, 14); ctx.fill()
+    ctx.fillStyle = '#9a3412'; ctx.font = `20px ${FONT}`
+    ctx.fillText(s.label, x + 18, 678)
+    ctx.fillStyle = '#111827'
+    let fs = 27
+    ctx.font = `bold ${fs}px ${FONT}`
+    while (ctx.measureText(s.value).width > 176 && fs > 16) { fs -= 1; ctx.font = `bold ${fs}px ${FONT}` }
+    ctx.fillText(s.value, x + 18, 722)
+  })
+  // disclaimer + footer
+  ctx.fillStyle = '#9ca3af'; ctx.font = `19px ${FONT}`
+  ctx.fillText(isZh ? '📊 费用为估算区间（非报价）· 数据含官方规划/地籍来源' : '📊 Estimates only · official planning & cadastre data', 40, 800)
+  ctx.strokeStyle = '#f3f4f6'; ctx.lineWidth = 2
+  ctx.beginPath(); ctx.moveTo(40, 850); ctx.lineTo(710, 850); ctx.stroke()
+  ctx.fillStyle = '#ea580c'; ctx.font = `bold 26px ${FONT}`
+  ctx.fillText('ausbuildcircle.com', 40, 905)
+  ctx.fillStyle = '#6b7280'; ctx.font = `22px ${FONT}`
+  ctx.fillText(isZh ? '输入地址，2 分钟免费查你家这块地能盖什么' : 'Enter your address — free feasibility in 2 minutes', 40, 945)
+  return canvas.toDataURL('image/png')
+}
+
 function FeasibilityContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -262,6 +375,7 @@ function FeasibilityContent() {
 
   const [loadingStep, setLoadingStep] = useState(0)
   const [liveFacts, setLiveFacts] = useState<LiveZoneMeta | null>(null)
+  const [shareCardUrl, setShareCardUrl] = useState<string | null>(null)
 
   const fetchFeasibility = async (sub: string, addr: string, lot: string, st: string, l: string, pt = 'kdr') => {
     if (!sub) return
@@ -556,6 +670,27 @@ function FeasibilityContent() {
           </div>
         )}
 
+        {result && !loading && shareCardUrl && (
+          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setShareCardUrl(null)}>
+            <div className="bg-white rounded-2xl p-4 max-w-sm w-full max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={shareCardUrl} alt="share card" className="w-full rounded-xl border border-gray-200" />
+              <p className="text-xs text-gray-400 text-center mt-2">
+                {lang === 'zh' ? '手机长按图片保存，发到微信群和家人一起看' : 'Long-press to save and share with family'}
+              </p>
+              <div className="flex gap-2 mt-3">
+                <a href={shareCardUrl} download={`ausbuildcircle-${result.suburb || 'report'}.png`}
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold py-2.5 rounded-xl text-center">
+                  {lang === 'zh' ? '下载图片' : 'Download'}
+                </a>
+                <button onClick={() => setShareCardUrl(null)} className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-900">
+                  {lang === 'zh' ? '关闭' : 'Close'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {result && !loading && (
           <div className="space-y-6">
             {/* Live zone banner */}
@@ -701,6 +836,12 @@ function FeasibilityContent() {
                   </div>
                 </div>
               )}
+              <button
+                onClick={() => { try { setShareCardUrl(buildShareCard(result, lang)) } catch { /* canvas unsupported — ignore */ } }}
+                className="mt-3 w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+              >
+                📤 {lang === 'zh' ? '生成分享卡片（发微信群一起看）' : 'Create a share card'}
+              </button>
             </div>
 
             {/* Lot Size Check */}
@@ -820,6 +961,34 @@ function FeasibilityContent() {
                 ))}
               </div>
             </div>
+
+            {/* Alternatives — same block, other paths */}
+            {result.alternatives && result.alternatives.length > 0 && (
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-gray-900 mb-1 flex items-center gap-2">
+                  <span>🔀</span>{lang === 'zh' ? '同一块地，还能怎么做？' : 'Same block, other options'}
+                </h2>
+                <p className="text-xs text-gray-400 mb-4">{lang === 'zh' ? 'AI 顺手帮你比了比另外两条路，想看哪条点一下就重查' : 'Two other paths compared — one click to re-run'}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {result.alternatives.map((alt, i) => (
+                    <div key={i} className="bg-gray-50 rounded-xl p-4 border border-gray-100 flex flex-col">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <p className="text-sm font-semibold text-gray-900">{alt.label}</p>
+                        <span className="text-xs text-gray-400 shrink-0">{alt.months} {lang === 'zh' ? '个月' : 'months'}</span>
+                      </div>
+                      <p className="text-sm font-semibold text-orange-600 mb-1.5">{alt.cost} <span className="text-[10px] font-normal text-gray-400">{lang === 'zh' ? '估算' : 'est.'}</span></p>
+                      <p className="text-xs text-gray-500 leading-relaxed mb-3 flex-1">{alt.note}</p>
+                      <button
+                        onClick={() => { setProjectType(alt.typeKey); fetchFeasibility(suburb, address, lotSize, state, lang, alt.typeKey); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                        className="text-xs font-semibold text-orange-600 hover:text-orange-700 text-left"
+                      >
+                        {lang === 'zh' ? '换这个方案查一查 →' : 'Re-run with this →'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Next Steps */}
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
