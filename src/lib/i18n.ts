@@ -19,11 +19,11 @@ export const translations = {
     },
     // Homepage
     home: {
-      badge: 'Free · AI-Powered · All 537 Councils Covered',
-      h1a: 'Renovate · Rebuild · Extend.',
-      h1b: 'Finally clear.',
+      badge: 'Free · AI-Powered · Real cadastre + planning data',
+      h1a: 'Your block:',
+      h1b: 'what you can build & what it costs.',
       h1c: '',
-      subtitle: 'Whatever your project — knockdown rebuild, renovation, extension, granny flat or dual occupancy — get an AI feasibility report in minutes. Council rules, real costs, next steps. Free.',
+      subtitle: 'Enter your address — in 2 minutes AI tells you what you can build, what it will cost, DA or CDC, whether it is worth it, and who to call next. Australia-wide. Free. No signup.',
       formSuburb: 'Your Suburb',
       formSuburbPlaceholder: 'e.g. Strathfield, Box Hill, Parramatta',
       formState: 'Your State',
@@ -191,11 +191,11 @@ export const translations = {
     },
     // Homepage
     home: {
-      badge: '免费 · AI 驱动 · 全澳 537 个 Council 全覆盖',
-      h1a: '翻新 · 重建 · 扩建，',
-      h1b: '让复杂变简单',
+      badge: '免费 · AI 驱动 · 真实地籍 + 官方规划数据',
+      h1a: '你家这块地，',
+      h1b: '能盖什么 · 花多少 · 值不值',
       h1c: '',
-      subtitle: '无论你想推倒重建、翻新改造、扩建加建，还是建 Granny Flat——输入你的区，2 分钟获取 AI 可行性报告。覆盖全澳所有 Council，无需顾问，免费查询。',
+      subtitle: '输入你家地址，2 分钟 AI 告诉你：能盖多大、要花多少、走 DA 还是 CDC、值不值、下一步找谁。覆盖全澳，免费，无需注册。',
       formSuburb: '你的区域（Suburb）',
       formSuburbPlaceholder: '如：Strathfield、Box Hill、Parramatta',
       formState: '所在州',
