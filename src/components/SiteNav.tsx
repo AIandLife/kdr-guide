@@ -29,7 +29,8 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
     { href: '/articles',      label: t.nav.articles },
     { href: '/professionals', label: t.nav.professionals },
     { href: '/suppliers',     label: t.nav.suppliers },
-    { href: '/tenders',       label: t.nav.tenders },
+    // /tenders page kept reachable by URL, but pulled from the nav — zero
+    // tenders live and it diluted the homeowner-focused menu (2026-06-01).
     { href: '/forum',         label: t.nav.forum },
   ]
 
