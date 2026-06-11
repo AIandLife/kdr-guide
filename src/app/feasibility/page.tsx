@@ -33,6 +33,7 @@ interface LiveZoneMeta {
   lotAreaSqm?: number | null
   lotId?: string | null
   lotSource?: 'user' | 'cadastre' | null
+  reportLevel?: 'parcel' | 'suburb' | null
 }
 
 interface FeasibilityResult {
@@ -629,7 +630,9 @@ function FeasibilityContent() {
             {liveFacts && (liveFacts.zoneCode || liveFacts.lotAreaSqm) && (
               <div className="max-w-md mx-auto mb-6 bg-green-50 border border-green-200 rounded-xl p-4 text-left">
                 <p className="text-sm font-semibold text-green-700 mb-2 flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4" /> {lang === 'zh' ? '已查到你这块地（官方数据）' : 'Found your block (official data)'}
+                  <CheckCircle className="w-4 h-4" /> {liveFacts.lotAreaSqm
+                    ? (lang === 'zh' ? '已查到你这块地（官方数据）' : 'Found your block (official data)')
+                    : (lang === 'zh' ? '已查到该区规划参考（官方数据）' : 'Found area planning data (official)')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {liveFacts.zoneCode && <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">{liveFacts.zoneCode}{liveFacts.zoneName ? ' · ' + liveFacts.zoneName : ''}</span>}
@@ -693,12 +696,29 @@ function FeasibilityContent() {
 
         {result && !loading && (
           <div className="space-y-6">
+            {/* Report level banner — make crystal clear whether this is THEIR block or the area */}
+            {result._liveZone?.lotSource === 'cadastre' ? null : (
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-sm">
+                <span className="font-semibold text-blue-700">📍 {lang === 'zh' ? '区域分析报告' : 'Suburb-level report'}</span>
+                <span className="text-blue-800/80">
+                  {lang === 'zh'
+                    ? `以下是 ${result.suburb} 的整体情况（按该区典型地块分析），不代表你家具体地块。`
+                    : `General analysis for ${result.suburb} based on typical lots — not your specific block.`}
+                </span>
+                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  className="text-blue-700 font-semibold hover:text-blue-900 text-xs underline underline-offset-2">
+                  {lang === 'zh' ? '输入完整门牌地址，免费升级成你家地块的专属报告 ↑' : 'Enter your full street address for a block-specific report ↑'}
+                </button>
+              </div>
+            )}
             {/* Live zone banner */}
             {result._liveZone && (
               <div className="flex flex-wrap items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm">
                 <span className="flex items-center gap-1.5 font-semibold text-green-700">
                   <CheckCircle className="w-4 h-4" />
-                  {lang === 'zh' ? '实时规划数据' : 'Live Planning Data'}
+                  {result._liveZone.lotSource === 'cadastre'
+                    ? (lang === 'zh' ? '📐 你家地块 · 实测官方数据' : '📐 Your block · measured official data')
+                    : (lang === 'zh' ? '实时规划数据' : 'Live Planning Data')}
                 </span>
                 <span className="text-green-600">
                   {(() => {
@@ -736,11 +756,6 @@ function FeasibilityContent() {
                     </span>
                   )}
                 </div>
-                {!result._liveZone.lotAreaSqm && (
-                  <span className="w-full text-xs text-green-700/80">
-                    💡 {lang === 'zh' ? '想看你家地块的实测面积？用完整门牌地址（如 12 Albert St, Strathfield）再查一次' : 'Want your exact lot size? Re-run with a full street address (e.g. 12 Albert St)'}
-                  </span>
-                )}
               </div>
             )}
 

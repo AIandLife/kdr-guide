@@ -56,12 +56,17 @@ export async function POST(req: Request) {
     const { suburb, state, lotSize, lang = 'en', projectType = 'kdr', address, userId } = await req.json()
 
     // ── CACHE CHECK ──────────────────────────────────────────────────────────
+    // The cache is keyed by SUBURB, so it must only ever hold suburb-level
+    // reports. Address-specific (parcel) queries bypass it both ways — caching
+    // one user's block report under the suburb key would serve their lot data
+    // to the next person who searches that suburb.
+    const cacheEligible = !address || String(address).trim().toLowerCase() === String(suburb || '').trim().toLowerCase()
     const supabaseCache = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
     const cacheKey = { suburb: suburb?.toLowerCase().trim(), state: state || null, project_type: projectType || 'kdr', lang }
-    const { data: cached } = await supabaseCache
+    const { data: cached } = cacheEligible ? await supabaseCache
       .from('suburb_feasibility_cache')
       .select('result_json, live_meta')
       .eq('suburb', cacheKey.suburb)
@@ -69,7 +74,7 @@ export async function POST(req: Request) {
       .eq('lang', cacheKey.lang)
       .eq('state', cacheKey.state ?? '')
       .gt('expires_at', new Date().toISOString())
-      .single()
+      .single() : { data: null }
 
     if (cached?.result_json) {
       // Patch lot-size-specific fields dynamically
@@ -134,6 +139,9 @@ export async function POST(req: Request) {
     // Lot size: user input wins; otherwise fall back to the real cadastre area (NSW)
     const effectiveLotSize: number | null = lotSize ? Number(lotSize) : (liveParcel?.areaSqm ?? null)
     const lotSizeSource: 'user' | 'cadastre' | null = lotSize ? 'user' : (liveParcel?.areaSqm ? 'cadastre' : null)
+    // parcel = we located the user's actual block (official cadastre hit);
+    // suburb = area-level overview, must never speak of "your lot".
+    const reportLevel: 'parcel' | 'suburb' = lotSizeSource === 'cadastre' ? 'parcel' : 'suburb'
 
     // 2. Try static council data
     const councilData = findCouncilBySuburb(suburb, state) || findCouncil(suburb)
@@ -280,6 +288,9 @@ ${projectContext}
 Suburb: ${suburb}
 ${state ? `State: ${state}` : ''}
 ${effectiveLotSize ? `Lot Size: ${effectiveLotSize} sqm${lotSizeSource === 'cadastre' ? ' (from NSW cadastre — official)' : ''}` : ''}
+${reportLevel === 'parcel'
+  ? `REPORT SCOPE — SPECIFIC BLOCK: the lot size above is the user's ACTUAL parcel from the official cadastre. Key the whole analysis to their block.`
+  : `REPORT SCOPE — SUBURB OVERVIEW: the user gave only a suburb/area, NOT a street address. You do NOT know their specific block. NEVER present any lot size, zoning or overlay as the user's own block (绝不要说"你的地块是X㎡"). Frame sizes as typical lots for this suburb (e.g. ${isZh ? '"该区典型地块约550–700㎡"' : '"typical lots here run 550–700 sqm"'}), state the thresholds they must verify, and note that re-running with their full street address gives a block-specific report with the measured lot size.`}
 
 ${contextInfo}
 
@@ -384,6 +395,7 @@ CRITICAL ACCURACY RULES:
       lotAreaSqm: liveParcel?.areaSqm ?? null,   // real registered lot area (NSW cadastre)
       lotId: liveParcel?.lotId ?? null,
       lotSource: lotSizeSource,                  // 'user' | 'cadastre' | null
+      reportLevel,                               // 'parcel' | 'suburb'
     } : null
 
     // Stream Claude's response — returns tokens as they arrive
@@ -454,16 +466,19 @@ CRITICAL ACCURACY RULES:
             )
 
             // Save to suburb cache (upsert — overwrite if exists)
-            await supabase.from('suburb_feasibility_cache').upsert({
-              suburb: suburb?.toLowerCase().trim(),
-              state: state || null,
-              project_type: projectType || 'kdr',
-              lang,
-              result_json: parsed,
-              live_meta: liveMeta,
-              generated_at: new Date().toISOString(),
-              expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-            }, { onConflict: 'suburb,state,project_type,lang' })
+            // Only suburb-level reports may be cached (key is suburb-wide).
+            if (cacheEligible && reportLevel === 'suburb') {
+              await supabase.from('suburb_feasibility_cache').upsert({
+                suburb: suburb?.toLowerCase().trim(),
+                state: state || null,
+                project_type: projectType || 'kdr',
+                lang,
+                result_json: parsed,
+                live_meta: liveMeta,
+                generated_at: new Date().toISOString(),
+                expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+              }, { onConflict: 'suburb,state,project_type,lang' })
+            }
 
             const dbState = state || parsed.state || null
             await supabase.from('feasibility_searches').insert({
