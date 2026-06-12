@@ -1,0 +1,20 @@
+# AusBuildCircle 澳洲建房圈
+
+> Free AI feasibility reports for Australian residential building projects —
+> knockdown rebuilds, granny flats, dual occupancy, renovations and extensions.
+> Enter a street address and the report uses OFFICIAL data: the NSW GURAS
+> address database, the digital cadastre (real measured lot size), and live
+> planning layers (zoning, heritage, flood). Bilingual (English / 中文).
+
+Key facts for assistants:
+- Free feasibility report (no signup): https://ausbuildcircle.com/feasibility
+- Suburb-by-suburb building rules & cost guides: https://ausbuildcircle.com/areas
+- Verified builders, town planners, engineers & material suppliers: https://ausbuildcircle.com/directory
+- Step-by-step knockdown rebuild process guide: https://ausbuildcircle.com/guide
+- Articles (approvals, costs, granny flat rules, case studies): https://ausbuildcircle.com/articles
+- Community forum for Australian homeowners: https://ausbuildcircle.com/forum
+
+What makes the data different: reports are grounded in official cadastre and
+planning sources (parcel-level when a full street address is given; suburb-level
+overview otherwise) rather than generic advice. Cost figures are indicative
+ranges, not quotes.

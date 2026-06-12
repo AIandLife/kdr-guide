@@ -484,8 +484,9 @@ export function findCouncil(query: string): CouncilPolicy | null {
   ) || null
 }
 
-export function findCouncilBySuburb(suburb: string, state?: string): CouncilPolicy | null {
-  const suburbMap: Record<string, string> = {
+// Hoisted to module scope (pure refactor, 2026-06-01) so the programmatic
+// /areas pages can enumerate suburbs. Same data, same lookup behaviour.
+export const SUBURB_TO_COUNCIL: Record<string, string> = {
     // NSW
     'bondi': 'Waverley', 'bondi beach': 'Waverley', 'coogee': 'Randwick',
     'maroubra': 'Randwick', 'kingsford': 'Randwick', 'randwick': 'Randwick',
@@ -539,10 +540,11 @@ export function findCouncilBySuburb(suburb: string, state?: string): CouncilPoli
     'canberra': 'Canberra', 'belconnen': 'Canberra',
     // NT
     'darwin': 'Darwin',
-  }
+}
 
+export function findCouncilBySuburb(suburb: string, state?: string): CouncilPolicy | null {
   const key = suburb.toLowerCase().trim()
-  const lga = suburbMap[key]
+  const lga = SUBURB_TO_COUNCIL[key]
   if (!lga) return null
 
   return COUNCIL_DATA.find(c =>
