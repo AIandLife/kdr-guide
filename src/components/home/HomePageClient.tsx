@@ -404,7 +404,7 @@ export default function HomePageClient() {
       {/* Footer */}
       <footer className="bg-slate-900 border-t border-slate-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center">
@@ -413,6 +413,22 @@ export default function HomePageClient() {
                 <span className="font-bold text-white">{t.nav.brand}</span>
               </div>
               <p className="text-slate-400 text-xs leading-relaxed max-w-xs">{h.footerDisclaimer}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                {lang === 'zh' ? '快速入口' : 'Explore'}
+              </p>
+              <div className="space-y-2">
+                <a href="/areas" className="flex items-center gap-1 text-sm text-slate-400 hover:text-orange-400 transition-colors">
+                  {lang === 'zh' ? '区域建房指南（按 Suburb 查规则与成本）→' : 'Building guides by suburb →'}
+                </a>
+                <a href="/feasibility" className="flex items-center gap-1 text-sm text-slate-400 hover:text-orange-400 transition-colors">
+                  {lang === 'zh' ? '免费查我家地块 →' : 'Free feasibility report →'}
+                </a>
+                <a href="/directory" className="flex items-center gap-1 text-sm text-slate-400 hover:text-orange-400 transition-colors">
+                  {lang === 'zh' ? '找专业人士 · 建材 →' : 'Pros & materials →'}
+                </a>
+              </div>
             </div>
             <div>
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
