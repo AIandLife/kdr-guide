@@ -166,7 +166,7 @@ Return ONLY valid JSON: {"zh":"中文描述","en":"English description"}` }],
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Category</td><td style="padding:8px">${esc(category)}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Regions</td><td style="padding:8px">${Array.isArray(regions) ? esc(regions.join(', ')) : '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">WeChat</td><td style="padding:8px">${wechat ? esc(wechat) : '—'}</td></tr>
-          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Source</td><td style="padding:8px">${source === 'wechat_h5' ? '📱 微信入驻页 /ruzhu' : 'Website /join'}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Source</td><td style="padding:8px">${source === 'wechat_h5' ? '📱 微信入驻页 /ruzhu' : source === 'ruzhu_vi' ? '📱 入驻页（越南语）/ruzhu?lang=vi' : source === 'ruzhu_en' ? '📱 入驻页（英文）/ruzhu?lang=en' : 'Website /join'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Website</td><td style="padding:8px">${website ? esc(website) : '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Description</td><td style="padding:8px">${description ? esc(description) : '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">EN Business Name</td><td style="padding:8px">${businessNameEn ? esc(businessNameEn) : '—'}</td></tr>
@@ -199,6 +199,32 @@ Return ONLY valid JSON: {"zh":"中文描述","en":"English description"}` }],
             <p>审核通过后，你的信息会展示在「找专业人士」目录中。正在规划推倒重建、奶奶房、翻新扩建的业主可以直接找到并联系你。</p>
             <p>有任何问题，直接回复这封邮件即可。</p>
             <p>澳洲建房圈 AusBuildCircle</p>
+          </div>
+        </div>
+      `,
+    } : source === 'ruzhu_vi' ? {
+      from: FROM_EMAIL,
+      to: email,
+      subject: `Chào mừng bạn đến với AusBuildCircle — ${businessName}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:560px;margin:0 auto">
+          <div style="background:#f97316;padding:24px;border-radius:12px 12px 0 0;text-align:center">
+            <h1 style="color:white;margin:0;font-size:24px">Chào mừng đến với AusBuildCircle</h1>
+          </div>
+          <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
+            <p>Chào ${esc(contactName)},</p>
+            <p>Chúng tôi đã nhận được đăng ký của <strong>${esc(businessName)}</strong> và sẽ duyệt sớm nhất có thể (thường 1-2 ngày làm việc).</p>
+            <div style="background:white;border:2px solid #f97316;border-radius:8px;padding:16px;margin:20px 0">
+              <h3 style="margin:0 0 8px;color:#f97316">🎉 Ưu đãi thành viên sáng lập</h3>
+              <p style="margin:0">3 tháng đầu hiển thị <strong>hoàn toàn miễn phí</strong> — không cần thẻ, không tự động trừ tiền.</p>
+              <ul style="margin:12px 0 0">
+                <li>Bắt đầu: <strong>${trialStart}</strong></li>
+                <li>Kết thúc: <strong>${trialEnd}</strong></li>
+              </ul>
+            </div>
+            <p>Sau khi được duyệt, doanh nghiệp của bạn sẽ hiển thị trong danh bạ — chủ nhà đang chuẩn bị xây nhà, làm granny flat hoặc cải tạo sẽ liên hệ thẳng bạn.</p>
+            <p>Có câu hỏi? Cứ trả lời email này.</p>
+            <p>AusBuildCircle</p>
           </div>
         </div>
       `,
