@@ -27,10 +27,10 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
   const links = [
     { href: '/guide',         label: t.nav.guide },
     { href: '/articles',      label: t.nav.articles },
-    { href: '/professionals', label: t.nav.professionals },
-    { href: '/suppliers',     label: t.nav.suppliers },
-    // /tenders page kept reachable by URL, but pulled from the nav — zero
-    // tenders live and it diluted the homeowner-focused menu (2026-06-01).
+    // One entry for "find someone": /directory hosts both the professionals
+    // and suppliers tabs. /professionals, /suppliers and /tenders stay live
+    // by URL (report CTAs & old links must not 404) — just out of the nav.
+    { href: '/directory',     label: t.nav.directory },
     { href: '/forum',         label: t.nav.forum },
   ]
 
