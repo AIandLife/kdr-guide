@@ -377,8 +377,14 @@ function FeasibilityContent() {
   const [loadingStep, setLoadingStep] = useState(0)
   const [liveFacts, setLiveFacts] = useState<LiveZoneMeta | null>(null)
   const [shareCardUrl, setShareCardUrl] = useState<string | null>(null)
+  const [linkCopied, setLinkCopied] = useState(false)
 
-  const fetchFeasibility = async (sub: string, addr: string, lot: string, st: string, l: string, pt = 'kdr') => {
+  // GA4 event helper — no-ops when gtag isn't loaded.
+  const track = (name: string, params?: Record<string, unknown>) => {
+    try { (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag?.('event', name, params) } catch { /* ignore */ }
+  }
+
+  const fetchFeasibility = async (sub: string, addr: string, lot: string, st: string, l: string, pt = 'kdr', attempt = 0) => {
     if (!sub) return
     setLoading(true)
     setLoadingStep(0)
@@ -500,7 +506,16 @@ function FeasibilityContent() {
       }
 
       setResult(result as unknown as FeasibilityResult)
+      track('report_generated', { suburb: sub, project_type: pt, retried: attempt > 0 })
     } catch (e) {
+      // LLM streaming is occasionally flaky — retry once silently before
+      // surfacing an error to the homeowner.
+      if (attempt === 0) {
+        track('report_retry', { suburb: sub, project_type: pt })
+        setTimeout(() => fetchFeasibility(sub, addr, lot, st, l, pt, 1), 300)
+        return
+      }
+      track('report_failed', { suburb: sub, project_type: pt })
       setError(e instanceof Error ? e.message : 'Something went wrong')
     } finally {
       clearTimeout(stepTimer1)
@@ -686,7 +701,18 @@ function FeasibilityContent() {
                   className="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold py-2.5 rounded-xl text-center">
                   {lang === 'zh' ? '下载图片' : 'Download'}
                 </a>
-                <button onClick={() => setShareCardUrl(null)} className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-900">
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/feasibility?suburb=${encodeURIComponent(result.suburb || suburb)}&state=${encodeURIComponent(result.state || state)}&projectType=${encodeURIComponent(projectType)}&lang=${lang}&utm_source=share_card&utm_medium=wechat`
+                    navigator.clipboard?.writeText(url).then(() => {
+                      setLinkCopied(true)
+                      track('share_link_copied', { suburb: result.suburb })
+                    }).catch(() => { /* clipboard unavailable */ })
+                  }}
+                  className="flex-1 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 text-sm font-semibold py-2.5 rounded-xl">
+                  {linkCopied ? (lang === 'zh' ? '✓ 已复制' : '✓ Copied') : (lang === 'zh' ? '复制报告链接' : 'Copy link')}
+                </button>
+                <button onClick={() => setShareCardUrl(null)} className="px-3 py-2.5 text-sm text-gray-500 hover:text-gray-900">
                   {lang === 'zh' ? '关闭' : 'Close'}
                 </button>
               </div>
@@ -857,7 +883,13 @@ function FeasibilityContent() {
                 </div>
               )}
               <button
-                onClick={() => { try { setShareCardUrl(buildShareCard(result, lang)) } catch { /* canvas unsupported — ignore */ } }}
+                onClick={() => {
+                  try {
+                    setShareCardUrl(buildShareCard(result, lang))
+                    setLinkCopied(false)
+                    track('share_card_created', { suburb: result.suburb, project_type: result.projectType })
+                  } catch { /* canvas unsupported — ignore */ }
+                }}
                 className="mt-3 w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
               >
                 📤 {lang === 'zh' ? '生成分享卡片（发微信群一起看）' : 'Create a share card'}
