@@ -1073,6 +1073,26 @@ function FeasibilityContent() {
               </div>
             </div>
 
+            {/* Board CTA — flip the funnel: let merchants come to the homeowner */}
+            <div className="rounded-2xl p-6 border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50">
+              <h2 className="text-base font-bold text-gray-900 mb-1.5">
+                {lang === 'zh' ? '📣 不想一家家去找？把需求挂到对接大厅' : '📣 Done searching? Post your brief instead'}
+              </h2>
+              <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                {lang === 'zh'
+                  ? '免费发布你的项目需求（只显示区域，不公开门牌和联系方式），让商家来响应你。商家名片会发到你邮箱，联系谁你自己挑。'
+                  : 'Post your project brief for free — suburb only, no address or contact shown. Merchant cards arrive in your inbox and you choose who to talk to.'}
+              </p>
+              <a
+                href={`/board?publish=1&suburb=${encodeURIComponent(result.suburb || suburb)}&state=${encodeURIComponent(state)}&type=${encodeURIComponent(projectType)}${result._liveZone?.lotAreaSqm && result._liveZone.lotSource === 'cadastre' ? `&lot=${result._liveZone.lotAreaSqm}` : ''}&report=1`}
+                onClick={() => track('board_cta_from_report', { suburb: result.suburb })}
+                className="inline-block px-5 py-2.5 rounded-xl text-white font-semibold text-sm"
+                style={{ background: 'linear-gradient(135deg, #f97316, #ea6c0a)' }}
+              >
+                {lang === 'zh' ? '带着这份报告去发布 →' : 'Publish with this report →'}
+              </a>
+            </div>
+
             {/* Professionals */}
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">

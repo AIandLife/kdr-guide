@@ -31,6 +31,7 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
     // and suppliers tabs. /professionals, /suppliers and /tenders stay live
     // by URL (report CTAs & old links must not 404) — just out of the nav.
     { href: '/directory',     label: t.nav.directory },
+    { href: '/board',         label: t.nav.board },
     { href: '/forum',         label: t.nav.forum },
   ]
 

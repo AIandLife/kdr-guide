@@ -32,10 +32,11 @@ const PAGES = [
   { name: 'login',         url: '/login' },
   { name: 'join',          url: '/join' },
   { name: 'ruzhu',         url: '/ruzhu' },
+  { name: 'board',         url: '/board' },
   { name: 'areas-index',   url: '/areas' },
   { name: 'area-page',     url: '/areas/nsw/castle-hill' },
 ]
-const MOBILE_PAGES = new Set(['home', 'report', 'professionals', 'forum', 'ruzhu'])
+const MOBILE_PAGES = new Set(['home', 'report', 'professionals', 'forum', 'ruzhu', 'board'])
 
 const failures = []
 const warnings = []
