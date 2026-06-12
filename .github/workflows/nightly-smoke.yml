@@ -1,0 +1,47 @@
+name: Nightly smoke tests
+
+on:
+  schedule:
+    - cron: '0 16 * * *'   # 16:00 UTC ≈ 02:00–03:00 Sydney
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright (no package.json changes)
+        run: |
+          npm install --no-save playwright@1.49.1
+          npx playwright install --with-deps chromium
+
+      - name: Run smoke tests against production
+        run: node tests/e2e/smoke.mjs
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-screenshots
+          path: smoke-output/
+          retention-days: 7
+
+      - name: Open issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --repo "${{ github.repository }}" \
+            --title "🔴 Nightly smoke failed — $(date -u +%Y-%m-%d)" \
+            --body "Production smoke tests failed. Logs & screenshots: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            || true
