@@ -92,7 +92,7 @@ export async function POST(req: Request) {
     const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim() || 'recommendforterry@gmail.com'
     const FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || 'noreply@ausbuildcircle.com'
     const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    resend.emails.send({
+    await resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
       subject: `[对接大厅] 新需求 — ${esc(suburb)} ${projectType || kind || ''}`,
@@ -103,7 +103,7 @@ export async function POST(req: Request) {
         <p>联系人（不公开）：${esc(String(contactName))} · ${esc(email)} · ${esc(String(contactPhone || ''))} ${contactWechat ? '· 微信 ' + esc(String(contactWechat)) : ''}</p>
         <p>地块：${safeLot ? safeLot + '㎡' : '—'} · 带AI报告：${hasReport ? '是' : '否'}</p>
       `,
-    }).catch(err => console.error('Board admin email failed:', err))
+    }).catch((err: unknown) => console.error('Board admin email failed:', err))
 
     return Response.json({ success: true, briefId: row.id })
   } catch (error) {

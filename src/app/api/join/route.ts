@@ -151,7 +151,7 @@ Return ONLY valid JSON: {"zh":"中文描述","en":"English description"}` }],
     }
 
     // Emails — fire-and-forget, failures don't affect the response
-    resend.emails.send({
+    const adminEmailPromise = resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
       subject: `[澳洲建房圈] New Professional Application — ${esc(businessName)}`,
@@ -176,7 +176,7 @@ Return ONLY valid JSON: {"zh":"中文描述","en":"English description"}` }],
       `,
     }).catch(err => console.error('Admin email failed:', err))
 
-    resend.emails.send(source === 'wechat_h5' ? {
+    const userEmailPromise = resend.emails.send(source === 'wechat_h5' ? {
       from: FROM_EMAIL,
       to: email,
       subject: `欢迎加入澳洲建房圈 — ${businessName}`,
@@ -233,6 +233,10 @@ Return ONLY valid JSON: {"zh":"中文描述","en":"English description"}` }],
         </div>
       `,
     }).catch(err => console.error('Confirmation email failed:', err))
+
+    // Serverless: the function freezes once the response returns, so un-awaited
+    // sends are silently dropped. Await both (failures already caught above).
+    await Promise.all([adminEmailPromise, userEmailPromise])
 
     return Response.json({ success: true, trialEnd, professionalId })
 

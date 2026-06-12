@@ -98,7 +98,7 @@ export async function POST(req: Request) {
     const FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || 'noreply@ausbuildcircle.com'
     const esc = (s: unknown) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-    resend.emails.send({
+    const homeownerEmailPromise = resend.emails.send({
       from: FROM_EMAIL,
       to: brief.contact_email,
       subject: `有商家响应了你在对接大厅的需求（${brief.suburb}）`,
@@ -128,12 +128,15 @@ export async function POST(req: Request) {
       `,
     }).catch(err => console.error('Board homeowner email failed:', err))
 
-    resend.emails.send({
+    const adminEmailPromise = resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
       subject: `[对接大厅] ${esc(pro.business_name)} 响应了 ${esc(brief.suburb)} 的需求`,
       html: `<p>${esc(pro.business_name)}（${esc(pro.category)}）→ ${esc(brief.suburb)}, ${esc(brief.state)} ${esc(brief.project_type || brief.kind)}</p><p>${esc(message)}</p>`,
     }).catch(() => {})
+
+    // Serverless: must await or the sends are dropped when the function freezes
+    await Promise.all([homeownerEmailPromise, adminEmailPromise])
 
     return Response.json({ success: true })
   } catch (error) {
