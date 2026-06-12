@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { businessName, contactName, email: rawEmail, phone, state, category, regions, website, description, businessNameEn, contactNameEn, descriptionEn, userId, languages } = body
+    const { businessName, contactName, email: rawEmail, phone, state, category, regions, website, wechat, description, businessNameEn, contactNameEn, descriptionEn, userId, languages, source } = body
 
     if (!businessName || !contactName || !rawEmail || !state || !category) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 })
@@ -53,6 +53,7 @@ export async function POST(req: Request) {
         category,
         regions: regions || [],
         website: website || null,
+        wechat: wechat || null,
         description: description || null,
         business_name_en: businessNameEn || null,
         contact_name_en: contactNameEn || null,
@@ -134,6 +135,7 @@ Return ONLY valid JSON: {"zh":"中文描述","en":"English description"}` }],
           category,
           regions: regions || [],
           website: website || null,
+          wechat: wechat || null,
           description: polishedDesc || null,
           verified: false,
           verification_status: 'free',
@@ -163,6 +165,8 @@ Return ONLY valid JSON: {"zh":"中文描述","en":"English description"}` }],
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">State</td><td style="padding:8px">${esc(state)}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Category</td><td style="padding:8px">${esc(category)}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Regions</td><td style="padding:8px">${Array.isArray(regions) ? esc(regions.join(', ')) : '—'}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">WeChat</td><td style="padding:8px">${wechat ? esc(wechat) : '—'}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Source</td><td style="padding:8px">${source === 'wechat_h5' ? '📱 微信入驻页 /ruzhu' : 'Website /join'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Website</td><td style="padding:8px">${website ? esc(website) : '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Description</td><td style="padding:8px">${description ? esc(description) : '—'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">EN Business Name</td><td style="padding:8px">${businessNameEn ? esc(businessNameEn) : '—'}</td></tr>
@@ -172,7 +176,33 @@ Return ONLY valid JSON: {"zh":"中文描述","en":"English description"}` }],
       `,
     }).catch(err => console.error('Admin email failed:', err))
 
-    resend.emails.send({
+    resend.emails.send(source === 'wechat_h5' ? {
+      from: FROM_EMAIL,
+      to: email,
+      subject: `欢迎加入澳洲建房圈 — ${businessName}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:560px;margin:0 auto">
+          <div style="background:#f97316;padding:24px;border-radius:12px 12px 0 0;text-align:center">
+            <h1 style="color:white;margin:0;font-size:24px">欢迎加入澳洲建房圈</h1>
+          </div>
+          <div style="background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb">
+            <p>${esc(contactName)} 你好，</p>
+            <p>我们已收到 <strong>${esc(businessName)}</strong> 的入驻申请，团队会尽快审核。</p>
+            <div style="background:white;border:2px solid #f97316;border-radius:8px;padding:16px;margin:20px 0">
+              <h3 style="margin:0 0 8px;color:#f97316">🎉 创始商家福利</h3>
+              <p style="margin:0">前 3 个月<strong>完全免费</strong>展示，不需要绑卡，不会自动扣费。</p>
+              <ul style="margin:12px 0 0">
+                <li>免费期开始：<strong>${trialStart}</strong></li>
+                <li>免费期结束：<strong>${trialEnd}</strong></li>
+              </ul>
+            </div>
+            <p>审核通过后，你的信息会展示在「找专业人士」目录中。正在规划推倒重建、奶奶房、翻新扩建的业主可以直接找到并联系你。</p>
+            <p>有任何问题，直接回复这封邮件即可。</p>
+            <p>澳洲建房圈 AusBuildCircle</p>
+          </div>
+        </div>
+      `,
+    } : {
       from: FROM_EMAIL,
       to: email,
       subject: `Welcome to 澳洲建房圈 Professional Network — ${businessName}`,
