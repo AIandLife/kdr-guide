@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { ARTICLES } from '@/lib/articles-data'
+import { AREAS } from '@/lib/area-pages'
 import { createClient } from '@supabase/supabase-js'
 
 export const revalidate = 3600 // regenerate hourly
@@ -63,6 +64,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(a.date),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
+    })),
+    { url: `${base}/areas`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    ...AREAS.map(a => ({
+      url: `${base}/areas/${a.stateSlug}/${a.slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
     })),
     ...tenderEntries,
     { url: `${base}/privacy`,            lastModified: now, changeFrequency: 'monthly', priority: 0.3 },
