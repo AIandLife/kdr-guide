@@ -27,12 +27,29 @@ export async function GET() {
         .from('feasibility_searches')
         .select('suburb, state, project_type, created_at')
         .order('created_at', { ascending: false })
-        .limit(12),
+        .limit(60),
     ])
+
+    // Privacy guard: feasibility_searches.suburb sometimes holds the user's
+    // raw input including a street number ("77 illawong penrith"). Signals
+    // must be suburb-level ONLY — drop anything with a digit, titlecase,
+    // and dedupe by suburb+type.
+    const seen = new Set<string>()
+    const signals = (signalsRes.data || []).filter(s => {
+      const sub = String(s.suburb || '').trim()
+      if (!sub || sub.length > 30 || /\d/.test(sub)) return false
+      const key = `${sub.toLowerCase()}|${s.project_type || ''}`
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    }).slice(0, 12).map(s => ({
+      ...s,
+      suburb: String(s.suburb).trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase()),
+    }))
 
     return Response.json({
       briefs: briefsRes.data || [],
-      signals: signalsRes.data || [],
+      signals,
     }, {
       headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' },
     })
