@@ -88,6 +88,14 @@ async function checkDataPath() {
       failures.push(`full-address lookup broken: ${JSON.stringify(full)} (GURAS/cadastre pipeline?)`)
       console.log('  FAIL           full address lookup')
     }
+    // Live NSW zoning guard — the ePlanning endpoint silently 404'd once and
+    // nulled all zoning for weeks. A known R2 address must return zone + height.
+    if (full?.zoneCode === 'R2' && typeof full.maxHeight === 'number' && full.maxHeight > 0) {
+      console.log(`  OK             NSW zoning → ${full.zoneCode} / ${full.maxHeight}m (ArcGIS EPI layers)`)
+    } else {
+      failures.push(`NSW live zoning broken: zone=${full?.zoneCode} height=${full?.maxHeight} — ePlanning ArcGIS endpoint changed?`)
+      console.log('  FAIL           NSW live zoning')
+    }
     const sub = await post({ suburb: 'quakers hill', state: 'NSW', address: 'quakers hill' })
     if (sub?.lotAreaSqm) {
       failures.push(`suburb-only query returned a lot area (${sub.lotAreaSqm}㎡) — centroid-parcel bug regressed!`)
