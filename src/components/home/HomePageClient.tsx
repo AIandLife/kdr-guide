@@ -428,6 +428,12 @@ export default function HomePageClient() {
                 <a href="/directory" className="flex items-center gap-1 text-sm text-slate-400 hover:text-orange-400 transition-colors">
                   {lang === 'zh' ? '找专业人士 · 建材 →' : 'Pros & materials →'}
                 </a>
+                <a href="/guide" className="flex items-center gap-1 text-sm text-slate-400 hover:text-orange-400 transition-colors">
+                  {lang === 'zh' ? '建房项目全流程 →' : 'How building works, step by step →'}
+                </a>
+                <a href="/ruzhu" className="flex items-center gap-1 text-sm text-slate-400 hover:text-orange-400 transition-colors">
+                  {lang === 'zh' ? '我是商家 · 免费入驻 →' : 'List your business (free) →'}
+                </a>
               </div>
             </div>
             <div>

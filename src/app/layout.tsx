@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import './globals.css'
 import { LangProvider } from '@/lib/language-context'
 import { AuthProvider } from '@/lib/auth-context'
@@ -31,7 +31,16 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies()
   const langCookie = cookieStore.get('kdr-lang')?.value
-  const initialLang: Lang = langCookie === 'zh' ? 'zh' : 'en'
+  // Chinese-first product: honour an explicit choice (cookie), otherwise detect
+  // the visitor's browser language so Chinese browsers land in Chinese and
+  // English browsers / crawlers land in English.
+  let initialLang: Lang = 'en'
+  if (langCookie === 'zh' || langCookie === 'en') {
+    initialLang = langCookie
+  } else {
+    const accept = (await headers()).get('accept-language') || ''
+    if (/^zh\b|[,;]\s*zh\b|\bzh-/i.test(accept)) initialLang = 'zh'
+  }
 
   return (
     <html lang={initialLang === 'zh' ? 'zh' : 'en'}>

@@ -171,6 +171,9 @@ function BoardPageInner() {
               {isZh ? '我是商家，先入驻' : "I'm a Merchant — Get Listed"}
             </a>
           </div>
+          <a href="/directory" className="inline-block mt-3 text-sm text-gray-500 hover:text-orange-600 transition-colors">
+            {isZh ? '或者，直接浏览专业人士目录 →' : 'Or browse the professionals directory →'}
+          </a>
           {/* Privacy strip */}
           <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-5 text-xs text-gray-500">
             <span className="flex items-center gap-1"><Shield className="w-3.5 h-3.5 text-green-600" />{isZh ? '只显示区域，不显示门牌' : 'Suburb shown, never your address'}</span>
