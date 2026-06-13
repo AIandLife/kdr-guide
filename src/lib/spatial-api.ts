@@ -130,19 +130,28 @@ export async function geocodeNSWAddress(raw: string): Promise<GeoPoint | null> {
   } catch { return null }
 }
 
-// ─── NSW ePlanning API ────────────────────────────────────────────────────────
+// ─── NSW EPI Primary Planning Layers (ArcGIS) ───────────────────────────────
+// The live ArcGIS service behind the NSW Planning Portal Spatial Viewer. The old
+// ePlanningApi/layerintersect endpoint was retired (now 404s), which silently
+// nulled all zoning. We point-intersect each layer for the official LEP controls.
 
-const NSW_EPLAN_URL = 'https://api.apps1.nsw.gov.au/planning/viewersf/V1/ePlanningApi/layerintersect'
+const NSW_EPI_MAPSERVER =
+  'https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer'
+const NSW_EPI_LAYERS = { heritage: 0, fsr: 1, zoning: 2, lotSize: 4, height: 5 } as const
 
-interface NSWEpiLayer {
-  EpiName?: string
-  EpiType?: string
-  LandZoneCode?: string
-  LandZone?: string
-  FSR?: string
-  MaxBuildingHeight?: string
-  MinLotSize?: string
-  [key: string]: unknown
+async function nswEpiQuery(layerId: number, lat: number, lng: number, timeoutMs: number): Promise<Record<string, unknown> | null> {
+  const url = `${NSW_EPI_MAPSERVER}/${layerId}/query?geometry=${lng},${lat}` +
+    `&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects` +
+    `&outFields=*&returnGeometry=false&f=json`
+  try {
+    const res = await fetch(url, {
+      headers: { 'Accept': 'application/json', 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
+      signal: AbortSignal.timeout(timeoutMs),
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    return data?.features?.[0]?.attributes ?? null
+  } catch { return null }
 }
 
 function parseMetres(val: string | undefined): number | null {
@@ -165,90 +174,58 @@ function nswZonePermitKDR(code: string): boolean | null {
 }
 
 export async function getNSWZoning(lat: number, lng: number): Promise<LiveZoneData | null> {
-  try {
-    // Query zone + heritage + flood + biodiversity overlays in parallel
-    const [zoneRes, heritageRes, floodRes] = await Promise.allSettled([
-      fetch(`${NSW_EPLAN_URL}?layers=epi&x=${lng}&y=${lat}&pageSize=1`, {
-        headers: { 'Accept': 'application/json', 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
-        signal: AbortSignal.timeout(8000),
-      }),
-      fetch(`${NSW_EPLAN_URL}?layers=heritagemap&x=${lng}&y=${lat}&pageSize=1`, {
-        headers: { 'Accept': 'application/json', 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
-        signal: AbortSignal.timeout(5000),
-      }),
-      fetch(`${NSW_EPLAN_URL}?layers=nearmap_flood&x=${lng}&y=${lat}&pageSize=1`, {
-        headers: { 'Accept': 'application/json', 'User-Agent': 'AusBuildCircle/1.0 (ausbuildcircle.com)' },
-        signal: AbortSignal.timeout(5000),
-      }),
-    ])
+  // Zone is the must-have; height / min-lot / FSR / heritage are best-effort
+  // enrichment, each independently point-intersected against its EPI layer.
+  const [zoneA, heightA, lotA, fsrA, heritageA] = await Promise.all([
+    nswEpiQuery(NSW_EPI_LAYERS.zoning, lat, lng, 8000),
+    nswEpiQuery(NSW_EPI_LAYERS.height, lat, lng, 6000),
+    nswEpiQuery(NSW_EPI_LAYERS.lotSize, lat, lng, 6000),
+    nswEpiQuery(NSW_EPI_LAYERS.fsr, lat, lng, 6000),
+    nswEpiQuery(NSW_EPI_LAYERS.heritage, lat, lng, 6000),
+  ])
 
-    // Parse zone data
-    if (zoneRes.status !== 'fulfilled' || !zoneRes.value.ok) return null
-    const zoneData = await zoneRes.value.json()
-    const layers: NSWEpiLayer[] = zoneData?.Epi || zoneData?.EpiLayer || zoneData?.epi || []
-    if (!layers.length) return null
+  if (!zoneA) return null
+  const zoneCode = String(zoneA.SYM_CODE || '').trim()
+  if (!zoneCode) return null
+  const zoneName = String(zoneA.LAY_CLASS || '').trim()
+  const lep = (zoneA.EPI_NAME as string) || null
 
-    const lep = layers.find((l) => l.EpiType === 'LEP' || l.EpiName?.toLowerCase().includes('local')) || layers[0]
-    const zoneCode = String(lep.LandZoneCode || lep.ZoneCode || '')
-    const zoneName = String(lep.LandZone || lep.ZoneName || '')
-    const fsr = lep.FSR || lep.FloorSpaceRatio ? String(lep.FSR || lep.FloorSpaceRatio) : null
-    const maxHeight = parseMetres(lep.MaxBuildingHeight as string | undefined)
-    const minLotSize = parseMetres(lep.MinLotSize as string | undefined)
+  const maxHeight = typeof heightA?.MAX_B_H_M === 'number'
+    ? heightA.MAX_B_H_M as number
+    : parseMetres(heightA?.LAY_CLASS as string | undefined)
+  const minLotSize = typeof lotA?.LOT_SIZE === 'number'
+    ? lotA.LOT_SIZE as number
+    : parseMetres(lotA?.LAY_CLASS as string | undefined)
+  // FSR layer carries the ratio in a FSR field or the LAY_CLASS string ("0.5:1")
+  const fsrRaw = fsrA?.FSR ?? fsrA?.LAY_CLASS ?? null
+  const fsr = fsrRaw != null ? String(fsrRaw) : null
 
-    const notes: string[] = []
-    if (lep.EpiName) notes.push(`Planning instrument: ${lep.EpiName}`)
+  const notes: string[] = []
+  if (lep) notes.push(`Planning instrument: ${lep}`)
 
-    // Parse heritage overlay — if any features returned, this address is in a HCA
-    let heritageFlag = false
-    let heritageNote = ''
-    if (heritageRes.status === 'fulfilled' && heritageRes.value.ok) {
-      try {
-        const hData = await heritageRes.value.json()
-        const hItems = hData?.HeritageMap || hData?.heritagemap || hData?.Heritage || []
-        if (Array.isArray(hItems) && hItems.length > 0) {
-          heritageFlag = true
-          const item = hItems[0] as Record<string, unknown>
-          const hName = item.HeritageItemName || item.HeritageName || item.NAME || ''
-          heritageNote = hName
-            ? `⚠️ Heritage overlay: ${hName} — CDC not available, DA required`
-            : '⚠️ Heritage Conservation Area — CDC not available, DA required'
-          notes.push(heritageNote)
-        }
-      } catch { /* non-critical */ }
-    }
+  // Heritage overlay — a returned feature means the address sits in a HCA / item
+  let heritageFlag = false
+  if (heritageA) {
+    heritageFlag = true
+    const hName = String(heritageA.LAY_CLASS || heritageA.H_NAME || heritageA.ITEM_NAME || '').trim()
+    notes.push(hName
+      ? `⚠️ Heritage overlay: ${hName} — CDC not available, DA required`
+      : '⚠️ Heritage item / Conservation Area — CDC not available, DA required')
+  }
+  if (heritageFlag && zoneCode && nswZonePermitKDR(zoneCode)) {
+    notes.push('CDC pathway blocked by heritage overlay — Development Application (DA) required')
+  }
 
-    // Parse flood overlay
-    let floodFlag = false
-    if (floodRes.status === 'fulfilled' && floodRes.value.ok) {
-      try {
-        const fData = await floodRes.value.json()
-        const fItems = fData?.NearMapFlood || fData?.flood || fData?.Flood || []
-        if (Array.isArray(fItems) && fItems.length > 0) {
-          floodFlag = true
-          notes.push('⚠️ Flood planning area — additional flood assessment required')
-        }
-      } catch { /* non-critical */ }
-    }
-
-    // CDC availability: not available in HCA or flood zones
-    const cdcBlocked = heritageFlag || floodFlag
-    if (cdcBlocked && zoneCode && nswZonePermitKDR(zoneCode)) {
-      notes.push('CDC pathway blocked by overlays — Development Application (DA) required')
-    }
-
-    return {
-      source: 'nsw-eplan',
-      zoneCode,
-      zoneName,
-      fsr,
-      maxHeight,
-      minLotSize,
-      lep: (lep.EpiName as string) || null,
-      kdrPermitted: zoneCode ? nswZonePermitKDR(zoneCode) : null,
-      notes,
-    }
-  } catch {
-    return null
+  return {
+    source: 'nsw-eplan',
+    zoneCode,
+    zoneName,
+    fsr,
+    maxHeight,
+    minLotSize,
+    lep,
+    kdrPermitted: nswZonePermitKDR(zoneCode),
+    notes,
   }
 }
 
