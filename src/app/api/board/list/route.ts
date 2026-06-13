@@ -19,7 +19,7 @@ export async function GET() {
     const [briefsRes, signalsRes] = await Promise.all([
       supabase
         .from('project_briefs')
-        .select('id, kind, project_type, state, suburb, budget_band, timeline, description, lot_area_sqm, has_report, response_count, created_at')
+        .select('id, kind, project_type, state, suburb, budget_band, timeline, description, lot_area_sqm, has_report, is_demo, response_count, created_at')
         .eq('status', 'live')
         .order('created_at', { ascending: false })
         .limit(100),

@@ -32,6 +32,7 @@ interface Brief {
   description: string | null
   lot_area_sqm: number | null
   has_report: boolean
+  is_demo?: boolean
   response_count: number
   created_at: string
 }
@@ -223,9 +224,16 @@ function BoardPageInner() {
             {filtered.map(b => (
               <div key={b.id} className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm flex flex-col">
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-100">
-                    {typeLabel(b, isZh)}
-                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-100">
+                      {typeLabel(b, isZh)}
+                    </span>
+                    {b.is_demo && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-lg text-[11px] font-medium bg-gray-100 text-gray-400 border border-gray-200" title={isZh ? '平台示例需求' : 'Sample brief'}>
+                        {isZh ? '示例' : 'Sample'}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-xs text-gray-400 flex items-center gap-1 shrink-0"><Clock className="w-3 h-3" />{timeAgo(b.created_at, isZh)}</span>
                 </div>
                 <p className="font-semibold text-gray-900 flex items-center gap-1.5 mb-1.5">
@@ -494,6 +502,8 @@ function RespondModal({ isZh, brief, onClose, onSent }: {
   const [noProfile, setNoProfile] = useState(false)
   const [done, setDone] = useState(false)
 
+  const [doneDemo, setDoneDemo] = useState(false)
+
   const submit = async () => {
     setSubmitting(true)
     setError('')
@@ -507,7 +517,8 @@ function RespondModal({ isZh, brief, onClose, onSent }: {
       if (res.status === 403 && data.error === 'no_profile') { setNoProfile(true); return }
       if (res.status === 409) throw new Error(isZh ? '你已经响应过这条需求了。' : 'You already responded to this brief.')
       if (!res.ok) throw new Error(data.error || (isZh ? '发送失败，请稍后再试' : 'Failed, please retry'))
-      track('board_response_sent', { brief: brief.id })
+      track('board_response_sent', { brief: brief.id, demo: !!data.isDemo })
+      setDoneDemo(!!data.isDemo)
       setDone(true)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed')
@@ -527,9 +538,15 @@ function RespondModal({ isZh, brief, onClose, onSent }: {
         {done ? (
           <div className="p-8 text-center">
             <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
-            <h3 className="font-bold text-gray-900 mb-2">{isZh ? '已发送！' : 'Sent!'}</h3>
+            <h3 className="font-bold text-gray-900 mb-2">{isZh ? '已收到！' : 'Received!'}</h3>
             <p className="text-sm text-gray-500 leading-relaxed mb-6">
-              {isZh ? '你的名片和留言已发到业主邮箱。业主有兴趣会直接联系你。' : "Your card and message are in the homeowner's inbox. They'll contact you directly if interested."}
+              {doneDemo
+                ? (isZh
+                    ? '这条是平台示例需求。你的名片我们已存档 —— 你服务区域有匹配的真实需求时，我们会第一时间联系你。'
+                    : "This is a sample brief. We've saved your card — when a matching real brief comes up in your area, we'll reach out to you first.")
+                : (isZh
+                    ? '你的名片和留言已发到业主邮箱。业主有兴趣会直接联系你。'
+                    : "Your card and message are in the homeowner's inbox. They'll contact you directly if interested.")}
             </p>
             <button onClick={onSent} className="px-6 py-2.5 rounded-xl text-white font-semibold text-sm bg-gray-900">{isZh ? '好的' : 'Done'}</button>
           </div>
