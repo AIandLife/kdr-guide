@@ -10,7 +10,8 @@ import { createClient } from '@supabase/supabase-js'
  */
 
 const PROJECT_TYPES = new Set(['kdr', 'granny_flat', 'dual_occupancy', 'renovation', 'extension', 'new_build', 'other'])
-const KINDS = new Set(['project', 'hire', 'work_wanted'])
+const TRADE_TYPES = new Set(['builder', 'electrician', 'plumber', 'tiler', 'carpenter', 'concreter', 'bricklayer', 'painter', 'landscaper', 'other_trade'])
+const KINDS = new Set(['project', 'find_tradie'])
 const STATES = new Set(['NSW', 'VIC', 'QLD', 'WA', 'SA', 'ACT', 'TAS', 'NT'])
 
 export async function POST(req: Request) {
@@ -36,8 +37,13 @@ export async function POST(req: Request) {
     if (kind && !KINDS.has(kind)) {
       return Response.json({ error: 'Invalid kind' }, { status: 400 })
     }
-    if (projectType && !PROJECT_TYPES.has(projectType)) {
-      return Response.json({ error: 'Invalid project type' }, { status: 400 })
+    // project_type holds a project type for kind=project, or a trade for kind=find_tradie
+    if (projectType) {
+      const ok = kind === 'find_tradie' ? TRADE_TYPES.has(projectType) : PROJECT_TYPES.has(projectType)
+      if (!ok) return Response.json({ error: 'Invalid type' }, { status: 400 })
+    }
+    if (kind === 'find_tradie' && !projectType) {
+      return Response.json({ error: 'Pick which trade is needed' }, { status: 400 })
     }
     if (!contactPhone && !contactWechat) {
       return Response.json({ error: 'Provide at least a phone number or WeChat ID' }, { status: 400 })

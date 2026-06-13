@@ -53,9 +53,18 @@ const TYPE_LABELS: Record<string, { zh: string; en: string }> = {
   new_build: { zh: '新建房', en: 'New Build' },
   other: { zh: '其他', en: 'Other' },
 }
-const KIND_LABELS: Record<string, { zh: string; en: string }> = {
-  hire: { zh: '招工', en: 'Hiring' },
-  work_wanted: { zh: '找活干', en: 'Work Wanted' },
+// Trades a "找 Tradie" brief can be for. Stored in project_type when kind==='find_tradie'.
+const TRADE_LABELS: Record<string, { zh: string; en: string }> = {
+  builder: { zh: 'Builder 建筑商', en: 'Builder' },
+  electrician: { zh: '电工', en: 'Electrician' },
+  plumber: { zh: '水管工', en: 'Plumber' },
+  tiler: { zh: '瓦工 / 贴砖', en: 'Tiler' },
+  carpenter: { zh: '木工', en: 'Carpenter' },
+  concreter: { zh: '水泥工', en: 'Concreter' },
+  bricklayer: { zh: '砌砖 / 泥水', en: 'Bricklayer' },
+  painter: { zh: '油漆工', en: 'Painter' },
+  landscaper: { zh: '园艺 / 庭院', en: 'Landscaper' },
+  other_trade: { zh: '其他工种', en: 'Other trade' },
 }
 
 const BUDGET_OPTIONS = ['20万以下', '20-50万', '50-100万', '100-150万', '150万以上', '还不确定']
@@ -78,7 +87,10 @@ function timeAgo(iso: string, isZh: boolean): string {
 }
 
 function typeLabel(b: { kind: string; project_type: string | null }, isZh: boolean): string {
-  if (b.kind !== 'project' && KIND_LABELS[b.kind]) return isZh ? KIND_LABELS[b.kind].zh : KIND_LABELS[b.kind].en
+  if (b.kind === 'find_tradie') {
+    const t = TRADE_LABELS[b.project_type || 'other_trade'] || TRADE_LABELS.other_trade
+    return (isZh ? '找 ' : 'Need a ') + (isZh ? t.zh : t.en)
+  }
   const t = TYPE_LABELS[b.project_type || 'other'] || TYPE_LABELS.other
   return isZh ? t.zh : t.en
 }
@@ -114,7 +126,7 @@ function BoardPageInner() {
   }, [params])
 
   const filtered = filter === 'all' ? briefs : briefs.filter(b =>
-    filter === 'hire' || filter === 'work_wanted' ? b.kind === filter : b.project_type === filter
+    filter === 'find_tradie' ? b.kind === 'find_tradie' : b.kind === 'project' && b.project_type === filter
   )
 
   const filterChips = [
@@ -124,8 +136,7 @@ function BoardPageInner() {
     { id: 'dual_occupancy', zh: '双拼', en: 'Dual Occ' },
     { id: 'renovation', zh: '翻新', en: 'Reno' },
     { id: 'extension', zh: '扩建', en: 'Extension' },
-    { id: 'hire', zh: '招工', en: 'Hiring' },
-    { id: 'work_wanted', zh: '找活干', en: 'Work Wanted' },
+    { id: 'find_tradie', zh: '找 Tradie', en: 'Find a Tradie' },
   ]
 
   return (
@@ -224,16 +235,9 @@ function BoardPageInner() {
             {filtered.map(b => (
               <div key={b.id} className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm flex flex-col">
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-100">
-                      {typeLabel(b, isZh)}
-                    </span>
-                    {b.is_demo && (
-                      <span className="inline-flex items-center px-2 py-1 rounded-lg text-[11px] font-medium bg-gray-100 text-gray-400 border border-gray-200" title={isZh ? '平台示例需求' : 'Sample brief'}>
-                        {isZh ? '示例' : 'Sample'}
-                      </span>
-                    )}
-                  </div>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-100">
+                    {typeLabel(b, isZh)}
+                  </span>
                   <span className="text-xs text-gray-400 flex items-center gap-1 shrink-0"><Clock className="w-3 h-3" />{timeAgo(b.created_at, isZh)}</span>
                 </div>
                 <p className="font-semibold text-gray-900 flex items-center gap-1.5 mb-1.5">
@@ -331,6 +335,10 @@ function PublishModal({ isZh, prefill, onClose, onPublished }: {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (form.kind === 'find_tradie' && !form.projectType) {
+      setError(isZh ? '请选择要找哪种师傅' : 'Please pick which trade you need')
+      return
+    }
     setSubmitting(true)
     setError('')
     try {
@@ -339,14 +347,14 @@ function PublishModal({ isZh, prefill, onClose, onPublished }: {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          projectType: form.kind === 'project' ? form.projectType : undefined,
-          lotAreaSqm: prefill.lot ? Number(prefill.lot) : undefined,
-          hasReport: prefill.hasReport,
+          projectType: form.projectType || undefined,
+          lotAreaSqm: form.kind === 'project' && prefill.lot ? Number(prefill.lot) : undefined,
+          hasReport: form.kind === 'project' ? prefill.hasReport : false,
         }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || (isZh ? '发布失败，请稍后再试' : 'Failed, please retry'))
-      track('board_brief_published', { type: form.kind === 'project' ? form.projectType : form.kind, state: form.state })
+      track('board_brief_published', { kind: form.kind, type: form.projectType, state: form.state })
       setDone(true)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed')
@@ -378,15 +386,15 @@ function PublishModal({ isZh, prefill, onClose, onPublished }: {
           </div>
         ) : (
           <form onSubmit={submit} className="p-5 space-y-4">
-            {/* Kind */}
+            {/* Kind: a building project, or finding a specific tradie for a job */}
             <div className="flex gap-2">
               {[
-                { id: 'project', zh: '我要建房 / 改造', en: 'Building project' },
-                { id: 'hire', zh: '我要招工', en: 'Hiring workers' },
-                { id: 'work_wanted', zh: '我找活干', en: 'Looking for work' },
+                { id: 'project', zh: '建房 / 改造项目', en: 'Building project' },
+                { id: 'find_tradie', zh: '找师傅 / Tradie', en: 'Find a tradie' },
               ].map(k => (
-                <button key={k.id} type="button" onClick={() => set('kind', k.id)}
-                  className={`flex-1 px-2 py-2.5 rounded-xl text-xs font-medium border-2 transition-colors ${
+                <button key={k.id} type="button"
+                  onClick={() => setForm(f => ({ ...f, kind: k.id, projectType: k.id === 'project' ? 'kdr' : '' }))}
+                  className={`flex-1 px-2 py-2.5 rounded-xl text-sm font-medium border-2 transition-colors ${
                     form.kind === k.id ? 'bg-orange-50 text-orange-700 border-orange-400' : 'bg-gray-50 text-gray-600 border-gray-100'
                   }`}>
                   {isZh ? k.zh : k.en}
@@ -399,6 +407,22 @@ function PublishModal({ isZh, prefill, onClose, onPublished }: {
                 <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '项目类型' : 'Project type'}</label>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(TYPE_LABELS).filter(([k]) => k !== 'other').map(([k, v]) => (
+                    <button key={k} type="button" onClick={() => set('projectType', k)}
+                      className={`px-2 py-2 rounded-xl text-xs font-medium border-2 transition-colors ${
+                        form.projectType === k ? 'bg-orange-50 text-orange-700 border-orange-400' : 'bg-gray-50 text-gray-600 border-gray-100'
+                      }`}>
+                      {isZh ? v.zh : v.en}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {form.kind === 'find_tradie' && (
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '要找哪种师傅' : 'Which trade'} *</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {Object.entries(TRADE_LABELS).map(([k, v]) => (
                     <button key={k} type="button" onClick={() => set('projectType', k)}
                       className={`px-2 py-2 rounded-xl text-xs font-medium border-2 transition-colors ${
                         form.projectType === k ? 'bg-orange-50 text-orange-700 border-orange-400' : 'bg-gray-50 text-gray-600 border-gray-100'
@@ -443,9 +467,13 @@ function PublishModal({ isZh, prefill, onClose, onPublished }: {
             )}
 
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5">{isZh ? '具体说说你的需求' : 'Describe your project'}</label>
+              <label className="block text-xs text-gray-500 mb-1.5">
+                {isZh ? '具体说说你的需求' : form.kind === 'find_tradie' ? 'Describe the job' : 'Describe your project'}
+              </label>
               <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={3}
-                placeholder={isZh ? '例如：老房子想推倒建双拼，地块大约 600㎡，希望找有 Castle Hill 附近经验的 builder...' : 'e.g. Looking to knock down and build a duplex, block is around 600sqm...'}
+                placeholder={form.kind === 'find_tradie'
+                  ? (isZh ? '例如：翻新两个卫生间要贴砖，约 30㎡，希望两周内能开工，有 ABN 报价...' : 'e.g. Tiling two bathrooms (~30sqm) for a reno, want to start within 2 weeks...')
+                  : (isZh ? '例如：老房子想推倒建双拼，地块大约 600㎡，希望找有 Castle Hill 附近经验的 builder...' : 'e.g. Looking to knock down and build a duplex, block is around 600sqm...')}
                 className={`${inputClass} resize-none`} />
             </div>
 
@@ -502,8 +530,6 @@ function RespondModal({ isZh, brief, onClose, onSent }: {
   const [noProfile, setNoProfile] = useState(false)
   const [done, setDone] = useState(false)
 
-  const [doneDemo, setDoneDemo] = useState(false)
-
   const submit = async () => {
     setSubmitting(true)
     setError('')
@@ -517,8 +543,7 @@ function RespondModal({ isZh, brief, onClose, onSent }: {
       if (res.status === 403 && data.error === 'no_profile') { setNoProfile(true); return }
       if (res.status === 409) throw new Error(isZh ? '你已经响应过这条需求了。' : 'You already responded to this brief.')
       if (!res.ok) throw new Error(data.error || (isZh ? '发送失败，请稍后再试' : 'Failed, please retry'))
-      track('board_response_sent', { brief: brief.id, demo: !!data.isDemo })
-      setDoneDemo(!!data.isDemo)
+      track('board_response_sent', { brief: brief.id })
       setDone(true)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed')
@@ -538,15 +563,11 @@ function RespondModal({ isZh, brief, onClose, onSent }: {
         {done ? (
           <div className="p-8 text-center">
             <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
-            <h3 className="font-bold text-gray-900 mb-2">{isZh ? '已收到！' : 'Received!'}</h3>
+            <h3 className="font-bold text-gray-900 mb-2">{isZh ? '已发送！' : 'Sent!'}</h3>
             <p className="text-sm text-gray-500 leading-relaxed mb-6">
-              {doneDemo
-                ? (isZh
-                    ? '这条是平台示例需求。你的名片我们已存档 —— 你服务区域有匹配的真实需求时，我们会第一时间联系你。'
-                    : "This is a sample brief. We've saved your card — when a matching real brief comes up in your area, we'll reach out to you first.")
-                : (isZh
-                    ? '你的名片和留言已发到业主邮箱。业主有兴趣会直接联系你。'
-                    : "Your card and message are in the homeowner's inbox. They'll contact you directly if interested.")}
+              {isZh
+                ? '你的名片和留言已发出。对方有兴趣会直接联系你。'
+                : "Your card and message have been sent. They'll contact you directly if interested."}
             </p>
             <button onClick={onSent} className="px-6 py-2.5 rounded-xl text-white font-semibold text-sm bg-gray-900">{isZh ? '好的' : 'Done'}</button>
           </div>
