@@ -24,14 +24,15 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const { user, loading } = useAuth()
 
+  // Homeowner journey, left→right: connect (post a need / browse pros) → learn →
+  // community. The report (查询我的地块) is the primary CTA on the right; the
+  // merchant door (商家入驻) sits in the account zone, also on the right.
+  // /guide, /suppliers, /professionals, /tenders stay live by URL (no 404s) but
+  // out of the top nav to keep it clear.
   const links = [
-    { href: '/guide',         label: t.nav.guide },
-    { href: '/articles',      label: t.nav.articles },
-    // One entry for "find someone": /directory hosts both the professionals
-    // and suppliers tabs. /professionals, /suppliers and /tenders stay live
-    // by URL (report CTAs & old links must not 404) — just out of the nav.
-    { href: '/directory',     label: t.nav.directory },
     { href: '/board',         label: t.nav.board },
+    { href: '/directory',     label: t.nav.directory },
+    { href: '/articles',      label: t.nav.articles },
     { href: '/forum',         label: t.nav.forum },
   ]
 
@@ -93,6 +94,12 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
             {t.nav.cta}
           </Link>
 
+          {/* Merchant door — sits in the account zone, distinct from homeowner nav */}
+          <Link href="/ruzhu"
+            className="hidden lg:flex items-center text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors px-2 py-1.5 rounded-lg hover:bg-gray-100 whitespace-nowrap">
+            {t.nav.ruzhu}
+          </Link>
+
           {/* User avatar / login */}
           {!loading && (
             user ? (
@@ -145,6 +152,11 @@ export function SiteNav({ backHref, backLabel, currentPath }: SiteNavProps) {
               {link.label}
             </Link>
           ))}
+          <Link href="/ruzhu"
+            onClick={() => setMobileOpen(false)}
+            className="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-orange-500 transition-colors">
+            {t.nav.ruzhu}
+          </Link>
           <div className="pt-2 pb-1 space-y-2">
             <Link href="/feasibility"
               className="block w-full text-center bg-orange-500 hover:bg-orange-400 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors">

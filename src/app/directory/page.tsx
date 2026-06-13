@@ -351,6 +351,9 @@ function ProfessionalsTab() {
               {tp.h1}
             </h1>
             <p className="text-gray-500">{tp.subtitle}</p>
+            <a href="/board" className="inline-block mt-2 text-sm text-orange-600 hover:text-orange-700 font-medium transition-colors">
+              {isZh ? '懒得一个个找？发布需求，让商家来找你 →' : 'Rather not search? Post a brief and let pros come to you →'}
+            </a>
           </div>
           <a
             href="/join"
