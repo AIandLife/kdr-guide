@@ -58,7 +58,7 @@ const T: Record<Lang, Record<string, string>> = {
     areaTitle: '服务范围',
     stateLabel: '主要在哪个州', allAu: '全澳',
     regions: '主要服务区域', regionsPh: '例如：Sydney 全城 / Parramatta, Blacktown',
-    langLabel: '服务语言',
+    langLabel: '服务语言（可多选）',
     introTitle: '一句话介绍（选填）',
     introHint: '随便写两句就行，AI 会帮你整理成专业介绍',
     introPh: '例如：做了 10 年 granny flat，悉尼西区为主，有 Builder 牌照',
@@ -91,7 +91,7 @@ const T: Record<Lang, Record<string, string>> = {
     areaTitle: 'Khu vực làm việc',
     stateLabel: 'Bang nào là chính', allAu: 'Toàn Úc',
     regions: 'Khu vực chính', regionsPh: 'VD: Sydney / Bankstown, Cabramatta',
-    langLabel: 'Ngôn ngữ phục vụ',
+    langLabel: 'Ngôn ngữ phục vụ (chọn nhiều)',
     introTitle: 'Giới thiệu ngắn (không bắt buộc)',
     introHint: 'Viết vài dòng là đủ, AI sẽ giúp chỉnh thành giới thiệu chuyên nghiệp',
     introPh: 'VD: 10 năm kinh nghiệm ốp lát, làm chủ yếu khu Tây Nam Sydney, có ABN',
@@ -124,7 +124,7 @@ const T: Record<Lang, Record<string, string>> = {
     areaTitle: 'Service area',
     stateLabel: 'Primary state', allAu: 'All Australia',
     regions: 'Main regions', regionsPh: 'e.g. Sydney / Parramatta, Blacktown',
-    langLabel: 'Service languages',
+    langLabel: 'Service languages (select all)',
     introTitle: 'Short intro (optional)',
     introHint: 'A couple of lines is fine — AI tidies it into a professional description',
     introPh: 'e.g. 10 years building granny flats across western Sydney, licensed builder',
@@ -143,20 +143,20 @@ const T: Record<Lang, Record<string, string>> = {
   },
 }
 
-// Per-locale service-language options → values stored in professionals.languages
-const LANG_OPTIONS: Record<Lang, { id: string; label: string; value: string[] }[]> = {
-  zh: [
-    { id: 'both', label: '中英都行', value: ['Mandarin', 'English'] },
-    { id: 'zh', label: '主要说中文', value: ['Mandarin'] },
-  ],
-  vi: [
-    { id: 'vi_en', label: 'Tiếng Việt & English', value: ['Vietnamese', 'English'] },
-    { id: 'vi', label: 'Chủ yếu tiếng Việt', value: ['Vietnamese'] },
-  ],
-  en: [
-    { id: 'en', label: 'English', value: ['English'] },
-    { id: 'en_plus', label: 'English + another language', value: ['English', 'Other'] },
-  ],
+// Languages a merchant can SERVE clients in — multi-select, independent of the
+// UI language they happen to be filling the form in. Stored in professionals.languages.
+const SERVICE_LANGUAGES: { value: string; label: Record<Lang, string> }[] = [
+  { value: 'Mandarin',   label: { zh: '中文（普通话）', vi: 'Tiếng Trung', en: 'Mandarin' } },
+  { value: 'Cantonese',  label: { zh: '粤语', vi: 'Tiếng Quảng Đông', en: 'Cantonese' } },
+  { value: 'English',    label: { zh: 'English', vi: 'English', en: 'English' } },
+  { value: 'Vietnamese', label: { zh: 'Tiếng Việt（越南语）', vi: 'Tiếng Việt', en: 'Vietnamese' } },
+]
+
+// Pre-selected service languages based on the UI locale the merchant arrived in
+const DEFAULT_LANGS: Record<Lang, string[]> = {
+  zh: ['Mandarin', 'English'],
+  vi: ['Vietnamese', 'English'],
+  en: ['English'],
 }
 
 const STATES = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'ACT', 'TAS', 'NT', 'All Australia']
@@ -172,9 +172,11 @@ function RuzhuPageInner() {
   const params = useSearchParams()
   const [lang, setLang] = useState<Lang>('zh')
 
+  const [serviceLangs, setServiceLangs] = useState<string[]>(DEFAULT_LANGS.zh)
+
   useEffect(() => {
     const l = params.get('lang')
-    if (l === 'vi' || l === 'en') setLang(l)
+    if (l === 'vi' || l === 'en') { setLang(l); setServiceLangs(DEFAULT_LANGS[l]) }
   }, [params])
 
   const t = T[lang]
@@ -183,19 +185,18 @@ function RuzhuPageInner() {
   const [form, setForm] = useState({
     category: '', businessName: '', contactName: '', wechat: '',
     phone: '', email: '', state: 'NSW', regions: '', description: '',
-    serviceLang: '',
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [done, setDone] = useState(false)
 
   const set = (key: string, value: string) => setForm(f => ({ ...f, [key]: value }))
-  const langOptions = LANG_OPTIONS[lang]
-  const serviceLangId = form.serviceLang || langOptions[0].id
+  const toggleServiceLang = (v: string) =>
+    setServiceLangs(prev => prev.includes(v) ? prev.filter(x => x !== v) : [...prev, v])
 
   const switchLang = (l: Lang) => {
     setLang(l)
-    setForm(f => ({ ...f, serviceLang: '' }))
+    setServiceLangs(DEFAULT_LANGS[l])
     track('ruzhu_lang_switch', { lang: l })
   }
 
@@ -205,7 +206,7 @@ function RuzhuPageInner() {
     setSubmitting(true)
     setError('')
     try {
-      const languages = (langOptions.find(o => o.id === serviceLangId) || langOptions[0]).value
+      const languages = serviceLangs.length ? serviceLangs : DEFAULT_LANGS[lang]
       const res = await fetch('/api/join', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -402,14 +403,17 @@ function RuzhuPageInner() {
           <div>
             <label className={labelClass}>{t.langLabel}</label>
             <div className="flex gap-2 flex-wrap">
-              {langOptions.map(opt => (
-                <button key={opt.id} type="button" onClick={() => set('serviceLang', opt.id)}
-                  className={`px-4 py-2.5 rounded-xl text-sm font-medium border-2 transition-colors ${
-                    serviceLangId === opt.id ? 'bg-orange-500 text-white border-orange-500' : 'bg-gray-50 text-gray-600 border-gray-100'
-                  }`}>
-                  {opt.label}
-                </button>
-              ))}
+              {SERVICE_LANGUAGES.map(opt => {
+                const on = serviceLangs.includes(opt.value)
+                return (
+                  <button key={opt.value} type="button" onClick={() => toggleServiceLang(opt.value)}
+                    className={`px-4 py-2.5 rounded-xl text-sm font-medium border-2 transition-colors ${
+                      on ? 'bg-orange-500 text-white border-orange-500' : 'bg-gray-50 text-gray-600 border-gray-100'
+                    }`}>
+                    {opt.label[lang]}
+                  </button>
+                )
+              })}
             </div>
           </div>
         </div>

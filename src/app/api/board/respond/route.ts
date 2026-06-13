@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     // 3. Brief must exist and be live
     const { data: brief } = await supabase
       .from('project_briefs')
-      .select('id, suburb, state, project_type, kind, contact_name, contact_email, response_count')
+      .select('id, suburb, state, project_type, kind, contact_name, contact_email, response_count, is_demo')
       .eq('id', briefId)
       .eq('status', 'live')
       .maybeSingle()
@@ -98,7 +98,9 @@ export async function POST(req: Request) {
     const FROM_EMAIL = process.env.RESEND_FROM_EMAIL?.trim() || 'noreply@ausbuildcircle.com'
     const esc = (s: unknown) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-    const homeownerEmailPromise = resend.emails.send({
+    // Real briefs email the homeowner their merchant card. Demo briefs have no
+    // real homeowner, so we skip this and only notify the admin (below).
+    const homeownerEmailPromise = brief.is_demo ? Promise.resolve() : resend.emails.send({
       from: FROM_EMAIL,
       to: brief.contact_email,
       subject: `有商家响应了你在对接大厅的需求（${brief.suburb}）`,
@@ -131,14 +133,16 @@ export async function POST(req: Request) {
     const adminEmailPromise = resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
-      subject: `[对接大厅] ${esc(pro.business_name)} 响应了 ${esc(brief.suburb)} 的需求`,
-      html: `<p>${esc(pro.business_name)}（${esc(pro.category)}）→ ${esc(brief.suburb)}, ${esc(brief.state)} ${esc(brief.project_type || brief.kind)}</p><p>${esc(message)}</p>`,
+      subject: brief.is_demo
+        ? `[对接大厅·示例需求] 🔥 ${esc(pro.business_name)} 想接 ${esc(brief.suburb)} 的活 — 可对接真实房东`
+        : `[对接大厅] ${esc(pro.business_name)} 响应了 ${esc(brief.suburb)} 的需求`,
+      html: `${brief.is_demo ? '<p style="background:#fff7ed;border:1px solid #fdba74;padding:10px;border-radius:8px"><b>这是商家对一条「示例需求」的响应</b> — 说明这个商家有意向接 ' + esc(brief.suburb) + ' 这类活，可以把他对接到你手上真实的房东。</p>' : ''}<p>${esc(pro.business_name)}（${esc(pro.category)}）→ ${esc(brief.suburb)}, ${esc(brief.state)} ${esc(brief.project_type || brief.kind)}</p><p>${esc(message)}</p><p style="font-size:13px;color:#6b7280">商家联系方式：${esc(pro.contact_name)} · ${esc(pro.phone || '')} ${pro.wechat ? '· 微信 ' + esc(pro.wechat) : ''} · ${esc(pro.email)}</p>`,
     }).catch(() => {})
 
     // Serverless: must await or the sends are dropped when the function freezes
     await Promise.all([homeownerEmailPromise, adminEmailPromise])
 
-    return Response.json({ success: true })
+    return Response.json({ success: true, isDemo: !!brief.is_demo })
   } catch (error) {
     console.error('Board respond error:', error)
     return Response.json({ error: 'Submission failed. Please try again.' }, { status: 500 })
