@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import { type Lang } from './i18n'
 
 interface LangContextType {
@@ -26,6 +26,16 @@ export function LangProvider({ children, initialLang = 'en' }: { children: React
   }
 
   const toggle = () => setLang(lang === 'en' ? 'zh' : 'en')
+
+  // Honour an explicit ?lang= in the URL (shared/deep links) so a zh link lands
+  // in Chinese regardless of cookie/browser default. Runs once on mount.
+  useEffect(() => {
+    try {
+      const p = new URLSearchParams(window.location.search).get('lang')
+      if ((p === 'zh' || p === 'en') && p !== lang) setLang(p)
+    } catch { /* ignore */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <LangContext.Provider value={{ lang, setLang, toggle }}>
