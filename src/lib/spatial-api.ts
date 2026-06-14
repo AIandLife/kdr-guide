@@ -515,6 +515,13 @@ export async function getLiveSite(
   if (!coords) return { zone: null, parcel: null }
   const zoneP: Promise<LiveZoneData | null> = (async () => {
     try {
+      // Live zoning is point-exact — only meaningful for a real street address.
+      // A suburb-only geocode is an arbitrary centroid that often lands on a
+      // road/park/CBD parcel (SP2 Infrastructure, MU1 Mixed Use…), which would
+      // wrongly tell a normal residential suburb that building is "not permitted".
+      // Suburb-level reports must use council-typical zoning instead, so suppress
+      // the centroid's live zone here (symmetric with the parcel guard below).
+      if (!coords.precise) return null
       switch (s) {
         case 'NSW': return await getNSWZoning(coords.lat, coords.lng)
         case 'VIC': return await getVICZoning(coords.lat, coords.lng)
