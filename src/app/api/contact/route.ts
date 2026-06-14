@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     const subject = toAdmin
       ? `[澳洲建房圈] 新询盘 → ${professional_name} (${homeowner_name})`
       : `新询盘：${homeowner_name} 来自 ${suburb || '未知区域'}`
-    await resend.emails.send({
+    const proEmailP = resend.emails.send({
       from: `Terry · 澳洲建房圈 <${FROM_EMAIL}>`,
       to: toEmail,
       subject,
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
     }).catch(err => console.error('Contact email error:', err))
 
     // Buyer confirmation
-    resend.emails.send({
+    const buyerEmailP = resend.emails.send({
       from: `Terry · 澳洲建房圈 <${FROM_EMAIL}>`,
       to: homeowner_email,
       subject: `询盘已发送 — ${professional_name}`,
@@ -126,6 +126,9 @@ export async function POST(req: NextRequest) {
         </div>
       `,
     }).catch(err => console.error('Buyer confirmation email error:', err))
+
+    // Serverless freezes on return — await both so neither send is dropped
+    await Promise.all([proEmailP, buyerEmailP])
 
     return NextResponse.json({ ok: true })
   } catch (e) {

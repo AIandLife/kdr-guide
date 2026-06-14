@@ -59,7 +59,7 @@ export async function POST(req: Request) {
     const isForwarded = !supplierEmail
 
     // Email to supplier (or admin if no supplier email)
-    resend.emails.send({
+    const supplierEmailP = resend.emails.send({
       from: `Terry · 澳洲建房圈 <${FROM}>`,
       to: toEmail,
       replyTo: buyerEmail,
@@ -109,7 +109,7 @@ export async function POST(req: Request) {
     }).catch(err => console.error('Supplier email failed:', err))
 
     // Confirmation to buyer
-    resend.emails.send({
+    const buyerEmailP = resend.emails.send({
       from: `Terry · 澳洲建房圈 <${FROM}>`,
       to: buyerEmail,
       subject: `询价已发送 — ${esc(supplierName)}`,
@@ -142,6 +142,9 @@ export async function POST(req: Request) {
         </div>
       `,
     }).catch(err => console.error('Buyer confirmation email failed:', err))
+
+    // Serverless freezes on return — await or both sends are silently dropped
+    await Promise.all([supplierEmailP, buyerEmailP])
 
     return Response.json({ success: true })
 
