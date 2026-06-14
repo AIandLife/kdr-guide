@@ -449,9 +449,10 @@ export default function HomePageClient() {
                   className="flex items-center gap-1 text-sm text-slate-400 hover:text-orange-400 transition-colors">
                   {lang === 'zh' ? '澳洲房产圈 →' : 'Aus Property Circle →'}
                 </a>
-                <span className="flex items-center gap-1 text-sm text-slate-600 cursor-default">
-                  {lang === 'zh' ? '澳洲NDIS圈（即将上线）' : 'NDIS Hub AU — Coming Soon'}
-                </span>
+                <a href="https://ndiscircle.com" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-sm text-slate-400 hover:text-orange-400 transition-colors">
+                  {lang === 'zh' ? '澳洲NDIS圈 →' : 'NDIS Circle →'}
+                </a>
               </div>
             </div>
           </div>
@@ -463,6 +464,10 @@ export default function HomePageClient() {
               {' · '}
               <a href="https://www.auspropertycircle.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-orange-400 transition-colors">
                 {lang === 'zh' ? '澳洲房产圈' : 'Aus Property Circle'}
+              </a>
+              {' · '}
+              <a href="https://ndiscircle.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-orange-400 transition-colors">
+                {lang === 'zh' ? '澳洲NDIS圈' : 'NDIS Circle'}
               </a>
             </p>
             <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
