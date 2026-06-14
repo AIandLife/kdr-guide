@@ -219,6 +219,15 @@ export default function UnifiedDashboard() {
   const scoreColor = (score: number) =>
     score >= 7 ? 'text-green-600 bg-green-50' : score >= 5 ? 'text-yellow-600 bg-yellow-50' : 'text-red-600 bg-red-50'
 
+  // Derive a localised verdict from the score so the label always matches the
+  // current UI language (the stored feasibility_label is in whatever language
+  // the report was generated in, which made the list show mixed 可行/English).
+  const verdictLabel = (score: number) =>
+    score >= 8 ? (isZh ? '高度可行' : 'Highly Feasible')
+      : score >= 6 ? (isZh ? '可行' : 'Feasible')
+      : score >= 4 ? (isZh ? '有难度' : 'Challenging')
+      : (isZh ? '很难' : 'Very Difficult')
+
   const isPro = !!proInfo
   const isSupplier = !!supplierInfo
 
@@ -497,9 +506,9 @@ export default function UnifiedDashboard() {
                           </div>
                         </div>
                         <div className="flex flex-col items-end gap-1 shrink-0">
-                          {r.feasibility_label && (
+                          {typeof r.feasibility_score === 'number' && (
                             <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${scoreColor(r.feasibility_score)}`}>
-                              {r.feasibility_label}
+                              {verdictLabel(r.feasibility_score)}
                             </span>
                           )}
                           <span className="text-xs text-gray-400">{formatDate(r.created_at)}</span>

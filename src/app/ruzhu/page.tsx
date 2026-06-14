@@ -303,6 +303,9 @@ function RuzhuPageInner() {
               <span key={c} className="px-3 py-1.5 rounded-full bg-white border border-orange-200 text-gray-700 font-medium">{c}</span>
             ))}
           </div>
+          <a href="/suppliers/register" className="inline-block mt-4 text-xs text-gray-500 hover:text-orange-600 underline transition-colors">
+            {lang === 'zh' ? '卖建材 / 门窗 / 地板的？→ 建材商入驻' : lang === 'vi' ? 'Bán vật liệu xây dựng? → Đăng ký nhà cung cấp' : 'Sell building materials? → List as a supplier'}
+          </a>
         </div>
       </div>
 
