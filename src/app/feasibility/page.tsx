@@ -301,6 +301,79 @@ function buildShareCard(result: FeasibilityResult, lang: string): string {
   return canvas.toDataURL('image/png')
 }
 
+/**
+ * Parse the streamed report JSON, repairing a mid-stream / truncated object by
+ * closing open strings, arrays and braces. Returns the best-effort object (which
+ * may be partial while the report is still streaming) or null if nothing usable.
+ */
+function parseReportJSON(accumulated: string): Record<string, unknown> | null {
+  // Try 1: parse as-is (complete object)
+  try { return JSON.parse(accumulated) } catch { /* fall through */ }
+
+  // Try 2: auto-close strings / brackets / braces (handles partial or truncated)
+  let repaired = accumulated.replace(/,\s*$/, '')
+  const quoteCount = (repaired.match(/(?<!\\)"/g) || []).length
+  if (quoteCount % 2 === 1) repaired += '"'
+  repaired = repaired.replace(/,?\s*"[^"]*":\s*"?[^",}\]]*$/, '')
+  let braces = 0, brackets = 0, inStr = false
+  for (let i = 0; i < repaired.length; i++) {
+    const c = repaired[i]
+    if (c === '"' && (i === 0 || repaired[i - 1] !== '\\')) inStr = !inStr
+    if (inStr) continue
+    if (c === '{') braces++
+    if (c === '}') braces--
+    if (c === '[') brackets++
+    if (c === ']') brackets--
+  }
+  for (let i = 0; i < brackets; i++) repaired += ']'
+  for (let i = 0; i < braces; i++) repaired += '}'
+  try { return JSON.parse(repaired) } catch { /* fall through */ }
+
+  // Try 3: walk back to the last complete top-level property
+  const end = accumulated.lastIndexOf('}')
+  if (end !== -1) {
+    const jsonStr = accumulated.slice(0, end + 1)
+    for (const sep of ['",\n', '",\r\n', '"\n', ']\n', '}\n']) {
+      const safeEnd = jsonStr.lastIndexOf(sep)
+      if (safeEnd !== -1) {
+        let candidate = jsonStr.slice(0, safeEnd + 1)
+        let b = 0, k = 0, s = false
+        for (let i = 0; i < candidate.length; i++) {
+          const c = candidate[i]
+          if (c === '"' && (i === 0 || candidate[i - 1] !== '\\')) s = !s
+          if (s) continue
+          if (c === '{') b++; if (c === '}') b--
+          if (c === '[') k++; if (c === ']') k--
+        }
+        for (let i = 0; i < k; i++) candidate += ']'
+        for (let i = 0; i < b; i++) candidate += '}'
+        try { return JSON.parse(candidate) } catch { /* try next */ }
+      }
+    }
+  }
+  return null
+}
+
+/** Defensive default for the arrays the report UI maps over, so even a slightly
+ *  malformed/truncated complete result can't crash the render. */
+function normalizeReport(r: Record<string, unknown>): Record<string, unknown> {
+  return {
+    ...r,
+    riskFlags: Array.isArray(r.riskFlags) ? r.riskFlags : [],
+    nextSteps: Array.isArray(r.nextSteps) ? r.nextSteps : [],
+    professionals: Array.isArray(r.professionals) ? r.professionals : [],
+    alternatives: Array.isArray(r.alternatives) ? r.alternatives : [],
+  }
+}
+
+interface ReportPreview {
+  score: number
+  label?: string
+  verdict?: string
+  keyInsight?: string
+  worthIt?: { verdict?: string; reason?: string }
+}
+
 function FeasibilityContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -375,6 +448,7 @@ function FeasibilityContent() {
   }, [searchParams, user])
 
   const [loadingStep, setLoadingStep] = useState(0)
+  const [preview, setPreview] = useState<ReportPreview | null>(null)
   const [liveFacts, setLiveFacts] = useState<LiveZoneMeta | null>(null)
   const [shareCardUrl, setShareCardUrl] = useState<string | null>(null)
   const [linkCopied, setLinkCopied] = useState(false)
@@ -390,6 +464,7 @@ function FeasibilityContent() {
     setLoadingStep(0)
     setError('')
     setResult(null)
+    setPreview(null)
     setLiveFacts(null)
 
     // Fast, LLM-free facts lookup in PARALLEL — shows the real block data within
@@ -421,6 +496,7 @@ function FeasibilityContent() {
       const decoder = new TextDecoder()
       let accumulated = '{'
       let metaStr = ''
+      let lastRender = 0
 
       while (true) {
         const { done, value } = await reader.read()
@@ -438,74 +514,37 @@ function FeasibilityContent() {
         } else {
           accumulated += chunk
         }
-      }
 
-      // Parse accumulated JSON — with robust truncation repair
-      let result: Record<string, unknown> | null = null
-
-      // Try 1: parse as-is
-      try { result = JSON.parse(accumulated) } catch { /* fall through */ }
-
-      // Try 2: auto-close brackets/braces (handles server-side truncation repair)
-      if (!result) {
-        let repaired = accumulated
-        // Trim trailing comma or incomplete value
-        repaired = repaired.replace(/,\s*$/, '')
-        // Close open string if needed
-        const quoteCount = (repaired.match(/(?<!\\)"/g) || []).length
-        if (quoteCount % 2 === 1) repaired += '"'
-        // Remove trailing incomplete key-value (e.g. "key": or "key": "partial)
-        repaired = repaired.replace(/,?\s*"[^"]*":\s*"?[^",}\]]*$/, '')
-        // Count and close unclosed brackets
-        let braces = 0, brackets = 0, inStr = false
-        for (let i = 0; i < repaired.length; i++) {
-          const c = repaired[i]
-          if (c === '"' && (i === 0 || repaired[i - 1] !== '\\')) inStr = !inStr
-          if (inStr) continue
-          if (c === '{') braces++
-          if (c === '}') braces--
-          if (c === '[') brackets++
-          if (c === ']') brackets--
-        }
-        for (let i = 0; i < brackets; i++) repaired += ']'
-        for (let i = 0; i < braces; i++) repaired += '}'
-        try { result = JSON.parse(repaired) } catch { /* fall through */ }
-      }
-
-      // Try 3: find last complete top-level property
-      if (!result) {
-        const end = accumulated.lastIndexOf('}')
-        if (end !== -1) {
-          const jsonStr = accumulated.slice(0, end + 1)
-          for (const sep of ['",\n', '",\r\n', '"\n', ']\n', '}\n']) {
-            const safeEnd = jsonStr.lastIndexOf(sep)
-            if (safeEnd !== -1) {
-              let candidate = jsonStr.slice(0, safeEnd + 1)
-              // Close remaining brackets
-              let b = 0, k = 0, s = false
-              for (let i = 0; i < candidate.length; i++) {
-                const c = candidate[i]
-                if (c === '"' && (i === 0 || candidate[i - 1] !== '\\')) s = !s
-                if (s) continue
-                if (c === '{') b++; if (c === '}') b--
-                if (c === '[') k++; if (c === ']') k--
-              }
-              for (let i = 0; i < k; i++) candidate += ']'
-              for (let i = 0; i < b; i++) candidate += '}'
-              try { result = JSON.parse(candidate); break } catch { /* try next */ }
-            }
+        // Progressive preview: every ~300ms, parse what has streamed so far and
+        // surface the headline (score + verdict + worth-it) the moment it arrives
+        // — which is first in the JSON — so the homeowner sees the answer in a few
+        // seconds instead of staring at a spinner. The full report still renders
+        // once complete; only these safe scalar fields are shown early.
+        const now = Date.now()
+        if (now - lastRender > 300) {
+          lastRender = now
+          const partial = parseReportJSON(accumulated)
+          if (partial && typeof partial.feasibilityScore === 'number') {
+            setPreview({
+              score: partial.feasibilityScore as number,
+              label: partial.feasibilityLabel as string | undefined,
+              verdict: partial.verdict as string | undefined,
+              keyInsight: partial.keyInsight as string | undefined,
+              worthIt: partial.worthIt as { verdict?: string; reason?: string } | undefined,
+            })
           }
         }
       }
 
+      // Final parse of the complete object (same repair logic as the stream)
+      const result = parseReportJSON(accumulated)
       if (!result) throw new Error('Response was truncated. Please try again.')
-
 
       if (metaStr) {
         try { result._liveZone = JSON.parse(metaStr) } catch { /* ignore */ }
       }
 
-      setResult(result as unknown as FeasibilityResult)
+      setResult(normalizeReport(result) as unknown as FeasibilityResult)
       track('report_generated', { suburb: sub, project_type: pt, retried: attempt > 0 })
     } catch (e) {
       // LLM streaming is occasionally flaky — retry once silently before
@@ -656,6 +695,28 @@ function FeasibilityContent() {
                   {liveFacts.maxHeight && <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">{lang === 'zh' ? '限高' : 'Max'} {liveFacts.maxHeight}m</span>}
                 </div>
                 <p className="text-[11px] text-green-600 mt-2">{lang === 'zh' ? 'AI 正在据此生成你的完整报告…' : 'AI is writing your full report from this…'}</p>
+              </div>
+            )}
+            {/* Live preview: the headline answer streams in first, so the user
+                sees the verdict in a few seconds instead of a 30s spinner */}
+            {preview && (
+              <div className="max-w-md mx-auto mb-6 bg-orange-50 border border-orange-200 rounded-2xl p-5 text-left">
+                <div className="flex items-start gap-4">
+                  <div className={`shrink-0 w-14 h-14 rounded-full flex flex-col items-center justify-center font-bold ${preview.score >= 7 ? 'bg-green-100 text-green-700' : preview.score >= 5 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+                    <span className="text-xl leading-none">{preview.score}</span>
+                    <span className="text-[10px] font-normal opacity-70">/10</span>
+                  </div>
+                  <div className="min-w-0">
+                    {preview.label && <p className="font-bold text-gray-900">{preview.label}</p>}
+                    {preview.verdict && <p className="text-sm text-gray-600 leading-relaxed mt-0.5">{preview.verdict}</p>}
+                  </div>
+                </div>
+                {preview.worthIt?.reason && (
+                  <p className="text-sm text-gray-700 mt-3 pt-3 border-t border-orange-100">
+                    💰 <strong>{lang === 'zh' ? '值不值' : 'Worth it?'}{preview.worthIt.verdict ? ' · ' + preview.worthIt.verdict : ''}</strong> — {preview.worthIt.reason}
+                  </p>
+                )}
+                <p className="text-[11px] text-orange-500 mt-3 flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" />{lang === 'zh' ? '正在补全完整报告（风险 / 费用 / 下一步）…' : 'Completing the full report (risks / cost / next steps)…'}</p>
               </div>
             )}
             <div className="max-w-xs mx-auto space-y-3 text-left">
@@ -915,6 +976,7 @@ function FeasibilityContent() {
             )}
 
             {/* Risk Flags */}
+            {result.riskFlags.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-yellow-500" />
@@ -938,6 +1000,7 @@ function FeasibilityContent() {
                 })}
               </div>
             </div>
+            )}
 
             {/* Approval + Cost */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -990,6 +1053,7 @@ function FeasibilityContent() {
             </div>
 
             {/* Timeline */}
+            {result.timeline?.totalWeeks && Array.isArray(result.timeline.phases) && (
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-purple-500" />
@@ -1013,6 +1077,7 @@ function FeasibilityContent() {
                 ))}
               </div>
             </div>
+            )}
 
             {/* Alternatives — same block, other paths */}
             {result.alternatives && result.alternatives.length > 0 && (
@@ -1043,6 +1108,7 @@ function FeasibilityContent() {
             )}
 
             {/* Next Steps */}
+            {result.nextSteps.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <ChevronRight className="w-5 h-5 text-orange-500" />
@@ -1072,6 +1138,7 @@ function FeasibilityContent() {
                 ))}
               </div>
             </div>
+            )}
 
             {/* Board CTA — flip the funnel: let merchants come to the homeowner */}
             <div className="rounded-2xl p-6 border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50">
@@ -1094,6 +1161,7 @@ function FeasibilityContent() {
             </div>
 
             {/* Professionals */}
+            {result.professionals.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <Users className="w-5 h-5 text-cyan-500" />
@@ -1109,6 +1177,7 @@ function FeasibilityContent() {
                 ))}
               </div>
             </div>
+            )}
 
             {/* Recommended Professionals from Directory */}
             {(() => {
