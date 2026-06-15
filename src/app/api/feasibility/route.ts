@@ -3,7 +3,12 @@ import { createClient } from '@supabase/supabase-js'
 import { findCouncilBySuburb, findCouncil, STATE_COST_RANGES } from '@/lib/council-data'
 import { getLiveSite, type LiveZoneData, type ParcelData } from '@/lib/spatial-api'
 
-export const runtime = 'edge'  // Edge Runtime: 30s limit on Hobby (vs 10s for serverless)
+// Reports run ~30s (spatial lookups + streamed LLM). Edge's implicit ~30s wall
+// was cutting it dangerously close — a report tipping over showed users a long
+// spin then failure. On our Pro plan, Node serverless allows an explicit
+// maxDuration, so give the report a hard 60s ceiling it will never hit.
+export const runtime = 'nodejs'
+export const maxDuration = 60
 
 const client = new Anthropic()
 
