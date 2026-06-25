@@ -20,6 +20,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: Config-drift guards (temperature, safety net wired in)
+        run: node scripts/check-config-guards.mjs
+
       - name: Install Playwright (no package.json changes)
         run: |
           npm install --no-save playwright@1.49.1
