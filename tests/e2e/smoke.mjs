@@ -81,7 +81,15 @@ async function checkDataPath() {
     return (await r.json())?.meta || null
   }
   try {
-    const full = await post({ suburb: 'Lidcombe', state: 'NSW', address: '33 Yarram St, Lidcombe NSW' })
+    // The cadastre + zoning lookups hit external NSW gov services that have brief
+    // outages (esp. overnight maintenance). Retry a few times so a transient blip
+    // doesn't raise a false alarm — only a persistent failure should fail the run.
+    let full = null
+    for (let attempt = 0; attempt < 3; attempt++) {
+      full = await post({ suburb: 'Lidcombe', state: 'NSW', address: '33 Yarram St, Lidcombe NSW' })
+      if (full?.lotSource === 'cadastre' && full?.zoneCode === 'R2') break
+      if (attempt < 2) await new Promise(r => setTimeout(r, 4000))
+    }
     if (full?.lotSource === 'cadastre' && full.lotAreaSqm > 100 && full.lotAreaSqm < 3000) {
       console.log(`  OK             full address → ${full.lotAreaSqm}㎡ (cadastre)`)
     } else {
