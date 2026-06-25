@@ -418,7 +418,7 @@ CRITICAL ACCURACY RULES:
       messages: [
         {
           role: 'user',
-          content: prompt + '\n\nCRITICAL: Output ONLY the raw JSON object. No markdown, no explanation, no code fences. Start your response with { and end with }. Keep text fields concise to stay within token limits.',
+          content: prompt + '\n\nCRITICAL: Output ONLY the raw JSON object. No markdown, no explanation, no code fences. Start your response with { and end with }. Keep text fields concise to stay within token limits.\nFIELD ORDER: emit the headline fields FIRST and in this exact order — "feasibilityScore", then "feasibilityLabel", then "verdict", then "keyInsight", then "worthIt" — before any other fields. (The UI shows these to the user the moment they stream in, so they must come first.)',
         },
         {
           role: 'assistant',
