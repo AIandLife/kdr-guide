@@ -108,6 +108,59 @@ async function checkDataPath() {
   }
 }
 
+// Parse the streamed feasibility report (body has no leading '{' and a __META__ trailer).
+async function fetchReport(body) {
+  const r = await fetch(`${BASE}/api/feasibility`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+  })
+  if (!r.ok) return null
+  const raw = await r.text()
+  let s = '{' + raw.split('__META__')[0].split('__ERROR__')[0]
+  try { return JSON.parse(s) } catch { /* repair */ }
+  s = s.replace(/,\s*$/, '')
+  if (((s.match(/(?<!\\)"/g) || []).length) % 2 === 1) s += '"'
+  let b = 0, k = 0, inS = false
+  for (let i = 0; i < s.length; i++) { const c = s[i]; if (c === '"' && s[i - 1] !== '\\') inS = !inS; if (inS) continue; if (c === '{') b++; if (c === '}') b--; if (c === '[') k++; if (c === ']') k-- }
+  for (let i = 0; i < k; i++) s += ']'; for (let i = 0; i < b; i++) s += '}'
+  try { return JSON.parse(s) } catch { return null }
+}
+
+// Report-quality guard. Catches the class of bug a real user (David) hit: a normal
+// residential block wrongly judged "very difficult", and the same block swinging
+// run-to-run because the LLM had no temperature control.
+async function checkReportQuality() {
+  console.log('— report quality (/api/feasibility) —')
+  try {
+    // 1. Sanity: a normal residential block in a standard suburb must be feasible (≥5)
+    for (const c of [
+      { suburb: 'Quakers Hill', state: 'NSW', projectType: 'kdr', lotSize: 600 },
+      { suburb: 'Footscray', state: 'VIC', projectType: 'kdr', lotSize: 500 },
+    ]) {
+      const rep = await fetchReport({ ...c, lang: 'en', userId: null })
+      const score = rep?.feasibilityScore
+      if (typeof score === 'number' && score >= 5 && rep.verdict) {
+        console.log(`  OK             ${c.suburb} ${c.state} → score ${score} (feasible)`)
+      } else {
+        failures.push(`report sanity: ${c.suburb} ${c.state} ${c.projectType} scored ${score} (<5 or malformed) — a normal residential block judged not feasible`)
+        console.log(`  FAIL           ${c.suburb} report sanity (score ${score})`)
+      }
+    }
+    // 2. Consistency: same full address twice (addresses bypass cache → fresh each time)
+    // must not swing — guards against the temperature/non-determinism regression.
+    const addr = { address: '33 Yarram St, Lidcombe NSW', suburb: 'Lidcombe', state: 'NSW', projectType: 'kdr', lang: 'en', userId: null }
+    const a = (await fetchReport(addr))?.feasibilityScore
+    const b = (await fetchReport(addr))?.feasibilityScore
+    if (typeof a === 'number' && typeof b === 'number' && Math.abs(a - b) <= 1) {
+      console.log(`  OK             consistency → same block scored ${a} & ${b} (stable)`)
+    } else {
+      failures.push(`report consistency: same block scored ${a} then ${b} — verdict swinging run-to-run (temperature regressed?)`)
+      console.log(`  FAIL           report consistency (${a} vs ${b})`)
+    }
+  } catch (e) {
+    failures.push(`report quality check errored: ${String(e.message).slice(0, 150)}`)
+  }
+}
+
 const run = async () => {
   fs.mkdirSync(OUT, { recursive: true })
   const browser = await chromium.launch({ headless: true })
@@ -124,6 +177,7 @@ const run = async () => {
 
   await browser.close()
   await checkDataPath()
+  await checkReportQuality()
 
   console.log('\n==================== summary ====================')
   if (warnings.length) { console.log(`⚠️  ${warnings.length} warning(s):`); warnings.forEach(w => console.log('   ' + w)) }
