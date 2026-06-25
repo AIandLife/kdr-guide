@@ -9,6 +9,7 @@ import {
   Droplets, Landmark, Shield, Info, Home, Mail, Send
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { sanitizeReport, clampScore, labelForScore } from '@/lib/report-bounds'
 import { useLang } from '@/lib/language-context'
 import { translations } from '@/lib/i18n'
 import { SiteNav } from '@/components/SiteNav'
@@ -88,8 +89,9 @@ const RISK_ICONS: Record<string, React.ElementType> = {
 }
 
 function ScoreMeter({ score }: { score: number }) {
-  const pct = (score / 10) * 100
-  const color = score >= 7 ? '#22c55e' : score >= 5 ? '#f59e0b' : '#ef4444'
+  const safe = Math.max(0, Math.min(10, Number(score) || 0))  // never draw an >100% arc
+  const pct = (safe / 10) * 100
+  const color = safe >= 7 ? '#22c55e' : safe >= 5 ? '#f59e0b' : '#ef4444'
   return (
     <div className="relative w-32 h-32">
       <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
@@ -525,9 +527,12 @@ function FeasibilityContent() {
           lastRender = now
           const partial = parseReportJSON(accumulated)
           if (partial && typeof partial.feasibilityScore === 'number') {
-            setPreview({
-              score: partial.feasibilityScore as number,
-              label: partial.feasibilityLabel as string | undefined,
+            // Sanitise the headline shown in the live preview too — the score
+            // appears in ~3s, before the full report, so it must be clamped here.
+            const sc = clampScore(partial.feasibilityScore)
+            if (sc != null) setPreview({
+              score: sc,
+              label: labelForScore(sc, l === 'zh'),
               verdict: partial.verdict as string | undefined,
               keyInsight: partial.keyInsight as string | undefined,
               worthIt: partial.worthIt as { verdict?: string; reason?: string } | undefined,
@@ -544,7 +549,8 @@ function FeasibilityContent() {
         try { result._liveZone = JSON.parse(metaStr) } catch { /* ignore */ }
       }
 
-      setResult(normalizeReport(result) as unknown as FeasibilityResult)
+      const safe = sanitizeReport(normalizeReport(result), l === 'zh')
+      setResult(safe as unknown as FeasibilityResult)
       track('report_generated', { suburb: sub, project_type: pt, retried: attempt > 0 })
     } catch (e) {
       // LLM streaming is occasionally flaky — retry once silently before
