@@ -153,11 +153,15 @@ async function checkReportQuality() {
       if (Array.isArray(ce.totalEstimate) && Number(ce.totalEstimate[1]) > 15_000_000) {
         failures.push(`report numbers: ${who} totalEstimate ${ce.totalEstimate[1]} absurd (land-as-floor blow-up)`)
       }
-      // Label must sit in the score's band (no "score 2 / Feasible" contradiction)
+      // Score↔label must not point OPPOSITE ways (e.g. score 8 labelled "Very
+      // Difficult"). Boundary disagreements (8 = Feasible vs Highly Feasible) are
+      // a matter of judgement, not a contradiction, so we don't flag them.
       const s = rep?.feasibilityScore
-      const expect = s >= 9 ? 4 : s >= 7 ? 3 : s >= 5 ? 2 : s >= 3 ? 1 : 0
-      if (rep?.feasibilityLabel && rep.feasibilityLabel !== LABELS[expect]) {
-        failures.push(`report contradiction: ${who} score ${s} but label "${rep.feasibilityLabel}" (expected "${LABELS[expect]}")`)
+      const NEG = ['Difficult', 'Very Difficult', '较难', '非常困难']
+      const POS = ['Feasible', 'Highly Feasible', '可行', '非常可行']
+      const lbl = rep?.feasibilityLabel
+      if (lbl && ((s >= 7 && NEG.includes(lbl)) || (s <= 3 && POS.includes(lbl)))) {
+        failures.push(`report contradiction: ${who} score ${s} but label "${lbl}" points the opposite way`)
       }
     }
 

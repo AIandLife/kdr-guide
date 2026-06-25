@@ -29,10 +29,25 @@ export const BOUNDS = {
 const LABELS_ZH = ['非常困难', '较难', '有条件可行', '可行', '非常可行']
 const LABELS_EN = ['Very Difficult', 'Difficult', 'Possible with Conditions', 'Feasible', 'Highly Feasible']
 
-/** Canonical label for a score band (1–2 / 3–4 / 5–6 / 7–8 / 9–10). */
+/** Canonical label for a score band — used only as a FALLBACK when the model's
+ *  label is missing/garbage or grossly contradicts the score. We do NOT re-map
+ *  every label to these exact cutoffs: an 8 called "Highly Feasible" is fine. */
 export function labelForScore(score: number, isZh: boolean): string {
   const i = score >= 9 ? 4 : score >= 7 ? 3 : score >= 5 ? 2 : score >= 3 ? 1 : 0
   return (isZh ? LABELS_ZH : LABELS_EN)[i]
+}
+
+const POSITIVE_LABELS = ['可行', '非常可行', 'Feasible', 'Highly Feasible']
+const NEGATIVE_LABELS = ['较难', '非常困难', 'Difficult', 'Very Difficult']
+
+/** True only for a GROSS score↔label contradiction (opposite directions), e.g.
+ *  a score of 8 labelled "Very Difficult", or a 2 labelled "Highly Feasible".
+ *  Boundary disagreements (8 = Feasible vs Highly Feasible) are NOT flagged. */
+export function labelContradictsScore(label: unknown, score: number): boolean {
+  const l = String(label || '')
+  if (score >= 7 && NEGATIVE_LABELS.includes(l)) return true
+  if (score <= 3 && POSITIVE_LABELS.includes(l)) return true
+  return false
 }
 
 /** Coerce any score to an integer 1–10. Treats an obvious percentage (11–100)
@@ -68,10 +83,11 @@ export function sanitizeReport(report: Rec, isZh: boolean): Rec {
   const s = clampScore(r.feasibilityScore)
   if (s != null) {
     r.feasibilityScore = s
-    if (!LABELS_ZH.includes(String(r.feasibilityLabel)) && !LABELS_EN.includes(String(r.feasibilityLabel))) {
-      r.feasibilityLabel = labelForScore(s, isZh)
-    } else {
-      // Force the label into the score's band (drops "feasible" on a 2).
+    const labelKnown = LABELS_ZH.includes(String(r.feasibilityLabel)) || LABELS_EN.includes(String(r.feasibilityLabel))
+    // Replace ONLY when the label is missing/garbage or points the opposite way
+    // from the score. A reasonable boundary label (8 → "Highly Feasible") is kept
+    // so we never downgrade a correct label to satisfy an arbitrary cutoff.
+    if (!labelKnown || labelContradictsScore(r.feasibilityLabel, s)) {
       r.feasibilityLabel = labelForScore(s, isZh)
     }
   }
