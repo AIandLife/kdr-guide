@@ -139,6 +139,28 @@ async function fetchReport(body) {
 async function checkReportQuality() {
   console.log('— report quality (/api/feasibility) —')
   try {
+    // Cross-field + numeric sanity on any report (after the safety net runs).
+    const LABELS = ['Very Difficult', 'Difficult', 'Possible with Conditions', 'Feasible', 'Highly Feasible']
+    const numericSane = (rep, who) => {
+      const ce = rep?.costEstimate || {}
+      const tuples = [['buildPerSqm', ce.buildPerSqm], ['totalEstimate', ce.totalEstimate], ['totalWeeks', rep?.timeline?.totalWeeks]]
+      for (const [k, t] of tuples) {
+        if (t == null) continue
+        if (!Array.isArray(t) || !Number.isFinite(Number(t[0])) || !Number.isFinite(Number(t[1])) || Number(t[0]) > Number(t[1])) {
+          failures.push(`report numbers: ${who} ${k}=${JSON.stringify(t)} is inverted/NaN (renderer crash risk)`)
+        }
+      }
+      if (Array.isArray(ce.totalEstimate) && Number(ce.totalEstimate[1]) > 15_000_000) {
+        failures.push(`report numbers: ${who} totalEstimate ${ce.totalEstimate[1]} absurd (land-as-floor blow-up)`)
+      }
+      // Label must sit in the score's band (no "score 2 / Feasible" contradiction)
+      const s = rep?.feasibilityScore
+      const expect = s >= 9 ? 4 : s >= 7 ? 3 : s >= 5 ? 2 : s >= 3 ? 1 : 0
+      if (rep?.feasibilityLabel && rep.feasibilityLabel !== LABELS[expect]) {
+        failures.push(`report contradiction: ${who} score ${s} but label "${rep.feasibilityLabel}" (expected "${LABELS[expect]}")`)
+      }
+    }
+
     // 1. Sanity: a normal residential block in a standard suburb must be feasible (≥5)
     for (const c of [
       { suburb: 'Quakers Hill', state: 'NSW', projectType: 'kdr', lotSize: 600 },
@@ -152,6 +174,7 @@ async function checkReportQuality() {
         failures.push(`report sanity: ${c.suburb} ${c.state} ${c.projectType} scored ${score} (<5 or malformed) — a normal residential block judged not feasible`)
         console.log(`  FAIL           ${c.suburb} report sanity (score ${score})`)
       }
+      if (rep) numericSane(rep, `${c.suburb} ${c.state}`)
     }
     // 2. Consistency: same full address twice (addresses bypass cache → fresh each time)
     // must not swing — guards against the temperature/non-determinism regression.
