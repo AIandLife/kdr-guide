@@ -378,6 +378,7 @@ Generate a comprehensive, honest feasibility report tailored to the project type
 Be specific, honest, and practical. If risks are high, say so clearly. Use real Australian industry knowledge.
 
 CRITICAL ACCURACY RULES:
+- SCORING: a normal residential block in a standard residential zone (R1/R2/R3/RU5/General Residential etc.) is feasible for KDR — score it 6–9. Only score below 5 when there is a CONCRETE blocker on the block: a heritage listing/HCA, High flood or bushfire, a zone that prohibits dwellings, or a lot below the minimum lot size. A remote location, small market or thin resale value lowers the WORTH-IT case, NOT feasibility — never score "very difficult" just because a town is remote or regional. An EXISTING legal lot can be knocked down and rebuilt even if it is smaller than the council's current minimum lot size (minimum lot size governs SUBDIVISION / creating new lots, not rebuilding one dwelling on an existing allotment) — so do not fail lotSizeCheck or tank the score for an undersized existing lot.
 - Build costs: Use 2024-2026 realistic ranges. Sydney/Melbourne/Perth mid-spec KDR = $2,800-$4,200/sqm minimum. Do NOT use $1,800/sqm — that is pre-2022 data.
 - CRITICAL — "Lot Size" is the LAND area, NOT the floor area being built. NEVER multiply the lot size by the per-sqm build rate. A new home's floor area is typically 200-350 sqm (or FSR × lot if that is smaller); apply the per-sqm build cost ONLY to that floor area. For renovations/extensions/granny flats, apply it only to the added/affected floor area (granny flats max 60 sqm). A typical detached KDR total build is $400k-$1.2m — totals in the tens of millions are ALWAYS wrong and mean you mistakenly used land area as floor area.
 - DA timelines: Use real-world times, not statutory targets. Inner Sydney councils = 6-18 months. Outer suburban = 3-6 months.
@@ -407,6 +408,12 @@ CRITICAL ACCURACY RULES:
     const stream = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 4096,
+      // A feasibility report is a factual assessment, not creative writing. With
+      // the default temperature (1.0) the same block swung wildly run-to-run
+      // (e.g. Broken Hill 655㎡ KDR scored 2 one run, 6–7 the next), so a real
+      // user saw a flatly wrong "very difficult" verdict. Low temperature keeps
+      // the score and facts stable and reproducible for the same inputs.
+      temperature: 0.2,
       stream: true,
       messages: [
         {
