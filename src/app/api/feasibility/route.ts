@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { findCouncilBySuburb, findCouncil, STATE_COST_RANGES } from '@/lib/council-data'
 import { getLiveSite, type LiveZoneData, type ParcelData } from '@/lib/spatial-api'
+import { reportLooksBad } from '@/lib/report-bounds'
 
 // Reports run ~30s (spatial lookups + streamed LLM). Edge's implicit ~30s wall
 // was cutting it dangerously close — a report tipping over showed users a long
@@ -477,9 +478,17 @@ CRITICAL ACCURACY RULES:
               process.env.SUPABASE_SERVICE_ROLE_KEY!
             )
 
+            // Cache gate: never cache a clearly-broken report, or one bad
+            // generation gets re-served to every later reader of this suburb
+            // (this is how the David score-2 bug persisted).
+            const badReason = reportLooksBad(parsed)
+            if (badReason) {
+              console.warn(`[report_hard_fail] ${suburb}/${state}/${projectType}: ${badReason}`)
+            }
+
             // Save to suburb cache (upsert — overwrite if exists)
             // Only suburb-level reports may be cached (key is suburb-wide).
-            if (cacheEligible && reportLevel === 'suburb') {
+            if (cacheEligible && reportLevel === 'suburb' && !badReason) {
               await supabase.from('suburb_feasibility_cache').upsert({
                 suburb: suburb?.toLowerCase().trim(),
                 state: state || null,
